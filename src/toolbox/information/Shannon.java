@@ -21,7 +21,7 @@ public class Shannon {
     private static Logger logger;
     
     static {
-        logger = Utilities.getLogger(Shannon.class, Level.DEBUG);
+        logger = Utilities.getLogger(Shannon.class, Level.INFO);
     }
     
     public static double getEntropy(double[] input) {
@@ -40,19 +40,8 @@ public class Shannon {
         if(left == null || right == null || left.size() != right.size()) {
             return -1.0;
         }
-        ArrayList<ArrayList<Double>> combined = new ArrayList<ArrayList<Double>>();
-        ArrayList<Double> current = new ArrayList<Double>();
-        for(int i = 0; i < left.size(); i++) {
-            current = new ArrayList<Double>();
-            current.add(left.get(i));
-            current.add(right.get(i));
-            combined.add(current);
-        }
-        for(int i = 0; i < combined.size(); i++) {
-            //logger.debug(combined.get(i));
-        }
         
-        //HX + HY - HXY;
+        List<List<Double>> combined = getCombinedList(left, right);
         double HL = new Histogram(left).getEntropy();
         logger.debug("HL = " + HL);
         double HR = new Histogram(right).getEntropy();
