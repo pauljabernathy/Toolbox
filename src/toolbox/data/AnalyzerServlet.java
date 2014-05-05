@@ -36,22 +36,8 @@ public class AnalyzerServlet extends HttpServlet {
         String fileName = DEFAULT_FILE_NAME;
         //fileName = "thefile.csv";
         File dir = new File(getServletContext().getRealPath(""));
-        writer.println(dir);
-        /*if(dir != null) {
-            writer.println("<br>dir path = " + dir.getAbsolutePath());
-            writer.println("<br>dir name = " + dir.getName());
-            File[] files = dir.listFiles();
-            if(files != null) {
-            for(int i = 0; i < files.length; i++) {
-                writer.println("<p>" + files[i].getAbsolutePath());
-                writer.println("<br>" + files[i].getName());
-            }
-            } else {
-                writer.println("files was null");
-            }
-        } else {
-            writer.println("dir was null");
-        }*/
+        
+        writer.println("<br>in doGet()");
         if(request.getSession().getAttribute("fileName") != null) {
             fileName = (String)request.getSession().getAttribute("fileName");
             writer.println("<br>using filename " + fileName);
@@ -64,25 +50,6 @@ public class AnalyzerServlet extends HttpServlet {
         }
         //a.analyzeFile(fileName, new int[] { 1, 2, 5, 6, 7, 8, 9, 10, 11, 12, 13}, ",");
         writer.println("</body></html>");
-    }
-    
-    public void doPost1(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        PrintWriter writer = response.getWriter();
-        writer.println("<html><head><title>Analyzer Servlet</title></head><body>");
-        if(request.getParameter("file") == null) {
-            writer.println("<p>did not receive a file</p>");
-        } else {
-            Part filePart = request.getPart("file"); // Retrieves <input type="file" name="file">
-            InputStream filecontent = filePart.getInputStream();
-            String fileName = filePart.getName();//new File(item.getName()).getName();
-            String filePath = UPLOAD_PATH + File.separator + fileName;
-            File storeFile = new File(filePath);
-            // C:\tomcat\apache-tomcat-7.0.40\webapps\data\
-            // saves the file on disk
-            filePart.write(filePath);
-            request.setAttribute("message","Upload has been done successfully!");
-            System.out.println("demo Success");
-        }
     }
     
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -107,9 +74,9 @@ public class AnalyzerServlet extends HttpServlet {
 
         // constructs the directory path to store upload file
         // this path is relative to application's directory
-        String uploadPath = getServletContext().getRealPath("")+ File.separator + UPLOAD_DIRECTORY;
-        writer.println("<br>getServletContext().getRealPath(\"\")+ File.separator");
-        uploadPath = UPLOAD_DIRECTORY;
+        String uploadPath = getServletContext().getRealPath("")+ File.separator;// + UPLOAD_DIRECTORY;
+        //writer.println("<br>getServletContext().getRealPath(\"\")+ File.separator = " + getServletContext().getRealPath("\"")+ File.separator);
+        //uploadPath = UPLOAD_DIRECTORY;
         writer.println("<br>uploadPath = " + uploadPath);writer.flush();
 
         // creates the directory if it does not exist
@@ -122,18 +89,18 @@ public class AnalyzerServlet extends HttpServlet {
             // parses the request's content to extract file data
             String fileName = DEFAULT_FILE_NAME;
             System.out.println(uploadPath);
-                Part filePart = request.getPart("file"); // Retrieves <input type="file" name="file">
-                InputStream filecontent = filePart.getInputStream();
-                //fileName = filePart.getName();//new File(item.getName()).getName();
-                writer.println("<br>fileName = " + fileName);
-                String filePath = uploadPath + File.separator + fileName;
-                writer.println("<br>file will be " + filePath);writer.flush();
-                File storeFile = new File(filePath);
-                // C:\tomcat\apache-tomcat-7.0.40\webapps\data\
-                // saves the file on disk
-                filePart.write(filePath);
-                request.setAttribute("message","Upload has been done successfully!");
-                writer.println("demo Success");
+            Part filePart = request.getPart("file"); // Retrieves <input type="file" name="file">
+            //InputStream filecontent = filePart.getInputStream();
+            //fileName = filePart.getName();//new File(item.getName()).getName();
+            writer.println("<br>fileName = " + fileName);
+            String filePath = uploadPath + File.separator + fileName;
+            writer.println("<br>file will be " + filePath);writer.flush();
+            //File storeFile = new File(filePath);
+            // C:\tomcat\apache-tomcat-7.0.40\webapps\data\
+            // saves the file on disk
+            filePart.write(filePath);
+            request.setAttribute("message","Upload has been done successfully!");
+            writer.println("demo Success");
         } catch (Exception ex) {
             request.setAttribute("message","There was an error: " + ex.getMessage());
             writer.println("demo Fail: " +   ex.getMessage() );
