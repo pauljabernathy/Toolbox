@@ -37,12 +37,12 @@ public class AnalyzerServlet extends HttpServlet {
         //fileName = "thefile.csv";
         File dir = new File(getServletContext().getRealPath(""));
         
-        writer.println("<br>in doGet()");
+        //writer.println("<br>in doGet()");
         if(request.getSession().getAttribute("fileName") != null) {
             fileName = (String)request.getSession().getAttribute("fileName");
-            writer.println("<br>using filename " + fileName);
+            //writer.println("<br>using filename " + fileName);
             fileName = getServletContext().getRealPath("") + File.separator + fileName;
-            writer.println("<br>using filename " + fileName);
+            //writer.println("<br>using filename " + fileName);
             //a.analyzeFile(fileName, new int[] { 1, 2, 5, 6, 7, 8, 9, 10, 11, 12, 13}, ",");
             a.analyzeFile(fileName, new int[] { 1, 2, 3, 4 }, ",");
         } else {
@@ -75,9 +75,7 @@ public class AnalyzerServlet extends HttpServlet {
         // constructs the directory path to store upload file
         // this path is relative to application's directory
         String uploadPath = getServletContext().getRealPath("")+ File.separator;// + UPLOAD_DIRECTORY;
-        //writer.println("<br>getServletContext().getRealPath(\"\")+ File.separator = " + getServletContext().getRealPath("\"")+ File.separator);
-        //uploadPath = UPLOAD_DIRECTORY;
-        writer.println("<br>uploadPath = " + uploadPath);writer.flush();
+        //writer.println("<br>uploadPath = " + uploadPath);writer.flush();
 
         // creates the directory if it does not exist
         File uploadDir = new File(uploadPath);
@@ -85,28 +83,26 @@ public class AnalyzerServlet extends HttpServlet {
             uploadDir.mkdir();
         }
 
+        String fileName = DEFAULT_FILE_NAME;
         try {
             // parses the request's content to extract file data
-            String fileName = DEFAULT_FILE_NAME;
-            System.out.println(uploadPath);
+            //System.out.println(uploadPath);
             Part filePart = request.getPart("file"); // Retrieves <input type="file" name="file">
-            //InputStream filecontent = filePart.getInputStream();
-            //fileName = filePart.getName();//new File(item.getName()).getName();
-            writer.println("<br>fileName = " + fileName);
-            String filePath = uploadPath + File.separator + fileName;
-            writer.println("<br>file will be " + filePath);writer.flush();
-            //File storeFile = new File(filePath);
-            // C:\tomcat\apache-tomcat-7.0.40\webapps\data\
-            // saves the file on disk
+            //writer.println("<br>filePart.getName() = " + filePart.getName());   //filePart.getName() gives the name of the file input item from the form page
+            //writer.println("<br>filePart.getSubmittedFileName() = " + filePart.getSubmittedFileName()); //getSubmittedFileName() gives the real file name
+            //writer.println("<br>fileName = " + fileName);
+            String filePath = uploadPath + File.separator + fileName;   //use the generic file name so that new files overwrite the old so that we don't proliferate files on the server
+            //writer.println("<br>file will be " + filePath);writer.flush();
+
             filePart.write(filePath);
             request.setAttribute("message","Upload has been done successfully!");
-            writer.println("demo Success");
+            //writer.println("demo Success");
         } catch (Exception ex) {
             request.setAttribute("message","There was an error: " + ex.getMessage());
             writer.println("demo Fail: " +   ex.getMessage() );
         }
         
-        request.getSession().setAttribute("fileName", DEFAULT_FILE_NAME);
+        request.getSession().setAttribute("fileName", fileName);
         doGet(request, response);
     }
 }
