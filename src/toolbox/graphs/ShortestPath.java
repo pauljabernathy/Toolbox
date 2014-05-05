@@ -95,8 +95,6 @@ public class ShortestPath {
         paths.put(source, dummyPathToSource);
         for(int i = 0; i < source.getEdges().size(); i++) {
             logger.debug(source);
-            //logger.debug(source.getNeighbors().get(i));
-            //logger.debug(source.getWeights().get(i));
             Edge current = source.getEdges().get(i);//new Edge(source, source.getNeighbors().get(i), source.getWeights().get(i));
             logger.debug("adding edge " + current + " to queue");
             queue.add(current);
@@ -127,9 +125,6 @@ public class ShortestPath {
         }
         
         List<LinkedList<Edge>> result = new ArrayList<LinkedList<Edge>>();
-        /*for(Edge edge: finalized) {
-            result.add(paths.get(edge));
-        }*/
         java.util.Iterator<LinkedList<Edge>> iterator = paths.values().iterator();
         while(iterator.hasNext()) {
             result.add(iterator.next());
@@ -157,8 +152,6 @@ public class ShortestPath {
         finalized.add(source);
         for(int i = 0; i < source.getEdges().size(); i++) {
             logger.debug(source);
-            //logger.debug(source.getNeighbors().get(i));
-            //logger.debug(source.getWeights().get(i));
             Edge current = source.getEdges().get(i);//new Edge(source, source.getNeighbors().get(i), source.getWeights().get(i));
             logger.debug("adding edge " + current + " to queue");
             queue.add(current);

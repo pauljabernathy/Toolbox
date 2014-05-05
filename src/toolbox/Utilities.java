@@ -88,9 +88,7 @@ public class Utilities {
         int from = (int)Math.pow(2, input.length - 2);
         int to = (int)Math.pow(2, input.length );
         int[][] result = new int[to][input.length];
-        for(int i = 0; i < to; i++) {         
-            //Utilities.showArray(Utilities.toBinaryArray(i, input.length));
-            Utilities.showArray(Utilities.and(input, Utilities.toBinaryArray(i, input.length)));
+        for(int i = 0; i < to; i++) {
             result[i] = Utilities.and(input, Utilities.toBinaryArray(i, input.length));
         }
         return result;
