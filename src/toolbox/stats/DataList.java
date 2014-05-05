@@ -39,6 +39,10 @@ public class DataList <T> {
         return values.get(index);
     }
     
+    public List<T> getData() {
+        return this.values;
+    }
+    
     public void print() {
         if(this.values == null) {
             return;
