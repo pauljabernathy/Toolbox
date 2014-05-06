@@ -118,6 +118,16 @@ public class Histogram {
             sb.append(this.values.get(i)).append("  ").append(this.counts.get(i)).append("  ").append(this.probabilities.get(i));
             sb.append("\n");
         }
+        //return sb.toString();*/
+        return this.toString("\n");
+    }
+    
+    public String toString(String endLine) {
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < this.getCounts().size(); i++) {
+            sb.append(this.values.get(i)).append("  ").append(this.counts.get(i)).append("  ").append(this.probabilities.get(i));
+            sb.append(endLine);
+        }
         return sb.toString();
     }
     

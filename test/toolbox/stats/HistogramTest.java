@@ -31,7 +31,7 @@ public class HistogramTest {
     public static void setUpClass() {
         logger = Logger.getLogger(HistogramTest.class);
         logger.addAppender(new ConsoleAppender(new PatternLayout(toolbox.Constants.DEFAULT_LOG_FORMAT)));
-        logger.setLevel(Level.INFO);
+        logger.setLevel(Level.DEBUG);
     }
     
     @AfterClass
@@ -111,5 +111,16 @@ public class HistogramTest {
     @Test
     public void testSize() {
         logger.info("\ntesting size()");
+    }
+    
+    @Test
+    public void testToString() {
+        logger.info("\ntesting toString()");
+        Histogram instance = new Histogram();
+        DataList<String> list = new DataList<String>();
+        list.add("a").add("b").add("b").add("a").add("b");
+        instance.setDataList(list);
+        logger.debug(instance.toString());
+        logger.debug(instance.toString("<br>"));
     }
 }
