@@ -22,6 +22,24 @@ public class DataList <T> {
         this.values = new ArrayList<T>();
     }
     
+    public DataList(List<T> list) {
+        this.values = new ArrayList<T>();
+        if(list != null) {
+            for(T t : list) {
+                this.values.add(t);
+            }
+        }
+    }
+
+    public DataList(T[] array) {
+        this.values = new ArrayList<T>();
+        if(array != null) {
+            for(T t : array) {
+                this.values.add(t);
+            }
+        }
+    }
+    
     public DataList<T> add(T value) {
         values.add(value);
         return this;

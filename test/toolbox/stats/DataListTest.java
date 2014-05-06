@@ -13,6 +13,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import org.apache.log4j.*;
+import java.util.ArrayList;
 
 /**
  *
@@ -44,6 +45,61 @@ public class DataListTest {
     public void tearDown() {
     }
 
+    @Test
+    public void testConstructor_List() {
+        logger.info("\ntesting DataList(List<T> list)");
+        DataList<String> instanceStr = null;
+        ArrayList<String> inputStr = null;
+        instanceStr = new DataList<String>(inputStr);
+        assertEquals(0, instanceStr.getData().size());
+        
+        inputStr = new ArrayList<String>();
+        inputStr.add("one");
+        inputStr.add("two");
+        inputStr.add("three");
+        inputStr.add("one");
+        instanceStr = new DataList<String>(inputStr);
+        assertEquals(4, instanceStr.getData().size());
+        assertEquals(3, instanceStr.getHistogram().size());
+        
+        ArrayList<Integer> inputInt = null;
+        DataList<Integer> instanceInt = new DataList<Integer>(inputInt);
+        assertEquals(0, instanceInt.getData().size());
+        
+        inputInt = new ArrayList<Integer>();
+        inputInt.add(1);
+        inputInt.add(2);
+        inputInt.add(3);
+        inputInt.add(1);
+        instanceInt = new DataList<Integer>(inputInt);
+        assertEquals(4, instanceInt.getData().size());
+        assertEquals(3, instanceInt.getHistogram().size());
+    }
+    
+    @Test
+    public void testConstructor_Array() {
+        logger.info("\ntesting DataList(T[] array)");
+        DataList<String> instanceStr = null;
+        String[] inputStr = null;
+        instanceStr = new DataList(inputStr);
+        assertEquals(0, instanceStr.getData().size());
+        
+        inputStr = new String[] { "one", "three", "two", "one" };
+        instanceStr = new DataList<String>(inputStr);
+        assertEquals(4, instanceStr.getData().size());
+        assertEquals(3, instanceStr.getHistogram().size());
+        
+        Integer[] inputInt = null;
+        DataList<Integer> instanceInt = null;
+        instanceInt = new DataList(inputInt);
+        assertEquals(0, instanceInt.getData().size());
+        
+        inputInt = new Integer[] { 1, 2, 3, 1 };
+        instanceInt = new DataList(inputInt);
+        assertEquals(4, instanceInt.getData().size());
+        assertEquals(3, instanceInt.getHistogram().size());
+    }
+    
     @Test
     public void testAdd() {
         logger.info("\ntesting add()");
