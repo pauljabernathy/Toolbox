@@ -31,7 +31,7 @@ public class ShannonTest {
     
     @BeforeClass
     public static void setUpClass() {
-        logger = toolbox.Utilities.getLogger(ShannonTest.class, Level.INFO);
+        logger = toolbox.Utilities.getLogger(ShannonTest.class, Level.DEBUG);
         sameLineLogger = Utilities.getSameLineLogger(ShannonTest.class, Level.INFO);
     }
     
@@ -48,23 +48,46 @@ public class ShannonTest {
     }
 
     @Test
-    public void testGetEntropy_doubleArr() {
+    public void testGetEntropy_Array() {
+        logger.info("\ntesting getEntropy(T[] input)");
+        
+        Integer[] inputInt = new Integer[] { 1, 2, 3, 1 }; 
+        assertEquals(1.5, Shannon.getEntropy(inputInt), 0.0000001);
+        
+        String[] inputStr = new String[] { "strawberry", "strawberry", "raspberry", "blueberry" };
+        assertEquals(1.5, Shannon.getEntropy(inputStr), 0.000001);
     }
 
     @Test
     public void testGetEntropy_List() {
+        logger.info("\ntesting getEntropy(List<T> input)");
+        List input = new ArrayList<Integer>();
+        input.add(1);
+        input.add(2);
+        input.add(3);
+        input.add(1);
+        
+        assertEquals(1.5, Shannon.getEntropy(input), 0.000001);
+        
+        input = new ArrayList<String>();
+        input.add("strawberry");
+        input.add("strawberry");
+        input.add("raspberry");
+        input.add("blueberry");
+        
+        assertEquals(1.5, Shannon.getEntropy(input), 0.0000001);
     }
 
     @Test
     public void testGetMutualInformation() {
         logger.info("\ntesting getMutualInformation()");
-        ArrayList<Double> left = new ArrayList<Double>();
+        ArrayList left = new ArrayList<Double>();
         left.add(1.0);
         left.add(2.0);
         left.add(3.0);
         left.add(4.0);
         
-        ArrayList<Double> right = new ArrayList<Double>();
+        ArrayList right = new ArrayList<Double>();
         right.add(5.0);
         right.add(6.0);
         right.add(7.0);
@@ -129,6 +152,22 @@ public class ShannonTest {
         right.add(5.0);
         right.add(6.0);
         right.add(6.0);
+        logger.debug(Shannon.getMutualInformation(left, right));
+        assertEquals(1.0, Shannon.getMutualInformation(left, right), .0000001);
+        
+        logger.debug("-");
+        left = new ArrayList<String>();
+        right = new ArrayList<String>();
+        left.add("1.0");
+        left.add("2.0");
+        left.add("3.0");
+        left.add("4.0");
+        
+        right.add(5.0);
+        right.add(5.0);
+        right.add(6.0);
+        right.add(6.0);
+        //TODO:  Figure out what class is being used above.  String or Double?
         logger.debug(Shannon.getMutualInformation(left, right));
         assertEquals(1.0, Shannon.getMutualInformation(left, right), .0000001);
     }

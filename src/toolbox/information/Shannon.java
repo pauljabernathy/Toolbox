@@ -24,18 +24,23 @@ public class Shannon {
         logger = Utilities.getLogger(Shannon.class, Level.INFO);
     }
     
-    public static double getEntropy(double[] input) {
-        DataList<Double> list = new DataList<Double>();
-        for(double num : input) {
-            list.add(num);
-        }
-        return list.getEntropy();
+    //TODO:  Should these functions even be here since they just pass the calculation off to something else?
+    //Or should Histogram pass the calculation off to here?
+    public static <T> double getEntropy(T[] input) {
+        return new DataList<T>(input).getEntropy();
     }
     
     public static <T> double getEntropy(List<T> input) {
         return new Histogram(input).getEntropy();
     }
     
+    /**
+     * finds the mutual information of the two lists, using the formula HL + HR - HLR where HL is the entropy of the left list, HR is the entropy of the right, and HLR is the entropy of the combined list
+     * @param <T>
+     * @param left
+     * @param right
+     * @return 
+     */
     public static <T> double getMutualInformation(List<T> left, List<T> right) {
         if(left == null || right == null || left.size() != right.size()) {
             return -1.0;
