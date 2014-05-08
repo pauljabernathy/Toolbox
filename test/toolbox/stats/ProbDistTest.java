@@ -386,30 +386,39 @@ public class ProbDistTest {
     public void testGetEntropy() {
         logger.info("\ntesting getEntropy()");
         ProbDist<String> instance = new ProbDist<String>();
-        //try {
-            assertEquals(0.0, instance.getEntropy(), .0000001);
-        /*} catch(ProbabilityException e) {
-            System.err.println(e.getMessage());
-        }*/
+        assertEquals(0.0, instance.getEntropy(), .0000001);
         
-        //try {
-            instance.add("first", 0.2424242);
-            logger.debug(instance.getEntropy());
-            logger.debug(ProbDist.validateNormalized(instance.getProbabilities()));
-            toolbox.Utilities.showList(instance.getProbabilities());
-            //fail("did not throw the exception");
-        /*} catch(ProbabilityException e) {
-            System.err.println(e.getMessage());
-        }*/
-        
-        //try {
-            instance.add("second", 0.2065095);
-            instance.add("third", 0.5510662);
+        instance.add("first", 0.2424242);
+        logger.debug(instance.getEntropy());
+        logger.debug(ProbDist.validateNormalized(instance.getProbabilities()));
+        toolbox.Utilities.showList(instance.getProbabilities());
 
-            assertEquals(1.439321, instance.getEntropy(), .001);
-        /*} catch(ProbabilityException e) {
-            System.err.println(e.getMessage());
-        }*/
+        instance.add("second", 0.2065095);
+        instance.add("third", 0.5510662);
+
+        assertEquals(1.439321, instance.getEntropy(), .001);
+            
+        instance = new ProbDist<String>();
+        assertEquals(0.0, instance.getEntropy(), .0000001);
+        instance.add("A", .3333333333333333);
+        instance.add("B", .3333333333333333);
+        instance.add("C", .3333333333333333);
+        assertEquals(1.584963, instance.getEntropy(), .000001);
+        instance.add("D", 0.0);
+        logger.debug(instance.getEntropy());
+        assertEquals(1.584963, instance.getEntropy(), .000001);
+        logger.debug(instance);
+        
+        try {
+            Histogram hist = new Histogram(new String[] { "A", "B", "C", "D"}, new int[] { 33, 33, 33, 0 });
+            logger.debug(hist.toString());
+            logger.debug(hist.getProbDist());
+            logger.debug(hist.getEntropy());
+            assertEquals(1.584963, hist.getEntropy(), .000001);
+        } catch(ProbabilityException e) {
+            logger.error(e.getClass() + " in testGetEntropy():  " + e.getMessage());
+        }
+        
     }
     
     @Test

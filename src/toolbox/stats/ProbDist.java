@@ -58,6 +58,7 @@ public class ProbDist<T> {
         this.values = (ArrayList<T>)values;
     }
 
+    //TODO:  check for probabilites of 0 since add() will not allow a 0 probability, or allow zero probabilites (but make sure to change getEntropy to ignore them)
     public void setValuesAndProbabilities(List<T> values, List<Double> probs) throws ProbabilityException {
         if(values == null) {
             throw new ProbabilityException("values must be non null");
@@ -81,9 +82,7 @@ public class ProbDist<T> {
         if(value == null || value.equals("") || probability <= 0.0 || probability >= 1.0) {
             return false;
         }
-        //if(T.getClass() == "java.lang.String") {
-            
-        //}
+        //TODO:  if 0 probabilities are ever allowed, change Histogram.getProbDist() to not remove them
         if(this.contains(value)) {
             return false;
         }
