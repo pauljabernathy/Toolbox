@@ -58,6 +58,19 @@ public class Utilities {
         return s.toString();
     }
     
+    public static <T> String arrayToString(T[] a) {
+        StringBuilder s = new StringBuilder();
+        if(a == null || a.length == 0) {
+            return s.toString();
+        }
+        s.append("{ ");
+        for(int i = 0; i < a.length - 1; i++) {
+            s.append(a[i]).append(", ");
+        }
+        s.append(a[a.length - 1]).append(" }");
+        return s.toString();
+    }
+    
     public static List<int[]> getCondensedPermutations(int[] input) {
         if(input == null || input.length == 0) {
             return new ArrayList<int[]>();
