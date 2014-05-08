@@ -15,6 +15,8 @@ public class Histogram {
     private ArrayList values;
     private ArrayList<Integer> counts;
     
+    private String label;
+    
     //percents and sum are technically redundant but here to make returning them faster than calculating them from counts each time
     private ArrayList<Double> probabilities;
     private int sum;
@@ -22,6 +24,12 @@ public class Histogram {
     public Histogram() {
         this.values = new ArrayList();
         this.counts = new ArrayList<Integer>();
+        label = "";
+    }
+    
+    public <T> Histogram(T[] data) {
+        this();
+        this.setDataList(data);
     }
     
     public Histogram(DataList data) {
@@ -30,6 +38,42 @@ public class Histogram {
     
     public Histogram(List data) {
         this.setDataList(data);
+    }
+    
+    public <T> Histogram(T[] values, int[] counts) throws ProbabilityException {
+        if(values == null || values.length == 0 || counts == null || counts.length == 0) {
+            throw new ProbabilityException("Histogram requires non empty values and counts");
+        } else if(counts.length != values.length) {
+            throw new ProbabilityException("length of values and counts must match");
+        }
+        
+        this.values = new ArrayList();
+        this.counts = new ArrayList<Integer>();
+        for(T value : values) {
+            this.values.add(value);
+        }
+        for(int count : counts) {
+            this.counts.add(count);
+        }
+        this.updatePercents();
+    }
+    
+    public <T> void setDataList(T[] data) {
+        if(data == null) {
+            return;//?
+        }
+        this.values = new ArrayList<T>();
+        this.counts = new ArrayList<Integer>();
+        for(int i = 0; i < data.length; i++) {
+            if(values.contains(data[i])) {
+                int index = values.indexOf(data[i]);
+                counts.set(index, counts.get(index) + 1);
+            } else {
+                values.add(data[i]);
+                counts.add(1);
+            }
+        }
+        this.updatePercents();
     }
     
     public <T> void setDataList(DataList<T> data) {
@@ -68,6 +112,14 @@ public class Histogram {
         this.updatePercents();
     }
     
+    public String getLabel() {
+        return this.label;
+    }
+    
+    public void setLabel(String label) {
+        this.label = label;
+    }
+    
     private void updateSum() {
         for(int i = 0; i < this.counts.size(); i++) {
             sum += this.counts.get(i);
@@ -84,16 +136,38 @@ public class Histogram {
         }
     }
     
+    /**
+     * gets the probability distribution; any elements with a count of 0 are omitted 
+     * because this causes getEntropy() to return NaN (ProbDist is not designed to have probabilities of 0)
+     */
     public ProbDist getProbDist() {
         ProbDist result = new ProbDist();
-        //result.setValues(this.values);
-        //result.setProbabilities(this.probabilities);
-        try {
-            result.setValuesAndProbabilities(this.values, this.probabilities);
-        } catch(ProbabilityException e) {
-            System.err.println(e.getClass() + " in Histogram.getProbDist():  " + e.getMessage());
+        if(!this.probabilities.contains(0.0)) {
+            try {
+                result.setValuesAndProbabilities(this.values, this.probabilities);
+            } catch(ProbabilityException e) {
+                System.err.println(e.getClass() + " in Histogram.getProbDist():  " + e.getMessage());
+            }
+            return result;
+        } else {
+            List v = new ArrayList();
+            List<Integer> c = new ArrayList<Integer>();
+            List<Double> p = new ArrayList<Double>();
+            for(int i = 0; i < this.counts.size(); i++) {
+                Integer count = this.counts.get(i);
+                if(count != 0) {
+                    c.add(count);
+                    v.add(this.values.get(i));
+                    p.add((double)count / this.sum);
+                }
+            }
+            try {
+                result.setValuesAndProbabilities(v, p);
+            } catch(ProbabilityException e) {
+                System.err.println(e.getClass() + " in Histogram.getProbDist():  " + e.getMessage());
+            }
+            return result;
         }
-        return result;
     }
     
     public List getValues() {
@@ -124,10 +198,20 @@ public class Histogram {
     
     public String toString(String endLine) {
         StringBuilder sb = new StringBuilder();
+        if(this.label != null && !this.label.equals("")) {
+            sb.append(this.label).append(endLine);
+        }
         for(int i = 0; i < this.getCounts().size(); i++) {
             sb.append(this.values.get(i)).append("  ").append(this.counts.get(i)).append("  ").append(this.probabilities.get(i));
             sb.append(endLine);
         }
+        sb.append("Total").append("  ").append(this.sum).append("  ");
+        double d = 0.0;
+        for(int i = 0; i < this.probabilities.size(); i++) {
+            d += this.probabilities.get(i);
+        }
+        sb.append(d);
+        sb.append(endLine).append("Entropy = ").append(this.getEntropy());
         return sb.toString();
     }
     

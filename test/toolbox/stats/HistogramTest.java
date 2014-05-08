@@ -47,6 +47,99 @@ public class HistogramTest {
     }
 
     @Test
+    public void testConstructor_noArgs() {
+        
+    }
+    
+    @Test
+    public void testConstructor_array() {
+        
+    }
+    
+    @Test
+    public void testConstructor_DataList() {
+        
+    }
+    
+    @Test
+    public void testConstructor_List() {
+        
+    }
+    
+    @Test
+    public void testConstructor_array_array() {
+        logger.info("\ntesting constructor Histogram(T[] values, int[] counts)");
+        Histogram instance = null;
+        try {
+            instance = new Histogram(null, null);
+            fail("did not throw an exception when it should have");
+        } catch(ProbabilityException e) {
+            //if we are here, it executed correctly
+        }
+        try {
+            instance = new Histogram(null, new int[] { });
+            fail("did not throw an exception when it should have");
+        } catch(ProbabilityException e) {
+            //if we are here, it executed correctly
+        }
+        try {
+            instance = new Histogram(null, new int[] { 2, 3 });
+            fail("did not throw an exception when it should have");
+        } catch(ProbabilityException e) {
+            //if we are here, it executed correctly
+        }
+        try {
+            instance = new Histogram(new Integer[] { }, null);
+            fail("did not throw an exception when it should have");
+        } catch(ProbabilityException e) {
+            //if we are here, it executed correctly
+        }
+        try {
+            instance = new Histogram(new Integer[] { }, new int[] { });
+            fail("did not throw an exception when it should have");
+        } catch(ProbabilityException e) {
+            //if we are here, it executed correctly
+        }
+        try {
+            instance = new Histogram(new Integer[] { 2, 3 }, null);
+            fail("did not throw an exception when it should have");
+        } catch(ProbabilityException e) {
+            //if we are here, it executed correctly
+        }
+        try {
+            instance = new Histogram(new Integer[] { 2, 3 }, new int[] { });
+            fail("did not throw an exception when it should have");
+        } catch(ProbabilityException e) {
+            //if we are here, it executed correctly
+        }
+        
+        try {
+            instance = new Histogram(new Integer[] { 2, 3 }, new int[] { 5, 7, 9 });
+            fail("did not throw an exception when it should have");
+        } catch(ProbabilityException e) {
+            //if we are here, it executed correctly
+        }
+        
+        try {
+            instance = new Histogram(new Integer[] { 1, 2, 3 }, new int[] { 5, 7, 9 });
+            assertEquals(3, instance.size());
+            List<Double> probs = instance.getProbabilities();
+            assertEquals(3, probs.size());
+            assertEquals(5.0 / 21.0, probs.get(0), .0000000001);
+            assertEquals(7.0 / 21.0, probs.get(1), .0000000001);
+            assertEquals(9.0 / 21.0, probs.get(2), .0000000001);
+            
+            List<Integer> values = instance.getValues();
+            assertEquals(new Integer(1), values.get(0));
+            assertEquals(new Integer(2), values.get(1));
+            assertEquals(new Integer(3), values.get(2));
+            assertEquals(3, values.size());
+        } catch(ProbabilityException e) {
+            fail("threw an exception when the input was good");
+        }
+    }
+    
+    @Test
     public void testSetDataList() {
         logger.info("\ntesting setDataList()");
         Histogram instance = new Histogram();
@@ -89,6 +182,28 @@ public class HistogramTest {
     }
 
     @Test
+    public void testSetLabel() {
+        logger.info("\ntesting setLabel()");
+        Histogram instance = new Histogram();
+        DataList<Double> d = new DataList<Double>();
+        d.add(5.0).add(2.0).add(5.0);
+        instance.setDataList(d);
+        
+        logger.debug("\nlabel = " + instance.getLabel());
+        logger.debug("label length = " + instance.getLabel().length());
+        assert(instance.getLabel().equals(""));
+        String str = instance.toString();
+        assert(str.startsWith("5.0"));
+        logger.debug(str);
+        
+        instance.setLabel("Histogram for 5 and 2");
+        assertEquals("Histogram for 5 and 2", instance.getLabel());
+        logger.debug("\nlabel = " + instance.getLabel());
+        logger.debug("label length = " + instance.getLabel().length());
+        assert(instance.toString().startsWith("Histogram for 5 and 2"));
+        logger.debug("\n" + instance.toString());
+    }
+    @Test
     public void testGetProbDist() {
         logger.info("\ntesting getProbDist()");
         Histogram instance = new Histogram();
@@ -106,6 +221,17 @@ public class HistogramTest {
         int bIndex = values.indexOf("b");
         assertEquals(probs.get(bIndex), .6, .0001);
         logger.debug(pd.toString());
+        
+         try {
+            Histogram hist = new Histogram(new String[] { "A", "B", "C", "D"}, new int[] { 33, 33, 33, 0 });
+            logger.debug(hist.toString());
+            logger.debug(hist.getProbDist());
+            logger.debug(hist.getProbDist().getProbabilities().contains(0.0));
+            logger.debug(hist.getEntropy());
+            assertEquals(1.584963, hist.getEntropy(), .000001);
+        } catch(ProbabilityException e) {
+            logger.error(e.getClass() + " in testGetEntropy():  " + e.getMessage());
+        }
     }
     
     @Test
