@@ -24,7 +24,7 @@ public class Histogram {
     public Histogram() {
         this.values = new ArrayList();
         this.counts = new ArrayList<Integer>();
-        label = "";
+        this.label = "";
     }
     
     public <T> Histogram(T[] data) {
@@ -215,8 +215,24 @@ public class Histogram {
         return sb.toString();
     }
     
-    public void display() {
-        System.out.println(this.toString());
+    public String asXHTMLTable() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<table border=1>");
+        if(this.label != null && !this.label.equals("")) {
+            sb.append("<tr><td colspan = 3 align=center><b>").append(this.label).append("</b></td></tr>");
+        }
+        for(int i = 0; i < this.getCounts().size(); i++) {
+            sb.append("<tr><td>").append(this.values.get(i)).append("</td><td>").append(this.counts.get(i)).append("</td><td>").append(this.probabilities.get(i)).append("</td></tr>");
+        }
+        sb.append("<tr><td>").append("Total").append("</td><td>").append(this.sum);
+        double d = 0.0;
+        for(int i = 0; i < this.probabilities.size(); i++) {
+            d += this.probabilities.get(i);
+        }
+        sb.append("</td><td>").append(d).append("</td></tr>");
+        sb.append("<tr><td>").append("<a href=\"http://en.wikipedia.org/wiki/Entropy#Information_theory\"  target=\"_\">Entropy</a>").append("</td><td colspan = 2>").append(this.getEntropy()).append("</td></tr>");
+        sb.append("</table>");
+        return sb.toString();
     }
     
     public double getEntropy() {
