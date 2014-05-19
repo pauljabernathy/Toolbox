@@ -12,6 +12,9 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
+import java.util.Observer;
+import java.util.Observable;
+import java.util.regex.*;
 
 /**
  *
@@ -19,37 +22,94 @@ import javax.servlet.annotation.WebServlet;
  */
 @WebServlet("/AnalyzerServlet")
 @MultipartConfig
-public class AnalyzerServlet extends HttpServlet {
+public class AnalyzerServlet extends HttpServlet implements Observer {
     
-    private static final String UPLOAD_PATH = "C:\\Program Files\\Apache Software Foundation\\Tomcat 8.0\\webapps\\analyzer";
-    private static final String UPLOAD_DIRECTORY = "C:\\Program Files\\Apache Software Foundation\\Tomcat 8.0\\webapps\\analyzer";
     private static final String DEFAULT_FILE_NAME = "thefile.csv";
+    private PrintWriter writer;
+    protected static final String ENTER_COLUMNS_MESSAGE = "Please enter a list of columns";
+    protected static final String INVALID_COLUMNS_FORMAT_MESSAGE = "Please enter columns formated as numbers separated by commas";
     
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        PrintWriter writer = response.getWriter();
-        writer.println("<html><head><title>Analyzer Servlet</title></head><body>");
+        this.writer = response.getWriter();
+        writer.println("<html><head><title>Analyzer Servlet</title><script src=\"ga.js\"></script></head><body>");
         Analyzer a = new Analyzer();
-        a.addWriterAppender(writer);
+        //a.addWriterAppender(writer);
+        a.addObserver(this);
         a.setEndLine("<br>\n");
         
         String fileName = DEFAULT_FILE_NAME;
+        String columnStr = "";
         //fileName = "thefile.csv";
         File dir = new File(getServletContext().getRealPath(""));
         
-        //writer.println("<br>in doGet()");
         if(request.getSession().getAttribute("fileName") != null) {
             fileName = (String)request.getSession().getAttribute("fileName");
-            //writer.println("<br>using filename " + fileName);
             fileName = getServletContext().getRealPath("") + File.separator + fileName;
-            //writer.println("<br>using filename " + fileName);
-            //a.analyzeFile(fileName, new int[] { 1, 2, 5, 6, 7, 8, 9, 10, 11, 12, 13}, ",");
-            a.analyzeFile(fileName, new int[] { 1, 2, 3, 4 }, ",");
+            //a.analyzeFile(fileName, new int[] { 1, 2, 3, 4 }, ",");
         } else {
             writer.println("<br>did not receive a filename, using default:  " + fileName);
         }
+        int[] columns = null;
+        if(request.getParameter("columns") != null) {
+            try {
+                columns = getColumns(request.getParameter("columns"));
+                a.analyzeFile(fileName, columns, ",");
+            } catch(Exception e) {
+                writer.println("<p>" + e.getMessage() + "</p>");
+            }
+        }
         //a.analyzeFile(fileName, new int[] { 1, 2, 5, 6, 7, 8, 9, 10, 11, 12, 13}, ",");
+        writer.println("<br><br>Known issues:");
+        writer.println("<ul>");
+        writer.println("<li>when column 0 is entered, the list of columns is not computed correctly and the mutual information comparisons do not take place</li>");
+        writer.println("</ul>");
         writer.println("</body></html>");
+    }
+    
+    protected int[] getColumns(String columnStr) throws Exception {
+        if(columnStr == null || columnStr.length() == 0) {
+            throw new Exception(AnalyzerServlet.ENTER_COLUMNS_MESSAGE);
+        }
+        
+        columnStr = columnStr.trim();
+        if(columnStr.startsWith(",")) {
+            if(columnStr.length() == 1) {
+                throw new Exception(AnalyzerServlet.INVALID_COLUMNS_FORMAT_MESSAGE);
+            } else {
+                //remove the , at the beginning
+                columnStr = columnStr.substring(1);
+            }
+        }
+        if(columnStr.endsWith(",")) {
+            if(columnStr.length() == 1) {
+                throw new Exception(AnalyzerServlet.INVALID_COLUMNS_FORMAT_MESSAGE);
+            } else {
+                //remove the , at the end
+                columnStr = columnStr.substring(0, columnStr.length() - 1);
+            }
+        }
+        Pattern p = Pattern.compile("[^\\d^,]");
+        Matcher m = p.matcher(columnStr);
+        if(m.find()) {
+            //found a character that is not a number or comma
+            //System.out.println(columnStr);
+            //System.out.println(m.start() + " " + m.group());
+            throw new Exception(AnalyzerServlet.INVALID_COLUMNS_FORMAT_MESSAGE);
+        }
+        
+        
+        String[] nums = columnStr.split(",");
+        if(nums.length < 1) {
+            //empty list of numbers
+            throw new Exception(AnalyzerServlet.INVALID_COLUMNS_FORMAT_MESSAGE);
+        }
+        
+        int[] result = new int[nums.length];
+        for(int i = 0; i < nums.length; i++) {
+            result[i] = Integer.parseInt(nums[i]);
+        }
+        return result;
     }
     
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -104,6 +164,13 @@ public class AnalyzerServlet extends HttpServlet {
         
         request.getSession().setAttribute("fileName", fileName);
         doGet(request, response);
+    }
+    
+    public void update(Observable o, Object arg) {
+        if(o instanceof Analyzer) {
+            this.writer.println("<br>" + arg);
+            this.writer.flush();
+        }
     }
 }
 
