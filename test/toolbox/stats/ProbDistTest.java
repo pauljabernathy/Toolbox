@@ -169,7 +169,7 @@ public class ProbDistTest {
     
     @Test
     public void testGetRandomValue() {
-        logger.info("\ntesting getRandomFeature()");
+        logger.info("\ntesting getRandomValue()");
         ProbDist<String> instance = new ProbDist<String>();
         boolean added = false;
         instance.add("Duke", 0.2);
@@ -206,6 +206,12 @@ public class ProbDistTest {
             }
         }
         showArray(counts);
+        try {
+            Histogram hist = new Histogram(new String[] { "Duke", "UNC", "Wake Forest", "NC State", "GA Tech" }, counts);
+            logger.debug(hist.toString());
+        } catch(ProbabilityException e) {
+            logger.error("ProbabilityException trying to make a histogram in testGetRandomValue():  " + e.getMessage());
+        }
     }
 
     /**
@@ -230,7 +236,7 @@ public class ProbDistTest {
      */
     @Test
     public void testSetProbabilities() {
-        logger.info("\n testing setProbabilities()");
+        logger.info("\ntesting setProbabilities()");
         ArrayList<Double> probabilities = null;
         ProbDist instance = new ProbDist();
         try {

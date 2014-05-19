@@ -16,9 +16,11 @@ public class ProbDist<T> {
     ArrayList<Double> probabilities;
     private final T UNKNOWN = null;
     private static final double MIN_UNKNOWN = 0.0001;
+    private String label;
     
     public ProbDist() {
         this.reset();
+        this.label = "";
     }
 
     public void reset() {
@@ -249,6 +251,14 @@ public class ProbDist<T> {
         return x.getEntropy() + y.getEntropy() - ProbDist.getJointDistribution(x, y).getEntropy();
     }
     
+    public String getLabel() {
+        return this.label;
+    }
+    
+    public void setLabel(String label) {
+        this.label = label;
+    }
+    
     public String toString() {
         StringBuilder sb = new StringBuilder();
         double total = 0.0;
@@ -261,6 +271,27 @@ public class ProbDist<T> {
         return sb.toString();
     }
     
+    public String asXHTMLTable() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<table border=1>");
+        if(this.label != null && !this.label.equals("")) {
+            sb.append("<tr><td colspan = 3 align=center><b>").append(this.label).append("</b></td></tr>");
+        }
+        for(int i = 0; i < this.getValues().size(); i++) {
+            if(this.values.get(i) == null && this.probabilities.get(i) < MIN_UNKNOWN) {
+                //don't show the "rounding error"
+                //continue;
+            }
+            sb.append("<tr><td>").append(this.values.get(i)).append("</td><td>").append(this.probabilities.get(i)).append("</td></tr>");
+        }
+        sb.append("<tr><td>").append("<a href=\"http://en.wikipedia.org/wiki/Entropy#Information_theory\"  target=\"_\">Entropy</a>").append("</td><td>").append(this.getEntropy()).append("</td></tr>");
+        sb.append("</table>");
+        return sb.toString();
+    }
+    
+    /**
+     * @deprecated
+     */
     public void display() {
         System.out.println(this.toString());
     }
