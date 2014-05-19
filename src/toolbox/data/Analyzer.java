@@ -23,7 +23,7 @@ import org.apache.http.entity.mime.content.FileBody;
  *
  * @author paul
  */
-public class Analyzer {
+public class Analyzer extends java.util.Observable {
     
     private static Logger logger;
     private String endLine;
@@ -81,28 +81,35 @@ public class Analyzer {
     
     public void analyzeFile(String filename, int[] cols, String columnSeparator) {
         //Logger logger = Utilities.getLogger(this.getClass(), Level.DEBUG);
+        super.setChanged();
         try {
             List<List<String>> columnData = CSVReader.getColumns(filename, cols, columnSeparator);
             HashMap<Integer, Integer> colIndexMap = new HashMap<Integer, Integer>();
             for(int i = 0; i < columnData.size(); i++) {
+                super.setChanged();
                 List<String> current = columnData.get(i);
                 colIndexMap.put(cols[i], i);
                 Histogram h = new Histogram(current);
-                logger.info("column " + cols[i]);
-                logger.info(h.toString(this.getEndLine()));
-                logger.info("entropy = " + h.getEntropy());
-                logger.info("");
+                //logger.info("column " + cols[i]);
+                //super.notifyObservers("column " + cols[i]);super.setChanged();
+                this.info("column " + cols[i]);
+                //logger.info("<p>" + h.asXHTMLTable() + "</p>");
+                //super.notifyObservers("<p>" + h.asXHTMLTable() + "</p>");super.setChanged();
+                this.info("<p>" + h.asXHTMLTable() + "</p>");
+                //logger.info("");
+                //super.notifyObservers("");super.setChanged();
+                this.info("");
             }
             
             List<int[]> pairs = Utilities.getCondensedPermutations(cols);
             for(int i = 0; i < pairs.size(); i++) {
                 if(pairs.get(i).length == 2) {
                     //Utilities.showArray(pairs.get(i));
-                    logger.info(Utilities.arrayToString(pairs.get(i)));
+                    this.info(Utilities.arrayToString(pairs.get(i)));
                     int leftDataIndex = colIndexMap.get(pairs.get(i)[0]);
                     int rightDataIndex = colIndexMap.get(pairs.get(i)[1]);
-                    logger.info("mutual information = " + Shannon.getMutualInformation(columnData.get(leftDataIndex), columnData.get(rightDataIndex)));
-                    logger.info("entropy ratio = " + Shannon.getEntropyRatio(columnData.get(leftDataIndex), columnData.get(rightDataIndex)));
+                    this.info("mutual information = " + Shannon.getMutualInformation(columnData.get(leftDataIndex), columnData.get(rightDataIndex)));
+                    this.info("entropy ratio = " + Shannon.getEntropyRatio(columnData.get(leftDataIndex), columnData.get(rightDataIndex)));
                 }
             }
         } catch(IOException e) {
@@ -127,4 +134,12 @@ public class Analyzer {
         client.execute(post);
         client.getConnectionManager().shutdown();
     }*/
+    
+    private void info(String message) {
+        if(logger.isInfoEnabled()) {
+            logger.info(message);
+            super.notifyObservers(message);
+            super.setChanged();
+        }
+    }
 }
