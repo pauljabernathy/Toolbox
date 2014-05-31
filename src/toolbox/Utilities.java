@@ -58,6 +58,19 @@ public class Utilities {
         return s.toString();
     }
     
+    public static String arrayToString(double[] a) {
+        StringBuilder s = new StringBuilder();
+        if(a == null || a.length == 0) {
+            return s.toString();
+        }
+        s.append("{ ");
+        for(int i = 0; i < a.length - 1; i++) {
+            s.append(a[i]).append(", ");
+        }
+        s.append(a[a.length - 1]).append(" }");
+        return s.toString();
+    }
+    
     public static <T> String arrayToString(T[] a) {
         StringBuilder s = new StringBuilder();
         if(a == null || a.length == 0) {
@@ -71,6 +84,22 @@ public class Utilities {
         return s.toString();
     }
     
+    public static boolean contains(String[] array, String value) {
+        if(array == null || array.length == 0) {
+            return false;
+        }
+        for(String current : array) {
+            if(value != null && current != null && current.equals(value)) {
+                return true;
+            } else if(value == null && current == null) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    //TODO:  there is a defect here where if 0 is included in the array, the combinations where it should be will be removed even if the user wants zero there
+    //this is due to the fact that this uses a logical AND as part of the process
     public static List<int[]> getCondensedPermutations(int[] input) {
         if(input == null || input.length == 0) {
             return new ArrayList<int[]>();
@@ -248,5 +277,57 @@ public class Utilities {
         logger.addAppender(new ConsoleAppender(new PatternLayout(Constants.SAME_LINE_LOG_FORMAT)));
         logger.setLevel(level);
         return logger;
+    }
+    
+    //TODO:  what to do with elements of 0? the JVM records a value of "Infinity" instead of throwing an exception, but this may not be what we want...
+    //Should the user check for that or not?
+    /**
+     * Calculates the ratios of each element of the input to the previous element.  For example, if the input is 1.0, 2.0, 1.0, 5.0, the result would be 2.0, 0.5, 5.0.
+     * Currently does not check for 0s, so the user should check for it and act accordingly.
+     * @param input
+     * @return an array of length one less than the input length
+     */
+    public static double[] diffRatios(double[] input) {
+        if(input == null || input.length <= 1) {
+            return new double[] {};
+        }
+        double[] result = new double[input.length - 1];
+        for(int i = 1; i < input.length; i++) {
+            result[i - 1] = input[i] / input[i - 1];
+        }
+        return result;
+    }
+    
+    public static double[] diffRatios(List<Double> input) {
+        if(input == null || input.size() <= 1) {
+            return new double[] {};
+        }
+        double[] result = new double[input.size() - 1];
+        for(int i = 1; i < input.size(); i++) {
+            result[i - 1] = input.get(i) / input.get(i - 1);
+        }
+        return result;
+    }
+    
+    public static List<Double> diffRatiosList(double[] input) {
+        if(input == null || input.length <= 1) {
+            return new ArrayList<Double>();
+        }
+        ArrayList<Double> result = new ArrayList<Double>();
+        for(int i = 1; i < input.length; i++) {
+            result.add(input[i] / input[i - 1]);
+        }
+        return result;
+    }
+    
+    public static List<Double> diffRatiosList(List<Double> input) {
+        if(input == null || input.size() <= 1) {
+            return new ArrayList<Double>();
+        }
+        ArrayList<Double> result = new ArrayList<Double>();
+        for(int i = 1; i < input.size(); i++) {
+            result.add(input.get(i) / input.get(i - 1));
+        }
+        return result;
     }
 }
