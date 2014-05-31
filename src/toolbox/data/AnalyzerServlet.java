@@ -7,6 +7,7 @@ package toolbox.data;
 import javax.servlet.http.*;
 import java.io.*;
 import javax.servlet.ServletException;
+import javax.servlet.RequestDispatcher;
 import toolbox.Constants;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -30,7 +31,7 @@ public class AnalyzerServlet extends HttpServlet implements Observer {
     protected static final String INVALID_COLUMNS_FORMAT_MESSAGE = "Please enter columns formated as numbers separated by commas";
     
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         this.writer = response.getWriter();
         writer.println("<html><head><title>Analyzer Servlet</title><script src=\"ga.js\"></script></head><body>");
         Analyzer a = new Analyzer();
@@ -64,9 +65,13 @@ public class AnalyzerServlet extends HttpServlet implements Observer {
         writer.println("<ul>");
         writer.println("<li>when column 0 is entered, the list of columns is not computed correctly and the mutual information comparisons do not take place</li>");
         writer.println("</ul>");
+        //RequestDispatcher dispatcher = request.getRequestDispatcher("footer.jsp");
+        //dispatcher.include(request, response);
+        writer.println("<object name=\"footer\" type=\"text/html\" data=\"footer.html\"></object>");
         writer.println("</body></html>");
     }
     
+    //TODO:  remove spaces in the middle of the string so it is more user friendly
     protected int[] getColumns(String columnStr) throws Exception {
         if(columnStr == null || columnStr.length() == 0) {
             throw new Exception(AnalyzerServlet.ENTER_COLUMNS_MESSAGE);
