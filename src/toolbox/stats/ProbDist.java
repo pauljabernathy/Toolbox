@@ -13,7 +13,8 @@ import java.math.MathContext;
  */
 public class ProbDist<T> {
     private ArrayList<T> values;
-    ArrayList<Double> probabilities;
+    private ArrayList<Double> probabilities;
+    private ArrayList<Double> cumProbs;     //cumulative probabilities
     private final T UNKNOWN = null;
     private static final double MIN_UNKNOWN = 0.0001;
     private String label;
@@ -29,6 +30,7 @@ public class ProbDist<T> {
             values.add(UNKNOWN);
             ArrayList<Double> probs = new ArrayList<Double>();
             probs.add(1.0);
+            cumProbs = new ArrayList<Double>();
             this.setValuesAndProbabilities(values, probs);
         } catch(ProbabilityException e) {
             System.err.println(e.getClass() + " in reset():  " + e.getMessage());
@@ -117,6 +119,11 @@ public class ProbDist<T> {
         //TODO:  some kind of synchronization?
         this.getValues().add(value);
         this.getProbabilities().add(probability);
+        if(this.cumProbs.size() > 0) {
+            this.cumProbs.add(probability + this.cumProbs.get(this.cumProbs.size() - 1));
+        } else {
+            this.cumProbs.add(probability);
+        }
         return true;
     }
     
@@ -137,6 +144,7 @@ public class ProbDist<T> {
     }
     
     //TODO:  check for normalized before getting a random value?  what to do if not normalized?
+    //TODO:  faster method of selection; test showed this one is very slow
     public T getRandomValue() {
         double rand = Math.random();
         double sum = 0.0;
@@ -153,6 +161,21 @@ public class ProbDist<T> {
         return this.getValues().get(index);
     }
     
+    public T getRandomValue2() {
+        if(this.getProbabilities() == null || this.getProbabilities().size() == 0 || this.getValues() == null || this.getValues().size() == 0) {
+            return null;
+        }
+        double rand = Math.random();
+        double sum = 0.0;
+        int index = 0;
+        while(index < this.cumProbs.size() && rand < this.cumProbs.get(index)) {
+            index++;
+        }
+        return this.getValues().get(index);
+    }
+    //TODO:  try a binary search tree
+    
+    
     public List<Double> getProbabilities() {
         return probabilities;
     }
@@ -162,6 +185,17 @@ public class ProbDist<T> {
             throw new ProbabilityException("The number of probabilities must match the number of values.");
         }
         this.probabilities = (ArrayList)probabilities;
+    }
+    
+    public List<Double> getCumProbs() {
+        return this.cumProbs;
+    }
+    
+    public static List<Double> getCumProbsFromProbs(List<Double> probabilities) throws ProbabilityException {
+        if(probabilities == null || probabilities.size() == 0) {
+            throw new ProbabilityException("The number of probabilities must match the number of values.");
+        }
+        return Utilities.cumsumList(probabilities);
     }
     
     public boolean contains(T value) {

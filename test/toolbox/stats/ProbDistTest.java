@@ -4,12 +4,6 @@
  */
 package toolbox.stats;
 
-import toolbox.stats.ProbDist;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.HashMap;
-import toolbox.stats.ProbDist;
-import toolbox.Utilities;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -17,7 +11,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import toolbox.stats.ProbDist;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Date;
+import toolbox.Utilities;
+
 import org.apache.log4j.*;
+import toolbox.random.Random;
 
 /**
  *
@@ -118,14 +119,24 @@ public class ProbDistTest {
         logger.debug(instance.contains("Duke"));
         result = instance.add("Duke", 0.5);
         assertEquals(true, result);
-        instance.display();
+        logger.debug(instance.toString());
         result = instance.add("UNC", 0.501);
         assertEquals(false, result);
-        instance.display();
+        logger.debug(instance.toString());
         
         result = instance.add("UNC", 0.50);
         assertEquals(true, result);
-        instance.display();
+        logger.debug(instance.toString());
+        
+        List<Double> probs = instance.getProbabilities();
+        assertEquals(2, probs.size());
+        assertEquals(.5, probs.get(0), 0.0);
+        assertEquals(.5, probs.get(1), 0.0);
+        
+        List<Double> cumprobs = instance.getCumProbs();
+        assertEquals(2, cumprobs.size());
+        assertEquals(.5, cumprobs.get(0), 0.0);
+        assertEquals(1.0, cumprobs.get(1), 0.0);
         
         instance.reset();
         logger.debug("\n\nresetting");
@@ -135,11 +146,27 @@ public class ProbDistTest {
         instance.add("NC State", 0.15);
         result = instance.add("GA Tech", 0.15);
         logger.debug("added GA Tech? " + result);
-        instance.display();
+        logger.debug(instance.toString());
         logger.debug("probs;");
         showArrayList(instance.getProbabilities());
         logger.debug("values");
         showArrayList(instance.getValues());
+        
+        probs = instance.getProbabilities();
+        assertEquals(5, probs.size());
+        assertEquals(.2, probs.get(0), 0.0);
+        assertEquals(.3, probs.get(1), 0.0);
+        assertEquals(.2, probs.get(2), 0.0);
+        assertEquals(.15, probs.get(3), 0.0);
+        assertEquals(.15, probs.get(4), 0.0);
+        
+        cumprobs = instance.getCumProbs();
+        assertEquals(5, cumprobs.size());
+        assertEquals(.2, cumprobs.get(0), 0.0);
+        assertEquals(.5, cumprobs.get(1), 0.0);
+        assertEquals(.7, cumprobs.get(2), 0.0);
+        assertEquals(.85, cumprobs.get(3), 0.0);
+        assertEquals(1, cumprobs.get(4), 0.0);
     }
     
     @Test
@@ -213,6 +240,91 @@ public class ProbDistTest {
             logger.error("ProbabilityException trying to make a histogram in testGetRandomValue():  " + e.getMessage());
         }
     }
+    
+    @Test
+    public void testGetRandomValueSpeed() {
+        logger.info("\nperformance test of getRandomValue() vs Random.sample()");
+        List input = new ArrayList<String>();
+        input.add("a");
+        input.add("b");
+        input.add("c");
+        input.add("a");
+        input.add("a");
+        input.add("b");
+        //input.add("");
+        logger.debug("\ncomparing times for " + Utilities.listToString(input));
+        compareTimes(input, 10000);
+        compareTimes(input, 100000);
+        compareTimes(input, 1000000);
+        compareTimes(input, 10000000);
+        //compareTimes(input, 100000000);
+        
+        input.add("c");
+        logger.debug("\ncomparing times for " + Utilities.listToString(input));
+        compareTimes(input, 10000);
+        compareTimes(input, 100000);
+        compareTimes(input, 1000000);
+        compareTimes(input, 10000000);
+        //compareTimes(input, 100000000);
+        
+        input = new ArrayList<String>();
+        input.add("a");
+        input.add("a");
+        input.add("a");
+        input.add("a");
+        input.add("a");
+        input.add("a");
+        input.add("b");
+        logger.debug("\ncomparing times for " + Utilities.listToString(input));
+        compareTimes(input, 10000);
+        compareTimes(input, 100000);
+        compareTimes(input, 1000000);
+        compareTimes(input, 10000000);
+        //compareTimes(input, 100000000);
+    }
+    
+    private void compareTimes(List input, int size) {
+        Histogram h = new Histogram(input);
+        ProbDist instance = h.getProbDist();
+        
+        long t1 = new Date().getTime();
+        List outputS = null;
+        try {
+            outputS = Random.sample(input, size, true);
+        } catch(Exception e) {
+            logger.error(e.getClass() + " in testGetRandomValueSpeed():  " + e.getMessage());
+        }
+        long t2 = new Date().getTime();
+        List outputP = new ArrayList<String>();
+        for(int i = 0; i < size; i++) {
+            outputP.add(instance.getRandomValue());
+        }
+        long t3 = new Date().getTime();
+        List outputP2 = new ArrayList<String>();
+        for(int i = 0; i < size; i++) {
+            outputP.add(instance.getRandomValue2());
+        }
+        long t4 = new Date().getTime();
+        
+        long sampleTime = t2 - t1;
+        long probDistTime = t3 - t2;
+        long probDistTime2 = t4 - t3;
+        
+        logger.debug("\nfor output size " + size);
+        //logger.debug("input histogram:\n" +h.toString());
+        //logger.debug("sample histogram:\n" + new Histogram(outputS).toString());
+        //logger.debug("ProbDist.getRandomValue() histogram:\n" + new Histogram(outputP).toString());
+        logger.debug("Random.sample() time = " + sampleTime + " milliseconds");
+        logger.debug("ProbDist.getRandomValue() time = " + probDistTime + " milliseconds");
+        logger.debug("ProbDist.getRandomValue2() time = " + probDistTime2 + " milliseconds");
+        if(probDistTime > sampleTime) {
+            logger.debug("prob dist time was " + (double)probDistTime / (double)sampleTime + " times sample time");
+        } else if(sampleTime > probDistTime) {
+            logger.debug("sample time was " + (double)sampleTime / (double)probDistTime + " times prob dist time");
+        } else {
+            logger.debug("both times were the same");
+        }
+    }
 
     /**
      * Test of getProbabilities method, of class CPD.
@@ -249,6 +361,39 @@ public class ProbDistTest {
         }
     }
 
+    @Test
+    public void testGetCumProbsFromProbs() {
+        logger.info("\ntesting getCumProbsFromProbs()");
+        List<Double> result = null;
+        try {
+            result = ProbDist.getCumProbsFromProbs(null);
+            fail("should have thrown a ProbabilityException for null input but it did not");
+        } catch(ProbabilityException e) {
+            logger.debug("correctly threw an exception for null input in testGetCumProbsFromProbs():  " + e.getMessage());
+        }
+        List<Double> probs = new ArrayList<Double>();
+        try {
+            result = ProbDist.getCumProbsFromProbs(null);
+            fail("should have thrown a ProbabilityException for empty input but it did not");
+        } catch(ProbabilityException e) {
+            logger.debug("correctly threw an exception for empty input in testGetCumProbsFromProbs():  " + e.getMessage());
+        }
+        probs.add(.35);
+        probs.add(.25);
+        probs.add(.25);
+        probs.add(.15);
+        try {
+            result = ProbDist.getCumProbsFromProbs(probs);
+            assertEquals(4, result.size());
+            assertEquals(.35, result.get(0), 0.0);
+            assertEquals(.6, result.get(1), 0.0);
+            assertEquals(.85, result.get(2), 0.0);
+            assertEquals(1, result.get(3), 0.0);
+        } catch(ProbabilityException e) {
+            logger.error("ProbabiltyException in testGetCumProbsFromProbs():  " + e.getMessage());
+        }
+    }
+    
     /**
      * Test of contains method, of class CPD.
      */
