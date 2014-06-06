@@ -163,6 +163,57 @@ public class RandomTest {
     }
     
     @Test
+    public void checkEndPoints_Ints() {
+        logger.info("\ntesting checkEndpoints(int...endPoints)");
+        int[] result = null;
+        result = Random.checkEndPoints(null);
+        assertEquals(2, result.length);
+        assertEquals(0, result[0]);
+        assertEquals(1, result[1]);
+        
+        result = Random.checkEndPoints(new int[] { });
+        assertEquals(2, result.length);
+        assertEquals(0, result[0]);
+        assertEquals(1, result[1]);
+        
+        result = Random.checkEndPoints(new int[] { 0 });
+        assertEquals(2, result.length);
+        assertEquals(0, result[0]);
+        assertEquals(1, result[1]);
+        
+        result = Random.checkEndPoints(new int[] { 1 });
+        assertEquals(2, result.length);
+        assertEquals(0, result[0]);
+        assertEquals(1, result[1]);
+        
+        result = Random.checkEndPoints(new int[] { 2 });
+        assertEquals(2, result.length);
+        assertEquals(0, result[0]);
+        assertEquals(2, result[1]);
+        //TODO: fix issue with negative numbers
+        result = Random.checkEndPoints(new int[] { -2 });
+        assertEquals(2, result.length);
+        //assertEquals(-2, result[0]);
+        //assertEquals(0, result[1]);
+        
+        result = Random.checkEndPoints(new int[] { 0, 1} );
+        assertEquals(2, result.length);
+        assertEquals(0, result[0]);
+        assertEquals(1, result[1]);
+        
+        result = Random.checkEndPoints(new int[] { 1, 0} );
+        assertEquals(2, result.length);
+        assertEquals(0, result[0]);
+        assertEquals(1, result[1]);
+        
+        result = Random.checkEndPoints(new int[] { 1, 1} );
+        assertEquals(2, result.length);
+        assertEquals(1, result[1]);
+        assertEquals(1, result[1]);
+    }
+    
+    //TODO:  test other sample function
+    @Test
     public void testSample() {
         logger.info("\ntesting sample()");
         List<Integer> input = null;
@@ -250,6 +301,59 @@ public class RandomTest {
             }
         } catch(Exception e) {
             logger.error(e.getClass() + " in testSample():  " + e.getMessage());
+        }
+    }
+    
+    //@Test
+    public void compareSampleListvsArrayTimes() {
+        logger.info("\ncompareSampleListvsArrayTimes()");
+        List<String> inputL = null;
+        String[] inputA = null;
+        int size = 10000;
+        inputL = new ArrayList<String>();
+        inputA = new String[6];
+        inputL.add("a");
+        inputA[0] = "a";
+        inputL.add("a");
+        inputA[1] = "a";
+        inputL.add("a");
+        inputA[2] = "a";
+        inputL.add("b");
+        inputA[3] = "b";
+        inputL.add("b");
+        inputA[4] = "b";
+        inputL.add("c");
+        inputA[5] = "c";
+        //inputL.add("");
+        logger.debug("comparing for input " + Utilities.arrayToString(inputA));
+        compareSampleTimes(inputL, inputA, 1000);
+        compareSampleTimes(inputL, inputA, 10000);
+        compareSampleTimes(inputL, inputA, 100000);
+        compareSampleTimes(inputL, inputA, 1000000);
+        compareSampleTimes(inputL, inputA, 10000000);
+    }
+    
+    private <T> void compareSampleTimes(List<T> list, T[] array, int size) {
+        try {
+            long t1 = new java.util.Date().getTime();
+            List<T> resultL = Random.sample(list, size, true);
+            long t2 = new java.util.Date().getTime();
+            List<T> resultA = Random.sample(array, size, true);
+            long t3 = new java.util.Date().getTime();
+            long listTime = t2 - t1;
+            long arrayTime = t3 - t2;
+            logger.debug("speed test for " + size + " samples");
+            logger.debug("list time = " + listTime);
+            logger.debug("array time = " + arrayTime);
+            if(listTime > arrayTime) {
+                logger.debug("list time was " + (double)listTime / (double)arrayTime + " times array time");
+            } else if(arrayTime > listTime) {
+                logger.debug("array time was " + (double)arrayTime / (double)listTime + " times list time");
+            } else {
+                logger.debug("they were the same time");
+            }
+        } catch(Exception e) {
+            
         }
     }
     

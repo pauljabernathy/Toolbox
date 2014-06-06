@@ -20,30 +20,9 @@ public class Random {
         if(count < 1) {
             return new Integer[0];
         }
-        int lower = 0;
-        int upper = 1;
-        if(endPoints != null) {
-            if(endPoints.length == 1 & endPoints[0] > lower) {
-                upper = endPoints[0];
-            } else if(endPoints.length == 1 & endPoints[0] < upper) {
-                lower = endPoints[0];
-            } else if(endPoints.length > 1) {
-                if(endPoints[1] < endPoints[0]) {
-                    lower = endPoints[0];
-                    upper = endPoints[1];
-                } else if(endPoints[0] < endPoints[1]) {
-                    lower = endPoints[0];
-                    upper = endPoints[1];
-                } else if(endPoints[0] == endPoints[1]) {
-                    //both numbers are equal; weird input, but we'll give them what they ask for
-                    Integer[] result = new Integer[count];
-                    for(int i = 0; i < count; i++) {
-                        result[i] = endPoints[0];
-                        return result;
-                    }
-                }
-            }
-        }
+        endPoints = checkEndPoints(endPoints);
+        int lower = endPoints[0];
+        int upper = endPoints[1];
         
         upper = upper + 1;      //because upper is inclusive and we chop off the decimals a few lines down
         int range = upper - lower;
@@ -131,6 +110,32 @@ public class Random {
         return result;
     }
     
+    protected static int[] checkEndPoints(int...endPoints) {
+        //int[] result = new int[] { 0, 1 };
+        int lower = 0;
+        int upper = 1;
+        if(endPoints != null) {
+            if(endPoints.length == 0) {
+                return new int[] { 0, 1 };
+            }
+            if(endPoints.length == 1 & endPoints[0] > lower) {
+                upper = endPoints[0];
+            } else if(endPoints.length == 1 & endPoints[0] < upper) {
+                lower = endPoints[0];
+            } else if(endPoints.length > 1) {
+                if(endPoints[1] < endPoints[0]) {
+                    //the user put them in reverse order
+                    lower = endPoints[1];
+                    upper = endPoints[0];
+                } else if(endPoints[0] <= endPoints[1]) {
+                    lower = endPoints[0];
+                    upper = endPoints[1];
+                } 
+            }
+        }
+        return new int[] { lower, upper };
+    }
+    
     public static <T> List<T> sample(List<T> bag, int size, boolean replace) throws Exception {
         List<T> result = new ArrayList<T>();
         if(bag == null || bag.isEmpty()) {
@@ -143,7 +148,6 @@ public class Random {
             }
         } else {
             //replace is false, so once we select something from the input we can't select it again
-            //System.out.println("bag.size() = " + bag.size() + ";  size = " + size + ";  replace = " + replace);
             if(size > bag.size()) {
                 throw new Exception("cannot sample without replacement more elements than there are in the inuput");
             } /*else if(size == bag.size()) {
