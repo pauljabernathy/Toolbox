@@ -80,6 +80,74 @@ public class UtilitiesTest {
     }
 
     @Test
+    public void testCumSum_doubleArray() {
+        //TODO:  fill in
+    }
+    
+    @Test
+    public void testCumSum_DoubleList() {
+        //TODO:  fill in
+    }
+    
+    @Test
+    public void testCumSum_intArray() {
+        //TODO:  fill in
+    }
+    
+    @Test
+    public void testCumSum_IntegerList() {
+        //TODO:  fill in
+    }
+    
+    @Test
+    public void testCumSumList_doubleArray() {
+        //TODO:  fill in
+    }
+    
+    @Test
+    public void testCumSumList_DoubleList() {
+        logger.info("\ntesting cumsumList(List<Double> input)");
+        List<Double> result = null;
+        List<Double> input = null;
+        assertEquals(0, Utilities.cumsumList(input).size());
+        assertEquals(true, Utilities.cumsumList(input).isEmpty());
+        input = new ArrayList<Double>();
+        assertEquals(0, Utilities.cumsumList(input).size());
+        assertEquals(true, Utilities.cumsumList(input).isEmpty());
+        
+        input.add(4.0);
+        result = Utilities.cumsumList(input);
+        assertEquals(1, result.size());
+        assertEquals(4.0, result.get(0), 0.0);
+        
+        input.add(1.0);
+        input.add(8.0);
+        input.add(-3.0);
+        result = Utilities.cumsumList(input);
+        assertEquals(4, result.size());
+        assertEquals(4.0, result.get(0), 0.0);
+        assertEquals(5.0, result.get(1), 0.0);
+        assertEquals(13.0, result.get(2), 0.0);
+        assertEquals(10.0, result.get(3), 0.0);
+        
+        List input2 = new ArrayList<Integer>();
+        input2.add(1);
+        input2.add(2);
+        List result2 = Utilities.cumsumList(input2);
+        logger.debug(toolbox.Utilities.listToString(input2));
+    }
+    
+    @Test
+    public void testCumSumList_intArray() {
+        //TODO:  fill in
+    }
+    
+    @Test
+    public void testCumSumList_IntegerList() {
+        //TODO:  fill in
+    }
+    
+    @Test
     public void testMean_doubleArr() {
     }
 

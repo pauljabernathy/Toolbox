@@ -41,6 +41,54 @@ public class Utilities {
         return sum;
     }
     
+    public static double[] cumsum(double[] input) {
+        //TODO:  fill in
+        return new double[] {};
+    }
+    
+    public static double[] cumum(List<Double> input) {
+        //TODO:  fill in
+        return new double[]{};
+    }
+    
+    public static int[] cumsum(int[] input) {
+        //TODO:  fill in
+        return null;
+    }
+    
+    public static int[] cumsum(List<Integer> input) {
+        //TODO:  fill in
+        return null;
+    }
+    
+    public static List<Double> cumsumList(double[] input) {
+        //TODO:  fill in
+        return null;
+    }
+    
+    public static List<Double> cumsumList(List<Double> input) {
+        if(input == null || input.isEmpty()) {
+            return new ArrayList<Double>();
+        }
+        double sum = 0.0;
+        ArrayList<Double> result = new ArrayList<Double>();
+        for(Double d : input) {
+            sum += d;
+            result.add(sum);
+        }
+        return result;
+    }
+    
+    public static List<Integer> cumsumList(int[] input) {
+        //TODO:  fill in
+        return null;
+    }
+    
+    /*public static List<Integer> cumsumList(List<Integer> input) {
+        //TODO:  fill in
+        return null;
+    }*/
+    
     public static double mean(double[] input) {
         if(input == null || input.length == 0) {
             return 0.0;
