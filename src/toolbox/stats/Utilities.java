@@ -30,6 +30,24 @@ public class Utilities {
         return s;
     }
     
+    public static Summary summary(List<Double> list) {
+        if(list == null || list.isEmpty()) {
+            return new Summary();
+        }
+        Summary s = new Summary();
+        java.util.Collections.sort(list);
+        s.min = list.get(0);
+        if(list.size() % 2 == 1) {
+            s.median = list.get(list.size() / 2);
+        } else {
+            s.median = .5 * list.get(list.size() / 2 - 1) + .5 * list.get(list.size() / 2);
+        }
+        s.mean = mean(list);
+        s.max = list.get(list.size() - 1);
+        s.sd = sd(list);
+        return s;
+    }
+    
     public static double sum(List<Double> list) {
         if(list == null || list.isEmpty()) {
             return 0;

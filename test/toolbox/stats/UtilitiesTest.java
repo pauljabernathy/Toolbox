@@ -48,8 +48,8 @@ public class UtilitiesTest {
     }
     
     @Test
-    public void testSummary() {
-        logger.info("\ntesting summary()");
+    public void testSummary_double_array() {
+        logger.info("\ntesting summary(double[] array)");
         double[] input = null;
         
         input = new double[] { 1, 2, 3, 4 };
@@ -58,6 +58,54 @@ public class UtilitiesTest {
         assertEquals(2.5, result.median, 0.0);
         assertEquals(2.5, result.mean, 0.0);
         assertEquals(4, result.max, 0.0);
+        assertEquals(1.290994, result.sd, 0.0001);
+    }
+    
+    @Test
+    public void testSummary_List_Double() {
+        logger.info("\ntesting summary(List<Double> list)");
+        List<Double> input = null;
+        Summary result = null;
+        result = Utilities.summary(input);
+        if(result == null) {
+            fail("summary was null");
+        }
+        /*public double min;
+        public double firstQ;
+        public double median;
+        public double mean;
+        public double thirdQ;
+        public double max;
+        public double sd*/
+        assertEquals(0.0, result.min, 0.0);
+        assertEquals(0.0, result.firstQ, 0.0);
+        assertEquals(0.0, result.median, 0.0);
+        assertEquals(0.0, result.mean, 0.0);
+        assertEquals(0.0, result.thirdQ, 0.0);
+        assertEquals(0.0, result.max, 0.0);
+        assertEquals(0.0, result.sd, 0.0);
+        
+        input = new ArrayList<Double>();
+        result = Utilities.summary(input);
+        assertEquals(0.0, result.min, 0.0);
+        assertEquals(0.0, result.firstQ, 0.0);
+        assertEquals(0.0, result.median, 0.0);
+        assertEquals(0.0, result.mean, 0.0);
+        assertEquals(0.0, result.thirdQ, 0.0);
+        assertEquals(0.0, result.max, 0.0);
+        assertEquals(0.0, result.sd, 0.0);
+        
+        input.add(1.0);
+        input.add(2.0);
+        input.add(3.0);
+        input.add(4.0);
+        result = Utilities.summary(input);
+        assertEquals(1.0, result.min, 0.0);
+        //assertEquals(1.75, result.firstQ, 0.0);
+        assertEquals(2.5, result.median, 0.0);
+        assertEquals(2.5, result.mean, 0.0);
+        //assertEquals(3.25, result.thirdQ, 0.0);
+        assertEquals(4.0, result.max, 0.0);
         assertEquals(1.290994, result.sd, 0.0001);
     }
     
@@ -133,8 +181,8 @@ public class UtilitiesTest {
         List input2 = new ArrayList<Integer>();
         input2.add(1);
         input2.add(2);
-        List result2 = Utilities.cumsumList(input2);
-        logger.debug(toolbox.Utilities.listToString(input2));
+        //List result2 = Utilities.cumsumList(input2);
+        //logger.debug(toolbox.Utilities.listToString(input2));
     }
     
     @Test
