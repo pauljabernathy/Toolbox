@@ -12,13 +12,15 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import toolbox.stats.ProbDist;
+import toolbox.random.Random;
+import toolbox.Utilities;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
-import toolbox.Utilities;
-
+import java.util.TreeMap;
 import org.apache.log4j.*;
-import toolbox.random.Random;
+
 
 /**
  *
@@ -210,7 +212,7 @@ public class ProbDistTest {
         showArrayList(instance.getValues());
         logger.debug("probabilities");
         showArrayList(instance.getProbabilities());*/
-        instance.display();
+        logger.debug(instance.toString());
         int[] counts = new int[5];
         int numRands = 100000;
         String rand = "";
@@ -253,19 +255,11 @@ public class ProbDistTest {
         input.add("b");
         //input.add("");
         logger.debug("\ncomparing times for " + Utilities.listToString(input));
-        compareTimes(input, 10000);
-        compareTimes(input, 100000);
-        compareTimes(input, 1000000);
-        compareTimes(input, 10000000);
-        //compareTimes(input, 100000000);
+        compareTimes(input);
         
         input.add("c");
         logger.debug("\ncomparing times for " + Utilities.listToString(input));
-        compareTimes(input, 10000);
-        compareTimes(input, 100000);
-        compareTimes(input, 1000000);
-        compareTimes(input, 10000000);
-        //compareTimes(input, 100000000);
+        compareTimes(input);
         
         input = new ArrayList<String>();
         input.add("a");
@@ -276,11 +270,15 @@ public class ProbDistTest {
         input.add("a");
         input.add("b");
         logger.debug("\ncomparing times for " + Utilities.listToString(input));
+        compareTimes(input);
+    }
+    
+    private void compareTimes(List input) {
         compareTimes(input, 10000);
         compareTimes(input, 100000);
         compareTimes(input, 1000000);
         compareTimes(input, 10000000);
-        //compareTimes(input, 100000000);
+        //compareTimes(input, 100000000);this one can cause a memory error
     }
     
     private void compareTimes(List input, int size) {
@@ -311,18 +309,16 @@ public class ProbDistTest {
         long probDistTime2 = t4 - t3;
         
         logger.debug("\nfor output size " + size);
-        //logger.debug("input histogram:\n" +h.toString());
-        //logger.debug("sample histogram:\n" + new Histogram(outputS).toString());
-        //logger.debug("ProbDist.getRandomValue() histogram:\n" + new Histogram(outputP).toString());
         logger.debug("Random.sample() time = " + sampleTime + " milliseconds");
         logger.debug("ProbDist.getRandomValue() time = " + probDistTime + " milliseconds");
         logger.debug("ProbDist.getRandomValue2() time = " + probDistTime2 + " milliseconds");
-        if(probDistTime > sampleTime) {
-            logger.debug("prob dist time was " + (double)probDistTime / (double)sampleTime + " times sample time");
-        } else if(sampleTime > probDistTime) {
-            logger.debug("sample time was " + (double)sampleTime / (double)probDistTime + " times prob dist time");
-        } else {
-            logger.debug("both times were the same");
+        TreeMap<String, Long> times = new TreeMap<String, Long>();
+        times.put("sample", sampleTime);
+        times.put("ProdDist.getRandom()", probDistTime);
+        times.put("ProdDist.getRandom2()", probDistTime2);
+        java.util.Set<String> keys = times.keySet();
+        for(String key : keys) {
+            logger.debug(times.get(key) + " " + key);
         }
     }
 

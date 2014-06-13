@@ -144,8 +144,25 @@ public class ProbDist<T> {
     }
     
     //TODO:  check for normalized before getting a random value?  what to do if not normalized?
-    //TODO:  faster method of selection; test showed this one is very slow
     public T getRandomValue() {
+        if(this.getProbabilities() == null || this.getProbabilities().size() == 0 || this.getValues() == null || this.getValues().size() == 0) {
+            return null;
+        }
+        double rand = Math.random();
+        double sum = 0.0;
+        int index = 0;
+        while(index < this.cumProbs.size() && this.cumProbs.get(index) <= rand) {
+            index++;
+        }
+        return this.getValues().get(index);
+    }
+    //TODO:  try a binary search tree
+    
+    /** This is this original version but is much slower that the new one in the majority of tests I have run.
+     * @deprecated 
+     * @return 
+     */
+    public T getRandomValue2() {
         double rand = Math.random();
         double sum = 0.0;
         int index = 0;
@@ -160,20 +177,6 @@ public class ProbDist<T> {
         }
         return this.getValues().get(index);
     }
-    
-    public T getRandomValue2() {
-        if(this.getProbabilities() == null || this.getProbabilities().size() == 0 || this.getValues() == null || this.getValues().size() == 0) {
-            return null;
-        }
-        double rand = Math.random();
-        double sum = 0.0;
-        int index = 0;
-        while(index < this.cumProbs.size() && rand < this.cumProbs.get(index)) {
-            index++;
-        }
-        return this.getValues().get(index);
-    }
-    //TODO:  try a binary search tree
     
     
     public List<Double> getProbabilities() {
