@@ -24,6 +24,7 @@ public class Histogram {
     public Histogram() {
         this.values = new ArrayList();
         this.counts = new ArrayList<Integer>();
+        this.probabilities = new ArrayList<Double>();
         this.label = "";
     }
     

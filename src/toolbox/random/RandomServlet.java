@@ -10,7 +10,7 @@ import java.io.*;
 import java.util.List;
 import java.util.ArrayList;
 
-import toolbox.Utilities;
+import toolbox.util.ListArrayUtil;
 
 /**
  *
@@ -69,7 +69,7 @@ public class RandomServlet extends HttpServlet {
         List result = new ArrayList<Double>();
         try {
             count = Integer.parseInt(request.getParameter(COUNT));
-            if(Utilities.contains(UNIFS, dist)) {
+            if(ListArrayUtil.contains(UNIFS, dist)) {
                 if(request.getParameter(MIN) != null) {
                     //out.println("min = " + Double.parseDouble(request.getParameter(MIN)));
                 }
@@ -77,19 +77,19 @@ public class RandomServlet extends HttpServlet {
                     //out.println("max = " + Double.parseDouble(request.getParameter(MAX)));
                 }
                 result = doUniform(request);
-            } else if(Utilities.contains(NORMS, dist)) {
+            } else if(ListArrayUtil.contains(NORMS, dist)) {
                 result = doNormal(request);
-            } else if(Utilities.contains(BINOMS, dist)) {
+            } else if(ListArrayUtil.contains(BINOMS, dist)) {
                 result = doBinomial(request);
-            } else if(Utilities.contains(EXP, dist)) {
+            } else if(ListArrayUtil.contains(EXP, dist)) {
                 result = doExponential(request);
-            } else if(Utilities.contains(POISSON, dist)) {
+            } else if(ListArrayUtil.contains(POISSON, dist)) {
                 //do Possion
                 //out.println("poisson");
             } else {
                 out.println("Please give a valid distribution");
             }
-            out.println(Utilities.listToString(result));
+            out.println(ListArrayUtil.listToString(result));
         }
         catch(NumberFormatException e) {
             out.println("please enter a valid count");
@@ -177,15 +177,15 @@ public class RandomServlet extends HttpServlet {
         List result = new ArrayList<Double>();
         try {
             count = Integer.parseInt(request.getParameter(COUNT));
-            if(Utilities.contains(UNIFS, dist)) {
+            if(ListArrayUtil.contains(UNIFS, dist)) {
                 result = doUniform(request);
-            } else if(Utilities.contains(NORMS, dist)) {
+            } else if(ListArrayUtil.contains(NORMS, dist)) {
                 result = doNormal(request);
-            } else if(Utilities.contains(BINOMS, dist)) {
+            } else if(ListArrayUtil.contains(BINOMS, dist)) {
                 result = doBinomial(request);
-            } else if(Utilities.contains(EXP, dist)) {
+            } else if(ListArrayUtil.contains(EXP, dist)) {
                 result = doExponential(request);
-            } else if(Utilities.contains(POISSON, dist)) {
+            } else if(ListArrayUtil.contains(POISSON, dist)) {
                 //do Possion
                 //out.println("poisson");
             } else {

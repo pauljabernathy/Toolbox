@@ -12,7 +12,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import org.apache.log4j.*;
-import toolbox.Utilities;
+import toolbox.util.ListArrayUtil;
 import java.util.regex.*;
 
 /**
@@ -28,7 +28,7 @@ public class AnalyzerServletTest {
     
     @BeforeClass
     public static void setUpClass() {
-        logger = Utilities.getLogger(AnalyzerServletTest.class, Level.DEBUG);
+        logger = ListArrayUtil.getLogger(AnalyzerServletTest.class, Level.DEBUG);
     }
     
     @AfterClass
@@ -97,7 +97,7 @@ public class AnalyzerServletTest {
             //A comma at the beginning should work.
             //fail("Should have thrown an exception for \",2\" but did not");
             assertEquals(1, result.length);
-            logger.debug(",2 -> " + Utilities.arrayToString(result));
+            logger.debug(",2 -> " + ListArrayUtil.arrayToString(result));
         } catch(Exception e) {
             logger.error(e.getClass() + " " + e.getMessage());
             assertEquals(AnalyzerServlet.INVALID_COLUMNS_FORMAT_MESSAGE, e.getMessage());
@@ -107,7 +107,7 @@ public class AnalyzerServletTest {
             result = instance.getColumns("1,");
             //It is OK if there is a trailing comma.
             assertEquals(1, result.length);
-            logger.debug("1, -> " + Utilities.arrayToString(result));
+            logger.debug("1, -> " + ListArrayUtil.arrayToString(result));
         } catch(Exception e) {
             logger.error(e.getClass() + " " + e.getMessage());
         }
@@ -116,7 +116,7 @@ public class AnalyzerServletTest {
             result = instance.getColumns("1");
             //It is OK if there is a trailing comma.
             assertEquals(1, result.length);
-            logger.debug("1 -> " + Utilities.arrayToString(result));
+            logger.debug("1 -> " + ListArrayUtil.arrayToString(result));
         } catch(Exception e) {
             logger.error(e.getClass() + " " + e.getMessage());
         }
@@ -124,7 +124,7 @@ public class AnalyzerServletTest {
         try {
             result = instance.getColumns("1,2");
             assertEquals(2, result.length);
-            logger.debug("1,2 -> " + Utilities.arrayToString(result));
+            logger.debug("1,2 -> " + ListArrayUtil.arrayToString(result));
         } catch(Exception e) {
             fail("input was valid (1,2) but threw exception with message: " + e.getMessage());
         }

@@ -17,7 +17,7 @@ import java.util.ArrayList;
 //import learning.naivebayes.Classification;
 //import learning.stats.*;
 import toolbox.Constants;
-import toolbox.Utilities;
+import toolbox.util.ListArrayUtil;
 
 import org.apache.log4j.*;
 
@@ -42,7 +42,7 @@ public class CSVReaderTest {
     public static void setUpClass() {
         logger = Logger.getLogger(CSVReaderTest.class);
         logger.addAppender(new ConsoleAppender(new PatternLayout( Constants.DEFAULT_LOG_FORMAT)));
-        logger.setLevel(Level.DEBUG);
+        logger.setLevel(Level.INFO);
     }
     
     @AfterClass
@@ -57,7 +57,7 @@ public class CSVReaderTest {
     public void tearDown() {
     }
 
-    //@Test
+    @Test
     public void testLoadFromFile() {
         logger.info("\ntesting loadFromFile()");
         String filename = "titanic.csv";

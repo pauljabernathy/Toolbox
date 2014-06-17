@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
 
 import toolbox.stats.ProbDist;
 import toolbox.random.Random;
-import toolbox.Utilities;
+import toolbox.util.ListArrayUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -254,11 +254,11 @@ public class ProbDistTest {
         input.add("a");
         input.add("b");
         //input.add("");
-        logger.debug("\ncomparing times for " + Utilities.listToString(input));
+        logger.debug("\ncomparing times for " + ListArrayUtil.listToString(input));
         compareTimes(input);
         
         input.add("c");
-        logger.debug("\ncomparing times for " + Utilities.listToString(input));
+        logger.debug("\ncomparing times for " + ListArrayUtil.listToString(input));
         compareTimes(input);
         
         input = new ArrayList<String>();
@@ -269,7 +269,7 @@ public class ProbDistTest {
         input.add("a");
         input.add("a");
         input.add("b");
-        logger.debug("\ncomparing times for " + Utilities.listToString(input));
+        logger.debug("\ncomparing times for " + ListArrayUtil.listToString(input));
         compareTimes(input);
     }
     
@@ -407,7 +407,7 @@ public class ProbDistTest {
         //values = instance.getValues();
         instance.add("b", .5);
         //values = instance.getValues();
-        logger.debug(Utilities.listToString(instance.getValues()));
+        logger.debug(ListArrayUtil.listToString(instance.getValues()));
     }
     
     private void showArray(int[] input) {
@@ -538,7 +538,7 @@ public class ProbDistTest {
         instance.add("first", 0.2424242);
         logger.debug(instance.getEntropy());
         logger.debug(ProbDist.validateNormalized(instance.getProbabilities()));
-        toolbox.Utilities.showList(instance.getProbabilities());
+        toolbox.util.ListArrayUtil.showList(instance.getProbabilities());
 
         instance.add("second", 0.2065095);
         instance.add("third", 0.5510662);

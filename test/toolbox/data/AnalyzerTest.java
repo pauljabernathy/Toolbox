@@ -12,7 +12,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import org.apache.log4j.*;
-import toolbox.Utilities;
+import toolbox.util.ListArrayUtil;
 
 /**
  *
@@ -27,7 +27,7 @@ public class AnalyzerTest {
     
     @BeforeClass
     public static void setUpClass() {
-        logger = Utilities.getLogger(AnalyzerTest.class, Level.DEBUG);
+        logger = ListArrayUtil.getLogger(AnalyzerTest.class, Level.DEBUG);
     }
     
     @AfterClass

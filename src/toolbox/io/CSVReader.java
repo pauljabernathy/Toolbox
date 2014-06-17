@@ -303,7 +303,7 @@ public class CSVReader {
             columns[i] = i;
         }
         reader.close();
-        toolbox.Utilities.showArray(columns);
+        toolbox.util.ListArrayUtil.showArray(columns);
         return getColumns(filename, columns, columnSeparator);
     }
     

@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
 
 import org.apache.log4j.*;
 
-import toolbox.Utilities;
+import toolbox.util.ListArrayUtil;
 import java.io.*;
 
 /**
@@ -29,7 +29,7 @@ public class RandomServletTest {
     
     @BeforeClass
     public static void setUpClass() {
-        logger = Utilities.getLogger(RandomServletTest.class, Level.DEBUG);
+        logger = ListArrayUtil.getLogger(RandomServletTest.class, Level.DEBUG);
     }
     
     @AfterClass

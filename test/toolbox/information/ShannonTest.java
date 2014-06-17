@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
 import org.apache.log4j.*;
 import java.util.ArrayList;
 import java.util.List;
-import toolbox.Utilities;
+import toolbox.util.ListArrayUtil;
 import toolbox.stats.*;
 
 /**
@@ -31,8 +31,8 @@ public class ShannonTest {
     
     @BeforeClass
     public static void setUpClass() {
-        logger = toolbox.Utilities.getLogger(ShannonTest.class, Level.DEBUG);
-        sameLineLogger = Utilities.getSameLineLogger(ShannonTest.class, Level.INFO);
+        logger = toolbox.util.ListArrayUtil.getLogger(ShannonTest.class, Level.DEBUG);
+        sameLineLogger = ListArrayUtil.getSameLineLogger(ShannonTest.class, Level.INFO);
     }
     
     @AfterClass

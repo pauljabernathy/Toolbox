@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.ArrayList;
 import org.apache.log4j.*;
-import toolbox.Utilities;
+import toolbox.util.ListArrayUtil;
 
 /**
  *
@@ -210,9 +210,9 @@ public class HistogramTest {
         DataList<String> list = new DataList<String>();
         list.add("a").add("b").add("b").add("a").add("b");
         instance.setDataList(list);
-        logger.debug(Utilities.listToString(instance.getValues()));
-        logger.debug(Utilities.listToString(instance.getCounts()));
-        logger.debug(Utilities.listToString(instance.getProbabilities()));
+        logger.debug(ListArrayUtil.listToString(instance.getValues()));
+        logger.debug(ListArrayUtil.listToString(instance.getCounts()));
+        logger.debug(ListArrayUtil.listToString(instance.getProbabilities()));
         ProbDist pd = instance.getProbDist();
         List<Double> probs = pd.getProbabilities();
         List<String> values = pd.getValues();

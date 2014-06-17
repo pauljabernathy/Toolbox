@@ -4,6 +4,7 @@
  */
 package toolbox.data;
 
+import toolbox.util.ListArrayUtil;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +34,7 @@ public class Analyzer extends java.util.Observable {
     }
     
     static {
-        logger = Utilities.getLogger(Analyzer.class, Level.INFO);
+        logger = ListArrayUtil.getLogger(Analyzer.class, Level.INFO);
     }
     
     public static void main(String[] args) {
@@ -43,14 +44,14 @@ public class Analyzer extends java.util.Observable {
         a.analyzeFile("test1.csv", new int[] { 1, 2, 3, 4 }, ",");
         int[] array = new int[] { 1, 2, 3 };
         
-        List<int[]> c = Utilities.getCondensedPermutations(array);
+        List<int[]> c = ListArrayUtil.getCondensedPermutations(array);
         for(int i = 0; i < c.size(); i++) {
             if(c.get(i).length == 2) {
                 //Utilities.showArray(c.get(i));
             }
         }
         
-        List<int[]> pairs = Utilities.getCondensedPermutations(columns);
+        List<int[]> pairs = ListArrayUtil.getCondensedPermutations(columns);
         for(int i = 0; i < pairs.size(); i++) {
             if(pairs.get(i).length == 2) {
                 //Utilities.showArray(pairs.get(i));
@@ -63,7 +64,7 @@ public class Analyzer extends java.util.Observable {
     }
     
     public void analyzeFile(String filename, String columnSeparator) {
-        Logger logger = Utilities.getLogger(this.getClass(), Level.DEBUG);
+        Logger logger = ListArrayUtil.getLogger(this.getClass(), Level.DEBUG);
         try {
             List<List<String>> columns = CSVReader.getAllColumns(filename, columnSeparator);
             for(int i = 0; i < columns.size(); i++) {
@@ -80,7 +81,7 @@ public class Analyzer extends java.util.Observable {
     }
     
     public void analyzeFile(String filename, int[] cols, String columnSeparator) {
-        //Logger logger = Utilities.getLogger(this.getClass(), Level.DEBUG);
+        //Logger logger = ListArrayUtil.getLogger(this.getClass(), Level.DEBUG);
         super.setChanged();
         try {
             List<List<String>> columnData = CSVReader.getColumns(filename, cols, columnSeparator);
@@ -101,11 +102,11 @@ public class Analyzer extends java.util.Observable {
                 this.info("");
             }
             
-            List<int[]> pairs = Utilities.getCondensedPermutations(cols);
+            List<int[]> pairs = ListArrayUtil.getCondensedPermutations(cols);
             for(int i = 0; i < pairs.size(); i++) {
                 if(pairs.get(i).length == 2) {
                     //Utilities.showArray(pairs.get(i));
-                    this.info(Utilities.arrayToString(pairs.get(i)));
+                    this.info(ListArrayUtil.arrayToString(pairs.get(i)));
                     int leftDataIndex = colIndexMap.get(pairs.get(i)[0]);
                     int rightDataIndex = colIndexMap.get(pairs.get(i)[1]);
                     this.info("mutual information = " + Shannon.getMutualInformation(columnData.get(leftDataIndex), columnData.get(rightDataIndex)));
@@ -113,7 +114,7 @@ public class Analyzer extends java.util.Observable {
                 }
             }
         } catch(IOException e) {
-            logger.error(e.getClass() + " in analyzeFile(" + filename + ", " + Utilities.arrayToString(cols) + ", " + columnSeparator + "):  " + e.getMessage());
+            logger.error(e.getClass() + " in analyzeFile(" + filename + ", " + ListArrayUtil.arrayToString(cols) + ", " + columnSeparator + "):  " + e.getMessage());
         }
     }
 

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
-import toolbox.Utilities;
+import toolbox.util.ListArrayUtil;
 
 /**
  *
@@ -21,7 +21,7 @@ public class Shannon {
     private static Logger logger;
     
     static {
-        logger = Utilities.getLogger(Shannon.class, Level.INFO);
+        logger = ListArrayUtil.getLogger(Shannon.class, Level.INFO);
     }
     
     //TODO:  Should these functions even be here since they just pass the calculation off to something else?

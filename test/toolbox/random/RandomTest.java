@@ -12,7 +12,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import org.apache.log4j.*;
-import toolbox.Utilities;
+import toolbox.util.ListArrayUtil;
 import toolbox.stats.*;
 import toolbox.io.CSVWriter;
 import java.util.GregorianCalendar;
@@ -38,8 +38,8 @@ public class RandomTest {
     
     @BeforeClass
     public static void setUpClass() {
-        logger = toolbox.Utilities.getLogger(RandomTest.class, Level.DEBUG);
-        sameLineLogger = Utilities.getSameLineLogger(RandomTest.class, Level.DEBUG);
+        logger = toolbox.util.ListArrayUtil.getLogger(RandomTest.class, Level.DEBUG);
+        sameLineLogger = ListArrayUtil.getSameLineLogger(RandomTest.class, Level.DEBUG);
     }
     
     @AfterClass
@@ -64,7 +64,7 @@ public class RandomTest {
         int count = 1000;
         result = Random.uniformInts(count, 2, 4);
         assertEquals(count, result.length);
-        //logger.debug(Utilities.arrayToString(result));
+        //logger.debug(ListArrayUtil.arrayToString(result));
         Histogram hist = new Histogram(result);
         logger.debug(hist.toString());
         double entropy = hist.getEntropy();
@@ -126,40 +126,40 @@ public class RandomTest {
         assertEquals(0, Random.getUniformDoubles(0).length);
         
         result = Random.getUniformDoubles(10000);
-        if(toolbox.stats.Utilities.summary(result).min < 0.0) {
+        if(toolbox.util.MathUtil.summary(result).min < 0.0) {
             fail("min was too low");
         }
-        if(toolbox.stats.Utilities.summary(result).max > 1.0) {
+        if(toolbox.util.MathUtil.summary(result).max > 1.0) {
             fail("max was too high");
         }
-        assertEquals(0.5, toolbox.stats.Utilities.summary(result).mean, 0.05);
+        assertEquals(0.5, toolbox.util.MathUtil.summary(result).mean, 0.05);
         
         result = Random.getUniformDoubles(10000, 0.0);
-        if(toolbox.stats.Utilities.summary(result).min < 0.0) {
+        if(toolbox.util.MathUtil.summary(result).min < 0.0) {
             fail("min was too low");
         }
-        if(toolbox.stats.Utilities.summary(result).max > 1.0) {
+        if(toolbox.util.MathUtil.summary(result).max > 1.0) {
             fail("max was too high");
         }
-        assertEquals(0.5, toolbox.stats.Utilities.summary(result).mean, 0.05);
+        assertEquals(0.5, toolbox.util.MathUtil.summary(result).mean, 0.05);
         
         result = Random.getUniformDoubles(10000, 1.0, 0.0);
-        if(toolbox.stats.Utilities.summary(result).min < 0.0) {
+        if(toolbox.util.MathUtil.summary(result).min < 0.0) {
             fail("min was too low");
         }
-        if(toolbox.stats.Utilities.summary(result).max > 1.0) {
+        if(toolbox.util.MathUtil.summary(result).max > 1.0) {
             fail("max was too high");
         }
-        assertEquals(0.5, toolbox.stats.Utilities.summary(result).mean, 0.05);
+        assertEquals(0.5, toolbox.util.MathUtil.summary(result).mean, 0.05);
         
         result = Random.getUniformDoubles(10000, 4.0, 8.0);
-        if(toolbox.stats.Utilities.summary(result).min < 4.0) {
+        if(toolbox.util.MathUtil.summary(result).min < 4.0) {
             fail("min was too low");
         }
-        if(toolbox.stats.Utilities.summary(result).max > 8.0) {
+        if(toolbox.util.MathUtil.summary(result).max > 8.0) {
             fail("max was too high");
         }
-        assertEquals(6.0, toolbox.stats.Utilities.summary(result).mean, 0.05);
+        assertEquals(6.0, toolbox.util.MathUtil.summary(result).mean, 0.05);
     }
     
     @Test
@@ -271,14 +271,14 @@ public class RandomTest {
             for(int i = 0; i < 1000; i++) {
                 input.add(i);
             }
-            //logger.debug(Utilities.listToString(input));
+            //logger.debug(ListArrayUtil.listToString(input));
             
             result = Random.sample(input, 1000, false);
             result.add(99);
             //logger.debug("result.size() = " + result.size());
             assertEquals(1001, result.size());
             java.util.Collections.sort(result);
-            //logger.debug(Utilities.listToString(result));
+            //logger.debug(ListArrayUtil.listToString(result));
             for(int i = 1; i < result.size(); i++) {
                 //logger.debug(result.get(i));
                 if(result.get(i) == result.get(i-1)) {
@@ -325,7 +325,7 @@ public class RandomTest {
         inputL.add("c");
         inputA[5] = "c";
         //inputL.add("");
-        logger.debug("comparing for input " + Utilities.arrayToString(inputA));
+        logger.debug("comparing for input " + ListArrayUtil.arrayToString(inputA));
         compareSampleTimes(inputL, inputA, 1000);
         compareSampleTimes(inputL, inputA, 10000);
         compareSampleTimes(inputL, inputA, 100000);
@@ -369,11 +369,11 @@ public class RandomTest {
         int[] result = null;
         result = Random.rbinom(10000, .5);
         assertEquals(10000, result.length);
-        assertEquals(.5, toolbox.stats.Utilities.mean(result), 0.01);
+        assertEquals(.5, toolbox.util.MathUtil.mean(result), 0.01);
         
         result = Random.rbinom(10000, .75);
         assertEquals(10000, result.length);
-        assertEquals(.75, toolbox.stats.Utilities.mean(result), 0.01);
+        assertEquals(.75, toolbox.util.MathUtil.mean(result), 0.01);
     }
     
     @Test
@@ -418,8 +418,8 @@ public class RandomTest {
         assertEquals(0, Random.rnorm(0, 0, 1).length);
         
         result = Random.rnorm(100000, 0, 1);
-        double mean = toolbox.stats.Utilities.mean(result);
-        double sd = toolbox.stats.Utilities.sd(result);
+        double mean = toolbox.util.MathUtil.mean(result);
+        double sd = toolbox.util.MathUtil.sd(result);
         assertEquals(0.0, mean, 0.1);
         assertEquals(1.0, sd, 0.05);
         logger.debug("mean = " + mean + ";  sd = " + sd);
@@ -430,8 +430,8 @@ public class RandomTest {
         }
         
         result = Random.rnorm(10000, 12, 4);
-        assertEquals(12.0, toolbox.stats.Utilities.mean(result), 0.1);
-        assertEquals(4.0, toolbox.stats.Utilities.sd(result), 0.05);    //This can fail with count is 10000 so maybe the .05 or the count needs to be changed
+        assertEquals(12.0, toolbox.util.MathUtil.mean(result), 0.1);
+        assertEquals(4.0, toolbox.util.MathUtil.sd(result), 0.05);    //This can fail with count is 10000 so maybe the .05 or the count needs to be changed
     }
     
     @Test
@@ -443,8 +443,8 @@ public class RandomTest {
         assertEquals(0, Random.rnormList(0, 0, 1).size());
         result = Random.rnormList(1000, 0, 1);
         assertEquals(1000, result.size());
-        double mean = toolbox.stats.Utilities.mean(result);
-        double sd = toolbox.stats.Utilities.sd(result);
+        double mean = toolbox.util.MathUtil.mean(result);
+        double sd = toolbox.util.MathUtil.sd(result);
     }
     
     @Test

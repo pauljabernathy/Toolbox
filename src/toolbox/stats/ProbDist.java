@@ -3,6 +3,7 @@
  * and open the template in the editor.
  */
 package toolbox.stats;
+import toolbox.util.MathUtil;
 import java.util.*;
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -198,7 +199,7 @@ public class ProbDist<T> {
         if(probabilities == null || probabilities.size() == 0) {
             throw new ProbabilityException("The number of probabilities must match the number of values.");
         }
-        return Utilities.cumsumList(probabilities);
+        return MathUtil.cumsumList(probabilities);
     }
     
     public boolean contains(T value) {
@@ -271,7 +272,7 @@ public class ProbDist<T> {
         }
         double H = 0.0;
         for(Double p : this.probabilities) {
-            H -= p * toolbox.Utilities.logBase2(p);
+            H -= p * MathUtil.logBase2(p);
         }
         return H;
     }
