@@ -257,6 +257,32 @@ public class ListArrayUtil {
         return result;
     }
     
+    /**
+     * gives the dimensions of a list of list as { num rows, num columns }
+     * @param data
+     * @return 
+     */
+    public static int[] dim(List<List> data) {
+        return dim(data, true);
+    }
+    
+    public static int[] dim(List<List> data, boolean byRow) {
+        if(data == null || data.size() == 0) {
+            return new int[] { 0, 0 };
+        }
+        int x = data.size();
+        int[] ys = new int[x];
+        for(int i = 0; i < x; i++) {
+            ys[i] = data.get(i).size();
+        }
+        int y = MathUtil.max(ys);
+        if(byRow) {
+            return new int[] { x, y };
+        } else {
+            return new int[] { y, x };
+        }
+    }
+    
     public static Logger getLogger(Class clazz, Level level) {
         Logger logger = Logger.getLogger(clazz);
         logger.addAppender(new ConsoleAppender(new PatternLayout(Constants.DEFAULT_LOG_FORMAT)));

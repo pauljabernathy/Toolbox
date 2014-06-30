@@ -205,4 +205,52 @@ public class ListArrayUtilTest {
         System.out.println(ListArrayUtil.arrayToString(ListArrayUtil.or(new int[] { 1, 0, 0, 1, 0, 0 }, new int[] { 0, 0, 0, 1})));
     }
     
+    @Test
+    public void testDim_List_List() {
+        logger.info("\ntesting dim(List<List> data)");
+        
+        int[] result = null;
+        result = ListArrayUtil.dim(null);
+        assertEquals(2, result.length);
+        assertEquals(0, result[0]);
+        assertEquals(0, result[1]);
+        
+        result = ListArrayUtil.dim(new ArrayList<List>());
+        assertEquals(2, result.length);
+        assertEquals(0, result[0]);
+        assertEquals(0, result[1]);
+        
+        ArrayList<List> input = new ArrayList<List>();
+        result = ListArrayUtil.dim(input);
+        assertEquals(2, result.length);
+        assertEquals(0, result[0]);
+        assertEquals(0, result[1]);
+        
+        List<String> a = new ArrayList<String>();
+        a.add("a");
+        a.add("aa");
+        
+        List<String> b = new ArrayList<String>();
+        b.add("b");
+        b.add("bb");
+        b.add("bbb");
+        
+        input.add(a);
+        input.add(b);
+        
+        result = ListArrayUtil.dim(input);
+        logger.debug(ListArrayUtil.arrayToString(result));
+        assertEquals(2, result.length);
+        assertEquals(2, result[0]);
+        assertEquals(3, result[1]);
+        
+        
+        result = ListArrayUtil.dim(input, false);
+        logger.debug(ListArrayUtil.arrayToString(result));
+        assertEquals(2, result.length);
+        assertEquals(3, result[0]);
+        assertEquals(2, result[1]);
+    }
+    
+    //TODO:  test dim by cols
 }
