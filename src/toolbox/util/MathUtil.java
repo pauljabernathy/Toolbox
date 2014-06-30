@@ -57,6 +57,28 @@ public class MathUtil {
         return s;
     }
     
+    //TODO:  how to handle null and empty input
+    public static int min(int[] array) {
+        int min = array[0];
+        for(int i = 1; i < array.length; i++) {
+            if(array[i] < min) {
+                min = array[i];
+            }
+        }
+        return min;
+    }
+    
+    //TODO:  how to handle null and empty input
+    public static int max(int[] array) {
+        int max = array[0];
+        for(int i = 1; i < array.length; i++) {
+            if(array[i] > max) {
+                max = array[i];
+            }
+        }
+        return max;
+    }
+    
     public static double sum(List<Double> list) {
         if(list == null || list.isEmpty()) {
             return 0;
@@ -64,6 +86,38 @@ public class MathUtil {
         double sum = 0.0;
         for(Double d : list) {
             sum += d;
+        }
+        return sum;
+    }
+    
+    //TODO:  complete, and test
+    public static double sum(List<Double> list, int...endPoints) {
+        if(list == null || list.isEmpty()) {
+            return 0;
+        }
+        double sum = 0.0;
+        for(Double d : list) {
+            sum += d;
+        }
+        return sum;
+    }
+    
+    /**
+     * Gives the sum bounded by the (optional) endpoints.  If the endpoints are reversed, it reverses them.
+     * @param input
+     * @param endPoints
+     * @return 
+     */
+    public static double sum(double[] input, int...endPoints) {
+        if(input == null || input.length == 0) {
+            return 0;
+        }
+        endPoints = checkEndPoints(0, input.length - 1, endPoints);
+        int start = endPoints[0];
+        int end = endPoints[1];
+        double sum = 0.0;
+        for(int i = start; i <= end; i++) {
+            sum += input[i];
         }
         return sum;
     }
@@ -157,6 +211,67 @@ public class MathUtil {
             sum *= list.get(i);
         }
         return sum;
+    }
+    
+    public static double prod(double[] input) {
+        if(input == null || input.length == 0) {
+            return 0.0;
+        }
+        double sum = 1.0;
+        for(Double d : input) {
+            sum *= d;
+        }
+        return sum;
+    }
+    
+    /**
+     * calculates the product of the input, from the start of the index labeled "start" to the end of the index labeled "end"
+     * If start and end are beyond the bounds of the input (less than 0 or greater than input.size() - 1), it adjusts start and end to fit the bounds of the input.
+     * If start is greater than end, start and end are switched.
+     * @param input
+     * @param start
+     * @param end
+     * @return 
+     */
+    public static double prod(double[] input, int start, int end) {
+        if(input == null || input.length == 0) {
+            return 0.0;
+        }
+        int[] endPoints = checkEndPoints(0, input.length - 1, start, end);
+        start = endPoints[0];
+        end = endPoints[1];
+        double sum = 1.0;
+        for(int i = start; i <= end; i++) {
+            sum *= input[i];
+        }
+        return sum;
+    }
+    
+    public static double[] cumProd(double[] input, boolean...reverse) {
+        if(input == null || input.length == 0) {
+            return new double[0];
+        }
+        double[] result = new double[input.length];
+        boolean backwards = false;
+        if(reverse != null && reverse.length > 0) {
+            backwards = reverse[0];
+        }
+        if(!backwards) {
+            int start = 0;
+            int end = input.length - 1;
+            result[start] = input[start];
+            for(int i = start + 1; i <= end; i++) {
+                result[i] = result[i - 1] * input[i];
+            }
+        } else {
+            int start = input.length - 1;
+            int end = 0;
+            result[input.length - 1] = input[input.length - 1];
+            for(int i = input.length - 2; i >= 0; i--) {
+                result[i] = result[i + 1] * input[i];
+            }
+        }
+        return result;
     }
     
     public static List<Double> diffRatiosList(List<Double> input) {
@@ -280,4 +395,50 @@ public class MathUtil {
         }
         return Math.sqrt(sum / (double)(squaredDiffs.size() - 1));
      }
+     
+     protected static int[] checkEndPoints(int defaultLower, int defaultUpper, int...endPoints) {
+        //int[] result = new int[] { 0, 1 };
+        int lower = defaultLower;
+        int upper = defaultUpper;
+        if(defaultLower > defaultUpper) {
+            lower = defaultUpper;
+            upper = defaultLower;
+        }
+        if(endPoints == null || endPoints.length == 0) {
+            return new int[] { lower, upper };
+        }
+        //not null and not empty
+        if(endPoints.length == 1 & endPoints[0] > lower) {
+            upper = endPoints[0];
+        } else if(endPoints.length == 1 & endPoints[0] < upper) {
+            lower = endPoints[0];
+        } else if(endPoints.length > 1) {
+            if(endPoints[1] < endPoints[0]) {
+                //the user put them in reverse order
+                lower = endPoints[1];
+                upper = endPoints[0];
+            } else if(endPoints[0] <= endPoints[1]) {
+                lower = endPoints[0];
+                upper = endPoints[1];
+            } 
+        }
+        if(lower < defaultLower) {
+            lower = defaultLower;
+        }
+        if(upper > defaultUpper) {
+            upper = defaultUpper;
+        }
+        if(lower > defaultUpper) {
+            lower = defaultLower;
+        }
+        if(upper < defaultLower) {
+            upper = defaultUpper;
+        }
+        if(lower > upper) {
+            int temp = upper;
+            upper = lower;
+            lower = temp;
+        }
+        return new int[] { lower, upper };
+    }
 }

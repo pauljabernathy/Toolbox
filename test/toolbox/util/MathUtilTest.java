@@ -31,7 +31,7 @@ public class MathUtilTest {
     
     @BeforeClass
     public static void setUpClass() {
-        logger = toolbox.util.ListArrayUtil.getLogger(MathUtilTest.class, Level.INFO);
+        logger = toolbox.util.ListArrayUtil.getLogger(MathUtilTest.class, Level.DEBUG);
     }
     
     @AfterClass
@@ -45,23 +45,19 @@ public class MathUtilTest {
     @After
     public void tearDown() {
     }
-
-    @Test
-    public void testSum() {
-    }
     
-        @Test
+    @Test
     public void testLogBase2() {
-        System.out.println("\ntesting logBase2()");
-        System.out.println(MathUtil.logBase2(1));
-        System.out.println(MathUtil.logBase2(2));
-        System.out.println(MathUtil.logBase2(3));
-        System.out.println(MathUtil.logBase2(4));
-        System.out.println(MathUtil.logBase2(5));
-        System.out.println(MathUtil.logBase2(6));
-        System.out.println(MathUtil.logBase2(7));
-        System.out.println(MathUtil.logBase2(8));
-        System.out.println(MathUtil.logBase2(9));
+        logger.debug("\ntesting logBase2()");
+        logger.debug(MathUtil.logBase2(1));
+        logger.debug(MathUtil.logBase2(2));
+        logger.debug(MathUtil.logBase2(3));
+        logger.debug(MathUtil.logBase2(4));
+        logger.debug(MathUtil.logBase2(5));
+        logger.debug(MathUtil.logBase2(6));
+        logger.debug(MathUtil.logBase2(7));
+        logger.debug(MathUtil.logBase2(8));
+        logger.debug(MathUtil.logBase2(9));
     }
     
     @Test
@@ -127,6 +123,18 @@ public class MathUtilTest {
     }
     
     @Test
+    public void testMin_Int_Array() {
+        logger.info("\ntesting min(int[] array)");
+        //TODO:  fill in
+    }
+    
+    @Test
+    public void testMax_Int_Array() {
+        logger.info("\ntesting max(int[] array)");
+        //TODO:  fill in
+    }
+    
+    @Test
     public void testSum_List_Double() {
         logger.info("\ntesting sum(List<Double> list)");
         List<Double> l = new ArrayList<Double>();
@@ -142,6 +150,35 @@ public class MathUtilTest {
         l.add(2.0);
         l.add(48.0);
         assertEquals(46.0, MathUtil.sum(l), 0.0);
+    }
+    
+    @Test
+    public void testSum_double_array() {
+        logger.info("\ntesting sum(double[] input, int...endPoints)");
+        double[] input = null;
+        assertEquals(0.0, MathUtil.sum(input), 0.0);
+        assertEquals(0.0, MathUtil.sum(input, 0), 0.0);
+        assertEquals(0.0, MathUtil.sum(input, 0, 57, 3), 0.0);
+        
+        input = new double[] { 1.0, 2.0, 3.0, 4.0 };
+        assertEquals(10.0, MathUtil.sum(input), 0.0);
+        assertEquals(3.0, MathUtil.sum(input, 0, 1), 0.0);
+        assertEquals(6.0, MathUtil.sum(input, 0, 2), 0.0);
+        assertEquals(10.0, MathUtil.sum(input, 0, 3), 0.0);
+        assertEquals(10.0, MathUtil.sum(input, 0, 4), 0.0);
+        
+        assertEquals(2.0, MathUtil.sum(input, 1, 1), 0.0);
+        assertEquals(5.0, MathUtil.sum(input, 1, 2), 0.0);
+        assertEquals(9.0, MathUtil.sum(input, 1, 3), 0.0);
+        assertEquals(9.0, MathUtil.sum(input, 1, 4), 0.0);
+        
+        assertEquals(9.0, MathUtil.sum(input, 4, 1), 0.0);
+        
+        input = new double[] { 1.3310000000000004, 1.3310000000000004, 1.3310000000000004, 1.3310000000000004 };
+        double[] cumBins = MathUtil.cumProd(input, true);
+        logger.debug(ListArrayUtil.arrayToString(cumBins));
+        int regularContribution = 1;
+        logger.debug(cumBins[0] + regularContribution * MathUtil.sum(cumBins, 1, cumBins.length - 1));
     }
 
     @Test
@@ -262,6 +299,88 @@ public class MathUtilTest {
     }
     
     @Test
+    public void testProd_double_array() {
+        logger.info("\ntesting prod(List<Double> list)");
+        double[] input = null;
+        assertEquals(0.0, MathUtil.prod(input), 0.0);
+        
+        input = new double[] { };
+        assertEquals(0.0, MathUtil.prod(input), 0.0);
+        
+        input = new double[] { 4 };
+        assertEquals(4.0, MathUtil.prod(input), 0.0);
+        input = new double[] { 4, 1.0 };
+        assertEquals(4.0, MathUtil.prod(input), 0.0);
+        input = new double[] { 4, 1.0, 0.5 };
+        assertEquals(2.0, MathUtil.prod(input), 0.0);
+        input = new double[] { 4, 1.0, 0.5, 27.0 };
+        assertEquals(54.0, MathUtil.prod(input), 0.0);
+    }
+    
+    @Test
+    public void testProd_double_array_Range() {
+        logger.info("\ntesting prod(List<Double> list, int start, int end)");
+        
+        double[] input = null;
+        assertEquals(0.0, MathUtil.prod(input), 0.0);
+        
+        input = new double[] { };
+        assertEquals(0.0, MathUtil.prod(input), 0.0);
+        
+        input = new double[] { 4, 1.0, 0.5, 27.0 };
+        assertEquals(4.0, MathUtil.prod(input, 0, 0), 0.0);
+        assertEquals(4.0, MathUtil.prod(input, 0, 1), 0.0);
+        assertEquals(2.0, MathUtil.prod(input, 0, 2), 0.0);
+        assertEquals(54.0, MathUtil.prod(input, 0, 3), 0.0);
+        
+        assertEquals(1.0, MathUtil.prod(input, 1, 1), 0.0);
+        assertEquals(0.5, MathUtil.prod(input, 1, 2), 0.0);
+        assertEquals(13.5, MathUtil.prod(input, 1, 3), 0.0);
+        
+        assertEquals(54.0, MathUtil.prod(input, -1, 4), 0.0);
+        assertEquals(54.0, MathUtil.prod(input, 0, 4), 0.0);
+        
+        assertEquals(54.0, MathUtil.prod(input, 3, 0), 0.0);
+        assertEquals(54.0, MathUtil.prod(input, 4, -1), 0.0);
+    }
+    
+    @Test
+    public void testCumprod_double_array() {
+        logger.info("\n testing cumProd(double[] array, boolean...reverse)");
+        double[] input = null;
+        double[] result = null;
+        result = MathUtil.cumProd(input);
+        assertEquals(0, result.length);
+        
+        input = new double[] { };
+        assertEquals(0, MathUtil.cumProd(input).length);
+        
+        input = new double[] { 1.0, 2.0, 3.0, 1.0, 2.0, -1.0, -1.0 };
+        result = MathUtil.cumProd(input);
+        assertEquals(7, result.length);
+        assertEquals(1.0, result[0], 1.0);
+        assertEquals(2.0, result[1], 1.0);
+        assertEquals(6.0, result[2], 1.0);
+        assertEquals(6.0, result[3], 1.0);
+        assertEquals(12.0, result[4], 1.0);
+        assertEquals(-12.0, result[5], 1.0);
+        assertEquals(12.0, result[6], 1.0);
+        
+        result = MathUtil.cumProd(input, true);
+        assertEquals(7, result.length);
+        assertEquals(-1.0, result[6], 1.0);
+        assertEquals(1.0, result[5], 1.0);
+        assertEquals(2.0, result[4], 1.0);
+        assertEquals(2.0, result[3], 1.0);
+        assertEquals(6.0, result[2], 1.0);
+        assertEquals(12.0, result[1], 1.0);
+        assertEquals(12.0, result[0], 1.0);
+        
+        input = new double[] { 1.3310000000000004, 1.3310000000000004, 1.3310000000000004, 1.3310000000000004 };
+        logger.debug(ListArrayUtil.arrayToString(MathUtil.cumProd(input, true)));
+    }
+    
+    @Test
     public void testDiffRatios() {
         logger.info("\ntesting diffRatios()");
         double[] input = null;
@@ -325,4 +444,88 @@ public class MathUtilTest {
         assertEquals(1.581139, MathUtil.sd(input), 0.0001);
     }
     
+    @Test
+    public void testCheckEndPoints() {
+        logger.info("\ntesting checkEndPoints()");
+        int[] input = null;
+        int[] result = null;
+        
+        //null and empty arrays
+        result = MathUtil.checkEndPoints(0, 1, input);
+        assertEquals(2, result.length);
+        assertEquals(0, result[0]);
+        assertEquals(1, result[1]);
+        
+        result = MathUtil.checkEndPoints(1, 1, input);
+        assertEquals(2, result.length);
+        assertEquals(1, result[0]);
+        assertEquals(1, result[1]);
+        
+        result = MathUtil.checkEndPoints(4, 4, input);
+        assertEquals(2, result.length);
+        assertEquals(4, result[0]);
+        assertEquals(4, result[1]);
+        
+        //TODO:  deal with case where defaults are switched
+        //or should it give an error since it is a programmer error
+        result = MathUtil.checkEndPoints(2, 1, input);
+        assertEquals(2, result.length);
+        assertEquals(1, result[0]);
+        assertEquals(2, result[1]);
+        
+        //TODO:  test with array of one element
+        
+        //array of two elements
+        input = new int[] { 4, 8 };
+        result = MathUtil.checkEndPoints(4, 10, input);
+        assertEquals(2, result.length);
+        assertEquals(4, result[0]);
+        assertEquals(8, result[1]);
+        
+        input = new int[] { 4, 8, 20 };//third element should be ignored
+        result = MathUtil.checkEndPoints(4, 10, input);
+        assertEquals(2, result.length);
+        assertEquals(4, result[0]);
+        assertEquals(8, result[1]);
+        
+        input = new int[] { 4, 8 };
+        result = MathUtil.checkEndPoints(0, 1, input);
+        assertEquals(2, result.length);
+        assertEquals(0, result[0]);
+        assertEquals(1, result[1]);
+        
+        input = new int[] { -4, -8 };
+        result = MathUtil.checkEndPoints(0, 1, input);
+        assertEquals(2, result.length);
+        assertEquals(0, result[0]);
+        assertEquals(1, result[1]);
+        
+        input = new int[] { -1, 2 };
+        result = MathUtil.checkEndPoints(0, 1, input);
+        assertEquals(2, result.length);
+        logger.debug(ListArrayUtil.arrayToString(result));
+        assertEquals(0, result[0]);
+        assertEquals(1, result[1]);
+        
+        input = new int[] { -1, 2 };
+        result = MathUtil.checkEndPoints(1, 0, input);
+        assertEquals(2, result.length);
+        logger.debug(ListArrayUtil.arrayToString(result));
+        assertEquals(0, result[0]);
+        assertEquals(1, result[1]);
+        
+        input = new int[] { 2 -1 };
+        result = MathUtil.checkEndPoints(0, 1, input);
+        assertEquals(2, result.length);
+        assertEquals(0, result[0]);
+        assertEquals(1, result[1]);
+        
+        input = new int[] { 2, -1 };
+        result = MathUtil.checkEndPoints(1, 0, input);
+        assertEquals(2, result.length);
+        assertEquals(0, result[0]);
+        assertEquals(1, result[1]);
+        
+        //TODO: more testing
+    }
 }
