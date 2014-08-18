@@ -53,6 +53,73 @@ public class ListArrayUtilTest {
     }
     
     @Test
+    public void testListToString() {
+        logger.info("\ntesting listToString()");
+        String empty = ListArrayUtil.DEFAULT_LIST_TO_STRING_OPEN + " " + ListArrayUtil.DEFAULT_LIST_TO_STRING_CLOSE;
+        assertEquals(empty, ListArrayUtil.listToString(null, null));
+        assertEquals(empty, ListArrayUtil.listToString(null, ""));
+        assertEquals(empty, ListArrayUtil.listToString(null, ","));
+        assertEquals(empty, ListArrayUtil.listToString(null, " "));
+        assertEquals(empty, ListArrayUtil.listToString(null));
+        
+        List data = new ArrayList<String>();
+        assertEquals(empty, ListArrayUtil.listToString(data, null));
+        assertEquals(empty, ListArrayUtil.listToString(data, ""));
+        assertEquals(empty, ListArrayUtil.listToString(data, ","));
+        assertEquals(empty, ListArrayUtil.listToString(data, " "));
+        assertEquals(empty, ListArrayUtil.listToString(data));
+        
+        data.add("first");
+        assertEquals("< first >", ListArrayUtil.listToString(data, null));
+        assertEquals("< first >", ListArrayUtil.listToString(data, ""));
+        assertEquals("< first >", ListArrayUtil.listToString(data, ","));
+        assertEquals("< first >", ListArrayUtil.listToString(data, " "));
+        assertEquals("< first >", ListArrayUtil.listToString(data));
+        
+        data.add("second");
+        assertEquals("< first, second >", ListArrayUtil.listToString(data, null));
+        assertEquals("< firstsecond >", ListArrayUtil.listToString(data, ""));
+        assertEquals("< first,second >", ListArrayUtil.listToString(data, ","));
+        assertEquals("< first second >", ListArrayUtil.listToString(data, " "));
+        assertEquals("< first, second >", ListArrayUtil.listToString(data));
+    }
+    
+    @Test
+    public void testListToStringOpen_input_sep_open_close() {
+        logger.info("listToString(List input, String sep, String open, String close)");
+        assertEquals("{  >", ListArrayUtil.listToString(null, null, "{", " >"));
+        assertEquals("{  >", ListArrayUtil.listToString(null, "", "{", " >"));
+        assertEquals("{  >", ListArrayUtil.listToString(null, " ", "{", " >"));
+        assertEquals("{  >", ListArrayUtil.listToString(null, ",", "{", " >"));
+        
+        assertEquals("{   >", ListArrayUtil.listToString(null, null, "{ ", " >"));
+        assertEquals("{   >", ListArrayUtil.listToString(null, "", "{ ", " >"));
+        assertEquals("{   >", ListArrayUtil.listToString(null, " ", "{ ", " >"));
+        assertEquals("{   >", ListArrayUtil.listToString(null, ",", "{ ", " >"));
+        
+        List data = new ArrayList<String>();
+        String open = "{";
+        String close = " >";
+        String empty = open + " " + close;
+        assertEquals(empty, ListArrayUtil.listToString(data, null, open, close));
+        assertEquals(empty, ListArrayUtil.listToString(data, "", open, close));
+        assertEquals(empty, ListArrayUtil.listToString(data, ",", open, close));
+        assertEquals(empty, ListArrayUtil.listToString(data, " ", open, close));
+        
+        data.add("first");
+        assertEquals(open + "first" + close, ListArrayUtil.listToString(data, null, open, close));
+        assertEquals(open + "first" + close, ListArrayUtil.listToString(data, "", open, close));
+        assertEquals(open + "first" + close, ListArrayUtil.listToString(data, ",", open, close));
+        assertEquals(open + "first" + close, ListArrayUtil.listToString(data, " ", open, close));
+        
+        data.add("second");
+        assertEquals(open + "first, second" + close, ListArrayUtil.listToString(data, null, open, close));
+        assertEquals(open + "firstsecond" + close, ListArrayUtil.listToString(data, "", open, close));
+        assertEquals(open + "first,second" + close, ListArrayUtil.listToString(data, ",", open, close));
+        assertEquals(open + "first second" + close, ListArrayUtil.listToString(data, " ", open, close));
+    }
+    
+    @Test
     public void testContains_String() {
         logger.info("\ntesting contains(String[] array, String value)");
         String[] array = null;
@@ -85,6 +152,19 @@ public class ListArrayUtilTest {
         assertEquals(true, ListArrayUtil.contains(array, value));
         assertEquals(false, ListArrayUtil.contains(array, ""));
         assertEquals(true, ListArrayUtil.contains(array, "value"));
+    }
+    
+    @Test
+    public void testContains_int() {
+        logger.info("\ntesting contains(int[] array, int value)");
+        assertEquals(false, ListArrayUtil.contains(null, 0));
+        assertEquals(false, ListArrayUtil.contains(new int[] { }, 0));
+        assertEquals(false, ListArrayUtil.contains(new int[0], 0));
+        assertEquals(true, ListArrayUtil.contains(new int[1], 0));  //only because arrays are initialized to 0
+        assertEquals(false, ListArrayUtil.contains(new int[0], 1));
+        
+        assertEquals(false, ListArrayUtil.contains(new int[] { 1, 2, 3 }, 0));
+        assertEquals(true, ListArrayUtil.contains(new int[] { 1, 2, 3 }, 2));
     }
     
     @Test
@@ -253,4 +333,198 @@ public class ListArrayUtilTest {
     }
     
     //TODO:  test dim by cols
+    
+    @Test
+    public void testHaveSameElements_doubleArray() {
+        logger.info("\ntesting haveSameElements(double[] left, double[] right)");
+        double[] a = null;
+        double[] b = null;
+        assertEquals(true, ListArrayUtil.haveSameElements(a, b));
+        assertEquals(true, ListArrayUtil.haveSameElements(b, a));
+        a = new double[0];
+        assertEquals(false, ListArrayUtil.haveSameElements(a, b));
+        assertEquals(false, ListArrayUtil.haveSameElements(b, a));
+        b = new double[0];
+        assertEquals(true, ListArrayUtil.haveSameElements(a, b));
+        assertEquals(true, ListArrayUtil.haveSameElements(b, a));   //reflexive property should hold
+        assertEquals(false, ListArrayUtil.haveSameElements(null, b));
+        assertEquals(false, ListArrayUtil.haveSameElements(b, null));
+        
+        a = new double[] { -1.0, 2.0, 5.0 };
+        assertEquals(false, ListArrayUtil.haveSameElements(a, b));
+        assertEquals(false, ListArrayUtil.haveSameElements(b, a));
+        
+        b = new double[] { -1.0, 2.0, 5.0 };
+        assertEquals(true, ListArrayUtil.haveSameElements(a, b));
+        assertEquals(true, ListArrayUtil.haveSameElements(b, a));
+        assertEquals(false, ListArrayUtil.haveSameElements(null, b));
+        assertEquals(false, ListArrayUtil.haveSameElements(b, null));
+        assertEquals(false, ListArrayUtil.haveSameElements(null, a));
+        assertEquals(false, ListArrayUtil.haveSameElements(a, null));
+        
+        a[1] = 4.0;
+        assertEquals(false, ListArrayUtil.haveSameElements(a, b));
+        assertEquals(false, ListArrayUtil.haveSameElements(b, a));
+        
+         a = new double[] { -1.0, 2.0, 5.0, 1.0 };
+         assertEquals(false, ListArrayUtil.haveSameElements(a, b));
+         assertEquals(false, ListArrayUtil.haveSameElements(b, a));
+    }
+    
+    @Test
+    public void haveSameElements_genericArray() {
+        logger.info("\nhaveSameElements(T[] left, T[] right)");
+        Integer[] a = null;
+        Integer[] b = null;
+        assertEquals(true, ListArrayUtil.haveSameElements(a, b));
+        assertEquals(true, ListArrayUtil.haveSameElements(b, a));
+        a = new Integer[0];
+        assertEquals(false, ListArrayUtil.haveSameElements(a, b));
+        assertEquals(false, ListArrayUtil.haveSameElements(b, a));
+        b = new Integer[0];
+        assertEquals(true, ListArrayUtil.haveSameElements(a, b));
+        assertEquals(true, ListArrayUtil.haveSameElements(b, a));   //reflexive property should hold
+        assertEquals(false, ListArrayUtil.haveSameElements(null, b));
+        assertEquals(false, ListArrayUtil.haveSameElements(b, null));
+        
+         a = new Integer[] { -1, 2, 5 };
+        assertEquals(false, ListArrayUtil.haveSameElements(a, b));
+        assertEquals(false, ListArrayUtil.haveSameElements(b, a));
+        
+        b = new Integer[] { -1, 2, 5 };
+        assertEquals(true, ListArrayUtil.haveSameElements(a, b));
+        assertEquals(true, ListArrayUtil.haveSameElements(b, a));
+        assertEquals(false, ListArrayUtil.haveSameElements(null, b));
+        assertEquals(false, ListArrayUtil.haveSameElements(b, null));
+        assertEquals(false, ListArrayUtil.haveSameElements(null, a));
+        assertEquals(false, ListArrayUtil.haveSameElements(a, null));
+        
+        a[1] = 4;
+        assertEquals(false, ListArrayUtil.haveSameElements(a, b));
+        assertEquals(false, ListArrayUtil.haveSameElements(b, a));
+        
+         a = new Integer[] { -1, 2, 5, 1 };
+         assertEquals(false, ListArrayUtil.haveSameElements(a, b));
+         assertEquals(false, ListArrayUtil.haveSameElements(b, a));
+         
+         
+         //TODO:  check for things besides Integers
+    }
+    @Test
+    public void testHaveSameElements_List() {
+        logger.info("\ntesting haveSameElements(double[] left, double[] right)");
+        List a = null;
+        List b = null;
+        assertEquals(true, ListArrayUtil.haveSameElements(a, b));
+        assertEquals(true, ListArrayUtil.haveSameElements(b, a));
+        a = new ArrayList();
+        assertEquals(false, ListArrayUtil.haveSameElements(a, b));
+        assertEquals(false, ListArrayUtil.haveSameElements(b, a));
+        b = new ArrayList();
+        assertEquals(true, ListArrayUtil.haveSameElements(a, b));
+        assertEquals(true, ListArrayUtil.haveSameElements(b, a));   //reflexive property should hold
+        assertEquals(false, ListArrayUtil.haveSameElements(null, b));
+        assertEquals(false, ListArrayUtil.haveSameElements(b, null));
+        
+        a.add(-1.0);
+        a.add(2.0);
+        a.add(5.0);
+        assertEquals(false, ListArrayUtil.haveSameElements(a, b));
+        assertEquals(false, ListArrayUtil.haveSameElements(b, a));
+        
+        b.add(-1.0);
+        b.add(2.0);
+        b.add(5.0);
+        assertEquals(true, ListArrayUtil.haveSameElements(a, b));
+        assertEquals(true, ListArrayUtil.haveSameElements(b, a));
+        assertEquals(false, ListArrayUtil.haveSameElements(null, b));
+        assertEquals(false, ListArrayUtil.haveSameElements(b, null));
+        assertEquals(false, ListArrayUtil.haveSameElements(null, a));
+        assertEquals(false, ListArrayUtil.haveSameElements(a, null));
+        
+        a.set(1, 4.0);
+        assertEquals(false, ListArrayUtil.haveSameElements(a, b));
+        assertEquals(false, ListArrayUtil.haveSameElements(b, a));
+        
+        a = new ArrayList();
+        a.add(-1.0);
+        a.add(2.0);
+        a.add(5.0);
+        a.add(1.0);
+        assertEquals(false, ListArrayUtil.haveSameElements(a, b));
+        assertEquals(false, ListArrayUtil.haveSameElements(b, a));
+        
+        //now with Strings
+        a = new ArrayList();
+        b = new ArrayList();
+        a.add("-1.0");
+        a.add("2.0");
+        a.add("5.0");
+        assertEquals(false, ListArrayUtil.haveSameElements(a, b));
+        assertEquals(false, ListArrayUtil.haveSameElements(b, a));
+        
+        b.add("-1.0");
+        b.add("2.0");
+        b.add("5.0");
+        assertEquals(true, ListArrayUtil.haveSameElements(a, b));
+        assertEquals(true, ListArrayUtil.haveSameElements(b, a));
+        assertEquals(false, ListArrayUtil.haveSameElements(null, b));
+        assertEquals(false, ListArrayUtil.haveSameElements(b, null));
+        assertEquals(false, ListArrayUtil.haveSameElements(null, a));
+        assertEquals(false, ListArrayUtil.haveSameElements(a, null));
+        
+        a.set(1, "4.0");
+        assertEquals(false, ListArrayUtil.haveSameElements(a, b));
+        assertEquals(false, ListArrayUtil.haveSameElements(b, a));
+        
+        a = new ArrayList();
+        a.add("-1.0");
+        a.add("2.0");
+        a.add("5.0");
+        a.add("1.0");
+        assertEquals(false, ListArrayUtil.haveSameElements(a, b));
+        assertEquals(false, ListArrayUtil.haveSameElements(b, a));
+        
+        //now a mix
+        a = new ArrayList();
+        b = new ArrayList();
+        a.add(-1.0);
+        a.add("2.0");
+        a.add(5.0);
+        assertEquals(false, ListArrayUtil.haveSameElements(a, b));
+        assertEquals(false, ListArrayUtil.haveSameElements(b, a));
+        
+        b.add(-1.0);
+        b.add("2.0");
+        b.add(5.0);
+        assertEquals(true, ListArrayUtil.haveSameElements(a, b));
+        assertEquals(true, ListArrayUtil.haveSameElements(b, a));
+        assertEquals(false, ListArrayUtil.haveSameElements(null, b));
+        assertEquals(false, ListArrayUtil.haveSameElements(b, null));
+        assertEquals(false, ListArrayUtil.haveSameElements(null, a));
+        assertEquals(false, ListArrayUtil.haveSameElements(a, null));
+        
+        a.set(1, "4.0");
+        assertEquals(false, ListArrayUtil.haveSameElements(a, b));
+        assertEquals(false, ListArrayUtil.haveSameElements(b, a));
+        
+        a = new ArrayList();
+        a.add(-1.0);
+        a.add("2.0");
+        a.add(5.0);
+        a.add("1.0");
+        assertEquals(false, ListArrayUtil.haveSameElements(a, b));
+        assertEquals(false, ListArrayUtil.haveSameElements(b, a));
+        
+        a = new ArrayList();
+        b = new ArrayList();
+        a.add(-1.0);
+        a.add("2.0");
+        a.add(5.0);
+        b.add(-1.0);
+        b.add(2.0);
+        b.add(5.0);
+        assertEquals(false, ListArrayUtil.haveSameElements(a, b));
+        assertEquals(false, ListArrayUtil.haveSameElements(b, a));
+    }
 }

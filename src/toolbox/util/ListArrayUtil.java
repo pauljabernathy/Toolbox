@@ -16,6 +16,10 @@ import toolbox.Constants;
  */
 public class ListArrayUtil {
     
+    public static final String DEFAULT_LIST_TO_STRING_OPEN = "< ";
+    public static final String DEFAULT_LIST_TO_STRING_CLOSE = " >";
+    public static final String DEFAULT_LIST_TO_STRING_SEP = ", ";
+    
     public static void showList(List input) {
         if(input == null) {
             return;
@@ -26,15 +30,62 @@ public class ListArrayUtil {
     }
     
     public static String listToString(List input) {
-        if(input == null || input.isEmpty()) {
-            return "";
+        return listToString(input, DEFAULT_LIST_TO_STRING_SEP);
+    }
+    
+    public static String listToString(List input, String sep) {
+        /*if(input == null || input.isEmpty()) {
+            return ListArrayUtil.DEFAULT_LIST_TO_STRING_OPEN + " " + ListArrayUtil.DEFAULT_LIST_TO_STRING_CLOSE;
+        }
+        if(sep == null) {
+            sep = DEFAULT_LIST_TO_STRING_SEP;
+        }
+        if(input.size() == 1) {
+            return DEFAULT_LIST_TO_STRING_OPEN + input.get(0) + DEFAULT_LIST_TO_STRING_CLOSE;
         }
         StringBuilder sb = new StringBuilder();
-        for(Object current : input) {
-            sb.append(current.toString()).append(" ");
+        sb.append(DEFAULT_LIST_TO_STRING_OPEN);
+        for(int i = 0; i < input.size() - 1; i++) {
+            Object current = input.get(i);
+            sb.append(current.toString()).append(sep);
         }
+        sb.append(input.get(input.size() - 1));
+        sb.append(DEFAULT_LIST_TO_STRING_CLOSE);
+        return sb.toString();*/
+        return listToString(input, sep, DEFAULT_LIST_TO_STRING_OPEN, DEFAULT_LIST_TO_STRING_CLOSE);
+    }
+    
+    public static String listToString(List input, String sep, String open, String close) {
+        if(open == null) {
+            open = DEFAULT_LIST_TO_STRING_OPEN;
+        }
+        if(close == null) {
+            close = DEFAULT_LIST_TO_STRING_CLOSE;
+        }
+        if(input == null || input.isEmpty()) {
+            return open + " " + close;
+        }
+        if(sep == null) {
+            sep = DEFAULT_LIST_TO_STRING_SEP;
+        }
+        if(input.size() == 1) {
+            return open + input.get(0) + close;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(open);
+        for(int i = 0; i < input.size() - 1; i++) {
+            Object current = input.get(i);
+            sb.append(current.toString()).append(sep);
+        }
+        sb.append(input.get(input.size() - 1));
+        sb.append(close);
         return sb.toString();
     }
+    //TODO:  remove this
+    /**
+     * @deprecated 
+     * @param a 
+     */
     public static void showArray(int[] a) {
         if(a == null) {
             return;
@@ -93,6 +144,18 @@ public class ListArrayUtil {
             if(value != null && current != null && current.equals(value)) {
                 return true;
             } else if(value == null && current == null) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public static boolean contains(int[] array, int value) {
+        if(array == null || array.length == 0) {
+            return false;
+        }
+        for(int current : array) {
+            if(current == value) {
                 return true;
             }
         }
@@ -283,6 +346,94 @@ public class ListArrayUtil {
         }
     }
     
+    /**
+     * checks element by element to see if the elements in the two arrays are the same (that is, checks not just that the values from one array are in the other, but that they are in the same order)
+     * @param left
+     * @param right
+     * @return 
+     */
+    public static boolean haveSameElements(double[] left, double[] right) {
+        if(left == null && right == null) {
+            return true;
+        }
+        //if one is null but the other is not, they are different
+        if((left == null && right != null) || (left != null && right == null)) {
+            return false;
+        }
+        //if they are different sizes, they are different
+        if(left.length != right.length) {
+            return false;
+        }
+        for(int i = 0; i < left.length; i++) {
+            if(left[i] != right[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public static boolean haveSameElements(int[] left, int[] right) {
+        if(left == null && right == null) {
+            return true;
+        }
+        //if one is null but the other is not, they are different
+        if((left == null && right != null) || (left != null && right == null)) {
+            return false;
+        }
+        //if they are different sizes, they are different
+        if(left.length != right.length) {
+            return false;
+        }
+        for(int i = 0; i < left.length; i++) {
+            if(left[i] != right[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public static <T> boolean haveSameElements(T[] left, T[] right) {
+        if(left == null && right == null) {
+            return true;
+        }
+        //if one is null but the other is not, they are different
+        if((left == null && right != null) || (left != null && right == null)) {
+            return false;
+        }
+        //if they are different sizes, they are different
+        if(left.length != right.length) {
+            return false;
+        }
+        for(int i = 0; i < left.length; i++) {
+            if(!left[i].equals(right[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public static boolean haveSameElements(List left, List right) {
+        if(left == null && right == null) {
+            return true;
+        }
+        
+        //if one is null but the other is not, they are different
+        if((left == null && right != null) || (left != null && right == null)) {
+            return false;
+        }
+        //if they are different sizes, they are different
+        if(left.size() != right.size()) {
+            return false;
+        }
+        for(int i = 0; i < left.size(); i++) {
+            if((left.get(i) == null && right.get(i) != null) || !left.get(i).equals(right.get(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    //TODO:  move somewhere else!
     public static Logger getLogger(Class clazz, Level level) {
         Logger logger = Logger.getLogger(clazz);
         logger.addAppender(new ConsoleAppender(new PatternLayout(Constants.DEFAULT_LOG_FORMAT)));
