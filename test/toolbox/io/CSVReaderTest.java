@@ -42,7 +42,7 @@ public class CSVReaderTest {
     public static void setUpClass() {
         logger = Logger.getLogger(CSVReaderTest.class);
         logger.addAppender(new ConsoleAppender(new PatternLayout( Constants.DEFAULT_LOG_FORMAT)));
-        logger.setLevel(Level.INFO);
+        logger.setLevel(Level.DEBUG);
     }
     
     @AfterClass
@@ -58,11 +58,11 @@ public class CSVReaderTest {
     }
 
     @Test
-    public void testLoadFromFile() {
-        logger.info("\ntesting loadFromFile()");
+    public void testGetRowsAsLists_noColumns() {
+        logger.info("\ntesting getRowsAsLists()");
         String filename = "titanic.csv";
         //filename = "titanic.csv";
-        List<List> data = (List<List>)CSVReader.loadFromFile(filename, 10000);
+        List<List> data = (List<List>)CSVReader.getRowsAsLists(filename, 10000);
         logger.debug(data.size());
         int count = 0;
         StringBuilder sb = new StringBuilder();
@@ -73,7 +73,102 @@ public class CSVReaderTest {
             for(Object feature : features) {
                 sb.append(i++).append(" ").append(feature).append(" ");
             }
-            logger.debug(sb);
+            //logger.debug(sb);
+        }
+    }
+    
+    @Test
+    public void testGetRowsAsLists_withColumns() {
+        logger.info("\ntesting getRowsAsLists() with columns");
+        String filename = "titanic.csv";
+        //filename = "titanic.csv";
+        List<List<String>> result = null;
+        
+        try {
+            result = (List<List<String>>)CSVReader.getRowsAsLists(null, new int[] { 0, 1, 2, 5, 7, 8, 12, 13 }, 10000);
+            assertEquals(0, result.size());
+        } catch(IOException e) {
+            fail("should not have thrown IOException for null filename");
+        }
+        
+        try {
+            result = (List<List<String>>)CSVReader.getRowsAsLists("", new int[] { 0, 1, 2, 5, 7, 8, 12, 13 }, 10000);
+            assertEquals(0, result.size());
+        } catch(IOException e) {
+            fail("should not have thrown IOException for empty filename");
+        }
+        
+        //TODO:  should this throw an IOException?
+        try {
+            result = (List<List<String>>)CSVReader.getRowsAsLists("filethatdoesnotexist", new int[] { 0, 1, 2, 5, 7, 8, 12, 13 }, 10000);
+            fail("failed to throw an IOException for non existent file");
+        } catch(IOException e) {
+            logger.debug("correctly threw IOException for non existent file");
+        }
+        
+        int numLinesToRead = -1;
+        try {
+            result = (List<List<String>>)CSVReader.getRowsAsLists(filename, new int[] { 0, 1, 2, 5, 7, 8, 12, 13 }, numLinesToRead);
+            assertEquals(0, result.size());
+        } catch(IOException e) {
+            logger.error(e.getClass() + " for  getRowsAsLists(filename, new int[] { 0, 1, 2, 5, 7, 8, 12, 13 }, " + numLinesToRead + "):  " + e.getMessage());
+        }
+        
+        numLinesToRead = 0;
+        try {
+            result = (List<List<String>>)CSVReader.getRowsAsLists(filename, new int[] { 0, 1, 2, 5, 7, 8, 12, 13 }, numLinesToRead);
+            assertEquals(numLinesToRead, result.size());
+        } catch(IOException e) {
+            logger.error(e.getClass() + " for  getRowsAsLists(filename, new int[] { 0, 1, 2, 5, 7, 8, 12, 13 }, " + numLinesToRead + "):  " + e.getMessage());
+        }
+        
+        numLinesToRead = 25;
+        try {
+            result = (List<List<String>>)CSVReader.getRowsAsLists(filename, new int[] { 1, 2, 5, 6, 7, 8, 10, 12, 13 }, 25);
+            assertEquals(numLinesToRead, result.size());
+            assertEquals(9, result.get(0).size());
+            StringBuilder sb = new StringBuilder();
+            int count = 0;
+            for(List features : result) {
+                sb = new StringBuilder();
+                sb.append(count++).append(" ");
+                int i = 0;
+                for(Object feature : features) {
+                    sb./*append(i++).*/append(" ").append(feature).append(" ");
+                }
+                logger.debug(sb);
+            }
+        } catch(IOException e) {
+            logger.error(e.getClass() + " for  getRowsAsLists(filename, new int[] { 0, 1, 2, 5, 7, 8, 12, 13 }, " + numLinesToRead + "):  " + e.getMessage());
+        }
+        
+        numLinesToRead = 10000;
+        try {
+            result = (List<List<String>>)CSVReader.getRowsAsLists(filename, new int[] { 0, 1, 2, 5, 7, 8, 12, 13 }, numLinesToRead);
+            assertEquals(891, result.size());
+            assertEquals(8, result.get(0).size());
+            int count = 0;
+            StringBuilder sb = new StringBuilder();
+            for(List features : result) {
+                sb = new StringBuilder();
+                sb.append(count++).append(" ");
+                int i = 0;
+                for(Object feature : features) {
+                    sb.append(i++).append(" ").append(feature).append(" ");
+                }
+                //logger.debug(sb);
+            }
+        } catch(IOException e) {
+            logger.error(e.getClass() + " for  getRowsAsLists(filename, new int[] { 0, 1, 2, 5, 7, 8, 12, 13 }, " + numLinesToRead + "):  " + e.getMessage());
+        }
+        
+        numLinesToRead = 10000;
+        try {
+            result = (List<List<String>>)CSVReader.getRowsAsLists(filename, new int[] { 0, 1, 2, 5, 7, 8, 12, 13, 45 }, numLinesToRead);
+            assertEquals(891, result.size());
+            assertEquals(8, result.get(0).size());
+        } catch(IOException e) {
+            logger.error(e.getClass() + " for  getRowsAsLists(filename, new int[] { 0, 1, 2, 5, 7, 8, 12, 13 }, " + numLinesToRead + "):  " + e.getMessage());
         }
     }
 
@@ -197,6 +292,25 @@ public class CSVReaderTest {
     public void testGetSingleColumn() {
         logger.info("\ntesting getSingleColumn()");
         DataList<String> result = null;
+        
+        try {
+            result = CSVReader.getSingleColumn("titanic.csv", 1, ",");
+            assertEquals(891, result.size());
+            for(int i = 0; i < 5; i++) {
+                logger.debug(result.get(i));
+            }
+            assertEquals("0", result.get(0));
+            assertEquals("1", result.get(1));
+            assertEquals("1", result.get(2));
+            assertEquals("1", result.get(3));
+            assertEquals("0", result.get(4));
+            assertEquals("0", result.get(5));
+            
+            assertEquals("0", result.get(886));
+            assertEquals("1", result.get(887));
+        } catch(IOException e) {
+            fail(e.getClass() + " in testGetSingleColumn():  " + e.getMessage());
+        }
         
         try {
             result = CSVReader.getSingleColumn("titanic.csv", 2, ",");

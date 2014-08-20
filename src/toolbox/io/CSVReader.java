@@ -19,6 +19,7 @@ import toolbox.information.Shannon;
 
 //import toolbox.stats.DataList;
 import toolbox.stats.*;
+import toolbox.util.ListArrayUtil;
 
 /**
  *
@@ -27,7 +28,7 @@ import toolbox.stats.*;
 public class CSVReader {
 
     
-    public static List<? extends List> loadFromFile(String filename, int maxLines) {
+    public static List<? extends List> getRowsAsLists(String filename, int maxLines) {
         List<ArrayList> result = new ArrayList<ArrayList>();
         int lineNum = -1;
         String line = "";
@@ -58,6 +59,59 @@ public class CSVReader {
         //System.out.println("leaving loadFile(" + filename + ") at " + new Date());
         return result;
     }
+    
+    public static List<List<String>> getRowsAsLists(String filename, int[] columns, int maxLines) throws IOException {
+        List<List<String>> result = new ArrayList<List<String>>();
+        if(filename == null || filename.equals("")) {
+            return result;
+        }
+        int lineNum = 0;
+        String line = "";
+        //try {
+            BufferedReader reader = new BufferedReader(new FileReader(filename));
+            if (reader.ready()) {
+                reader.readLine();
+            }
+            while (reader.ready() & lineNum < maxLines) {
+                //lineNum++;
+                line = reader.readLine();
+                String[] array = line.split(Constants.DEFAULT_SEPARATOR);
+                if (array == null) {
+                    System.out.println("null array at line " + lineNum + ":  " + line);
+                } else if (array.length == 0) {
+                    System.out.println("empty array at line " + lineNum + ":  " + line);
+                } else {
+                    ArrayList<String> current = new ArrayList<String>();
+                    for (int i = 0; i < array.length; i++) {
+                        if(ListArrayUtil.contains(columns, i)) {
+                            current.add(array[i]);
+                        }
+                    }
+                    //TODO:  maybe an AND operation on the two arrays
+                    result.add(current);
+                }
+                lineNum++;
+            }
+        /*} catch (IOException e) {
+            System.out.println(e.getClass() + " in classify(" + filename + ") at line " + lineNum + ":  " + e.getMessage());
+        }*/
+        //System.out.println("leaving loadFile(" + filename + ") at " + new Date());
+        return result;
+    }
+    
+    /*public static List<String> getRowsAsStrings(String filename, int maxLines) throws IOException {
+        List<String> result = new ArrayList<String>();
+        BufferedReader reader = new BufferedReader(new FileReader(filename));
+        int lineCount = 0;
+        String line = "";
+        while(reader.ready() && lineCount < maxLines) {
+            line = reader.readLine();
+            if(line != null) {
+                result.add(line);
+            }
+        }
+        return result;
+    }*/
 /*
     public static ProbDist<Classification> getDistributions(String filename, int classColumn, int[] featureColumns, String columnSeparator) throws IOException {
         ProbDist<String> classDist = getClassificationDists(filename, classColumn, columnSeparator);
@@ -173,6 +227,7 @@ public class CSVReader {
         return result;
     }
 
+    //TODO: change name or move to the project that uses this
     /**
      *
      * @param filename
