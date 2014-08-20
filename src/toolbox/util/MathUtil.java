@@ -39,12 +39,33 @@ public class MathUtil {
         return s;
     }
     
-    public static Summary summary(List<Double> list) {
-        if(list == null || list.isEmpty()) {
+    public static Summary summary(List input) {
+        if(input == null || input.isEmpty()) {
             return new Summary();
+        }
+        List<Double> list = new ArrayList<Double>();
+        for(int i = 0; i < input.size(); i++) {
+            if(input.get(i) instanceof Double) {
+                list.add((Double)input.get(i));
+            } else if(input.get(i) instanceof Integer) {
+                //list.add(new Double(input.get(i)));
+                Integer value = (Integer)input.get(i);
+                list.add(new Double(value));
+            } else if(input.get(i) instanceof Long) {
+                //list.add(new Double(input.get(i)));
+                Long value = (Long)input.get(i);
+                list.add(new Double(value));
+            } else if(input.get(i) instanceof Short) {
+                //list.add(new Double(input.get(i)));
+                Short value = (Short)input.get(i);
+                list.add(new Double(value));
+            } else {
+                //dont' add it
+            }
         }
         Summary s = new Summary();
         java.util.Collections.sort(list);
+        
         s.min = list.get(0);
         if(list.size() % 2 == 1) {
             s.median = list.get(list.size() / 2);
@@ -116,6 +137,26 @@ public class MathUtil {
         int start = endPoints[0];
         int end = endPoints[1];
         double sum = 0.0;
+        for(int i = start; i <= end; i++) {
+            sum += input[i];
+        }
+        return sum;
+    }
+    
+    /**
+     * Gives the sum bounded by the (optional) endpoints.  If the endpoints are reversed, it reverses them.
+     * @param input
+     * @param endPoints
+     * @return 
+     */
+    public static int sum(int[] input, int...endPoints) {
+        if(input == null || input.length == 0) {
+            return 0;
+        }
+        endPoints = checkEndPoints(0, input.length - 1, endPoints);
+        int start = endPoints[0];
+        int end = endPoints[1];
+        int sum = 0;
         for(int i = start; i <= end; i++) {
             sum += input[i];
         }
@@ -396,7 +437,7 @@ public class MathUtil {
         return Math.sqrt(sum / (double)(squaredDiffs.size() - 1));
      }
      
-     protected static int[] checkEndPoints(int defaultLower, int defaultUpper, int...endPoints) {
+     public static int[] checkEndPoints(int defaultLower, int defaultUpper, int...endPoints) {
         //int[] result = new int[] { 0, 1 };
         int lower = defaultLower;
         int upper = defaultUpper;
@@ -440,5 +481,50 @@ public class MathUtil {
             lower = temp;
         }
         return new int[] { lower, upper };
+    }
+    
+    public static double setDecimalPlaces(double amount, int places) {
+        if(places < 1) {
+            return amount;
+        }
+        return (double)((int)(amount * Math.pow(10, places))) / Math.pow(10, places);
+    }
+    
+    public static int[] seqInt(int start, int end) {
+        int length = Math.abs(end - start) + 1;
+        int[] result = new int[length];
+        if(start < end) {
+            for(int i = 0; i < length; i++) {
+                result[i] = i + start;
+            }
+        } else if(start == end){
+            result = new int[] { start };
+        } else {
+            for(int i = length - 1; i >= 0; i--) {
+                result[i] = start - i;
+            }
+        }
+        return result;
+    }
+    
+    public static int[] seqInt(int start, int end, int increment) {
+        return null;
+    }
+    
+    public static Integer[] seqInteger(int start, int end) {
+        int length = Math.abs(end - start) + 1;
+        Integer[] result = new Integer[length];
+        if(start < end) {
+            for(int i = 0; i < length; i++) {
+                result[i] = i + start;
+            }
+        } else if(start == end){
+            result = new Integer[] { start };
+        } else {
+            for(int i = length - 1; i >= 0; i--) {
+                result[i] = start - i;
+            }
+        }
+        return result;
     }
 }

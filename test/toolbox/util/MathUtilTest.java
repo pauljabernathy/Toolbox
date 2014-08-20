@@ -170,15 +170,54 @@ public class MathUtilTest {
         assertEquals(2.0, MathUtil.sum(input, 1, 1), 0.0);
         assertEquals(5.0, MathUtil.sum(input, 1, 2), 0.0);
         assertEquals(9.0, MathUtil.sum(input, 1, 3), 0.0);
-        assertEquals(9.0, MathUtil.sum(input, 1, 4), 0.0);
         
+        //with indeces out of bounds
+        assertEquals(9.0, MathUtil.sum(input, 1, 4), 0.0);
         assertEquals(9.0, MathUtil.sum(input, 4, 1), 0.0);
+        
         
         input = new double[] { 1.3310000000000004, 1.3310000000000004, 1.3310000000000004, 1.3310000000000004 };
         double[] cumBins = MathUtil.cumProd(input, true);
         logger.debug(ListArrayUtil.arrayToString(cumBins));
         int regularContribution = 1;
         logger.debug(cumBins[0] + regularContribution * MathUtil.sum(cumBins, 1, cumBins.length - 1));
+    }
+    
+    @Test
+    public void testSum_int_array() {
+        logger.info("\ntesting sum(int[] input, int...endPoints)");
+        int[] input = null;
+        assertEquals(0, MathUtil.sum(input));
+        assertEquals(0, MathUtil.sum(input, 0));
+        assertEquals(0, MathUtil.sum(input, 0, 57, 3));
+        
+        input = new int[0];
+        assertEquals(0, MathUtil.sum(input));
+        assertEquals(0, MathUtil.sum(input, 0));
+        assertEquals(0, MathUtil.sum(input, 0, 57, 3));
+        
+        input = new int[] { 1, 2, 3, 4 };
+        assertEquals(10, MathUtil.sum(input), 0.0);
+        assertEquals(3, MathUtil.sum(input, 0, 1));
+        assertEquals(3, MathUtil.sum(input, 1, 0));
+        assertEquals(6, MathUtil.sum(input, 0, 2));
+        assertEquals(10, MathUtil.sum(input, 0, 3));
+        assertEquals(10, MathUtil.sum(input, 0, 4));
+        
+        assertEquals(2, MathUtil.sum(input, 1, 1));
+        assertEquals(5, MathUtil.sum(input, 1, 2));
+        assertEquals(9, MathUtil.sum(input, 1, 3));
+        assertEquals(9, MathUtil.sum(input, 3, 1));
+        
+        //with indeces out of bounds
+        assertEquals(9, MathUtil.sum(input, 4, 1));
+        assertEquals(9, MathUtil.sum(input, 1, 4));
+        assertEquals(10, MathUtil.sum(input, -8, 45));
+        assertEquals(10, MathUtil.sum(input, 45, -8));
+        
+        //binary
+        input = new int[] { 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0 };
+        assertEquals(5, MathUtil.sum(input));
     }
 
     @Test
@@ -527,5 +566,112 @@ public class MathUtilTest {
         assertEquals(1, result[1]);
         
         //TODO: more testing
+    }
+    
+    @Test
+    public void testSetDecimalPlaces() {
+        logger.info("\ntesting setDecimalPlaces()");
+        assertEquals(10.21, MathUtil.setDecimalPlaces(10.2112, 2), 0.0);
+        assertEquals(3.14159, MathUtil.setDecimalPlaces(Math.PI, 5), 0.0);
+        assertEquals(2.718, MathUtil.setDecimalPlaces(Math.E, 3), 0.0);
+        assertEquals(2.718281, MathUtil.setDecimalPlaces(Math.E, 6), 0.0);
+        //assertEquals(2.718281828459, MathUtil.setDecimalPlaces(Math.E, 12), 0.0);
+        
+        //TODO:  complete testing
+    }
+    
+    @Test
+    public void testSeqInt_noIncrement() {
+        logger.info("\ntesting seqInt");
+        int[] result = null;
+        
+        //with start == end --> length 1
+        result = MathUtil.seqInt(0, 0);
+        assertEquals(1, result.length);
+        assertEquals(true, ListArrayUtil.haveSameElements(result, new int[] { 0 }));
+        result = MathUtil.seqInt(4, 4);
+        assertEquals(1, result.length);
+        assertEquals(true, ListArrayUtil.haveSameElements(result, new int[] { 4 }));
+        
+        //with start less than end
+        result = MathUtil.seqInt(0, 1);
+        assertEquals(2, result.length);
+        assertEquals(true, ListArrayUtil.haveSameElements(result, new int[] { 0, 1 }));
+        
+        result = MathUtil.seqInt(2, 5);
+        assertEquals(4, result.length);
+        assertEquals(true, ListArrayUtil.haveSameElements(result, new int[] { 2, 3, 4, 5 }));
+        
+        result = MathUtil.seqInt(-7, -4);
+        assertEquals(4, result.length);
+        assertEquals(true, ListArrayUtil.haveSameElements(result, new int[] { -7, -6, -5, -4 }));
+        
+        result = MathUtil.seqInt(-7, 2);
+        assertEquals(10, result.length);
+        assertEquals(true, ListArrayUtil.haveSameElements(result, new int[] { -7, -6, -5, -4, -3, -2, -1, 0, 1, 2 }));
+        
+        //now try start greater than end
+        result = MathUtil.seqInt(5, 2);
+        assertEquals(4, result.length);
+        //logger.debug(ListArrayUtil.arrayToString(result));
+        assertEquals(true, ListArrayUtil.haveSameElements(result, new int[] { 5, 4, 3, 2 }));
+        
+        result = MathUtil.seqInt(5, -2);
+        assertEquals(8, result.length);
+        //logger.debug(ListArrayUtil.arrayToString(result));
+        assertEquals(true, ListArrayUtil.haveSameElements(result, new int[] { 5, 4, 3, 2, 1, 0, -1, -2 }));
+        
+        result = MathUtil.seqInt(-2, -5);
+        assertEquals(4, result.length);
+        assertEquals(true, ListArrayUtil.haveSameElements(result, new int[] { -2, -3, -4, -5 }));
+    }
+    
+    @Test
+    public void testSeqInteger() {
+        logger.info("\ntesting seqInteger()");
+        
+        Integer[] result = null;
+        
+        //with start == end --> length 1
+        result = MathUtil.seqInteger(0, 0);
+        assertEquals(1, result.length);
+        assertEquals(true, ListArrayUtil.haveSameElements(result, new Integer[] { 0 }));
+        result = MathUtil.seqInteger(4, 4);
+        assertEquals(1, result.length);
+        assertEquals(true, ListArrayUtil.haveSameElements(result, new Integer[] { 4 }));
+        
+        //with start less than end
+        result = MathUtil.seqInteger(0, 1);
+        assertEquals(2, result.length);
+        assertEquals(true, ListArrayUtil.haveSameElements(result, new Integer[] { 0, 1 }));
+        
+        result = MathUtil.seqInteger(2, 5);
+        assertEquals(4, result.length);
+        assertEquals(true, ListArrayUtil.haveSameElements(result, new Integer[] { 2, 3, 4, 5 }));
+        
+        result = MathUtil.seqInteger(-7, -4);
+        assertEquals(4, result.length);
+        assertEquals(true, ListArrayUtil.haveSameElements(result, new Integer[] { -7, -6, -5, -4 }));
+        
+        result = MathUtil.seqInteger(-7, 2);
+        assertEquals(10, result.length);
+        assertEquals(true, ListArrayUtil.haveSameElements(result, new Integer[] { -7, -6, -5, -4, -3, -2, -1, 0, 1, 2 }));
+        
+        //now try start greater than end
+        result = MathUtil.seqInteger(5, 2);
+        assertEquals(4, result.length);
+        //logger.debug(ListArrayUtil.arrayToString(result));
+        assertEquals(true, ListArrayUtil.haveSameElements(result, new Integer[] { 5, 4, 3, 2 }));
+        
+        result = MathUtil.seqInteger(5, -2);
+        assertEquals(8, result.length);
+        //logger.debug(ListArrayUtil.arrayToString(result));
+        assertEquals(true, ListArrayUtil.haveSameElements(result, new Integer[] { 5, 4, 3, 2, 1, 0, -1, -2 }));
+        
+        result = MathUtil.seqInteger(-2, -5);
+        assertEquals(4, result.length);
+        assertEquals(true, ListArrayUtil.haveSameElements(result, new Integer[] { -2, -3, -4, -5 }));
+        
+        logger.debug(ListArrayUtil.arrayToString(MathUtil.seqInteger(0, 40)));
     }
 }
