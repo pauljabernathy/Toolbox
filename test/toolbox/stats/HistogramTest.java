@@ -63,11 +63,62 @@ public class HistogramTest {
     
     @Test
     public void testConstructor_List() {
+        logger.info("\ntesting Constructor_List()");
         
+        List<String> list = null;
+        Histogram instance = new Histogram(list);
+        assertEquals(0, instance.size());
+        
+        list = new ArrayList<String>();
+        instance = new Histogram(list);
+        assertEquals(0, instance.size());
+        
+        list.add("one");
+        list.add("one");
+        list.add("two");
+        instance = new Histogram(list);
+        assertEquals(2, instance.size());
+        
+        try {
+            retirement.InvestmentCalculator calc = new retirement.InvestmentCalculator();
+            List<Double> ratios = calc.getRatios("sp500.csv");
+            instance = new Histogram(ratios);
+            logger.debug(instance.getEntropy());
+            if(instance.getEntropy() == 1.0) { 
+                fail("entropy was 1");
+            }
+            List<Double> values = instance.getValues();
+            for(int i = 0; i < 10; i++) {
+                logger.debug(values.get(i));
+            }
+            
+        } catch(java.io.IOException e) {
+            logger.error(e.getClass() + " in testConstructor_List():  " + e.getMessage());
+        }
     }
     
     @Test
-    public void testConstructor_array_array() {
+    public void testConstructor_int_array() {
+        logger.info("\ntesting Histogram(int[] data)");
+        int[] data = null;
+        Histogram instance = null;
+        instance = new Histogram(data);
+        assertEquals(0, instance.size());
+        
+        data = new int[0];
+        instance = new Histogram(data);
+        assertEquals(0, instance.size());
+        
+        data = new int[] { 1, 2, 3, 3, 4, 4, 2, 4, 3, 4 };
+        instance = new Histogram(data);
+        assertEquals(4, instance.size());
+        assertEquals(1, instance.getCountOf(1));
+        assertEquals(2, instance.getCountOf(2));
+        assertEquals(3, instance.getCountOf(3));
+        assertEquals(4, instance.getCountOf(4));
+    }
+    @Test
+    public void testConstructor_generic_array_array() {
         logger.info("\ntesting constructor Histogram(T[] values, int[] counts)");
         Histogram instance = null;
         try {
@@ -140,10 +191,46 @@ public class HistogramTest {
     }
     
     @Test
+    public void testClear() {
+        logger.info("\ntesting clear()");
+        List<String> data = null;
+        Histogram instance = new Histogram(data);
+        assertEquals(0, instance.size());
+        instance.clear();
+        assertEquals(0, instance.size());
+        
+        data = new ArrayList<String>();
+        instance.setDataList(data);
+        assertEquals(0, instance.size());
+        instance.clear();
+        assertEquals(0, instance.size());
+        
+        data.add("a");
+        data.add("b");
+        data.add("c");
+        data.add("b");
+        instance.setDataList(data);
+        assertEquals(3, instance.size());
+        instance.clear();
+        assertEquals(0, instance.size());
+        
+        String[] dataStr = new String[] { "a", "b", "c", "b" };
+        instance.setDataList(dataStr);
+        assertEquals(3, instance.size());
+        instance.clear();
+        assertEquals(0, instance.size());
+    }
+    
+    @Test
     public void testSetDataList() {
         logger.info("\ntesting setDataList()");
         Histogram instance = new Histogram();
-        DataList<Double> d = new DataList<Double>();
+        assertEquals(0, instance.getValues().size());
+        DataList<Double> d = null;
+        instance.setDataList(d);
+        assertEquals(0, instance.getValues().size());
+        
+        d = new DataList<Double>();
         d.add(5.0).add(2.0).add(5.0);
         instance.setDataList(d);
         List<Double> values = instance.getValues();
@@ -158,6 +245,10 @@ public class HistogramTest {
         List<Integer> counts = instance.getCounts();
         assertEquals(2, (int)counts.get(i));
         //instance.display();
+        
+        ArrayList<String> empty = null;
+        instance.setDataList(empty);
+        assertEquals(0, instance.size());    
         
         ArrayList<ArrayList<Double>> d2 = new ArrayList<ArrayList<Double>>();
         ArrayList<Double> l1 = new ArrayList<Double>();
@@ -203,6 +294,7 @@ public class HistogramTest {
         assert(instance.toString().startsWith("Histogram for 5 and 2"));
         logger.debug("\n" + instance.toString());
     }
+    
     @Test
     public void testGetProbDist() {
         logger.info("\ntesting getProbDist()");
@@ -232,6 +324,57 @@ public class HistogramTest {
         } catch(ProbabilityException e) {
             logger.error(e.getClass() + " in testGetEntropy():  " + e.getMessage());
         }
+         
+         try {
+            retirement.InvestmentCalculator calc = new retirement.InvestmentCalculator();
+            List<Double> ratios = calc.getRatios("sp500.csv");
+            instance = new Histogram(ratios);
+            logger.debug(instance.getEntropy());
+            if(instance.getEntropy() == 1.0) { 
+                fail("entropy was 1");
+            }
+            values = instance.getValues();
+            
+            for(int i = 0; i < 10; i++) {
+                logger.debug(values.get(i));
+            }
+            logger.debug("\n");
+            ProbDist<Double> p = instance.getProbDist();
+            List<Double> v = p.getValues();
+            for(int i = 0; i < 10; i++) {
+                logger.debug(v.get(i));
+            }
+        } catch(java.io.IOException e) {
+            logger.error(e.getClass() + " in testConstructor_List():  " + e.getMessage());
+        }
+    }
+    
+    @Test
+    public void testGetCountOf() {
+        logger.info("\ntesting getCountOf()");
+        Histogram instance = new Histogram();
+        assertEquals(0, instance.getCountOf("some string that isn't there"));
+        assertEquals(0, instance.getCountOf(1));
+        
+        String[] strings = new String[] { "a", "a", "b", "a", "b", "c" };
+        instance = new Histogram(strings);
+        assertEquals(3, instance.getCountOf("a"));
+        assertEquals(2, instance.getCountOf("b"));
+        assertEquals(1, instance.getCountOf("c"));
+        assertEquals(0, instance.getCountOf("some string that isn't there"));
+        assertEquals(0, instance.getCountOf(1));
+        
+        List data = new ArrayList();
+        data.add("a");
+        data.add(2);
+        data.add("a");
+        instance = new Histogram(data);
+        assertEquals(2, instance.getCountOf("a"));
+        assertEquals(0, instance.getCountOf("b"));
+        assertEquals(0, instance.getCountOf("c"));
+        assertEquals(0, instance.getCountOf("some string that isn't there"));
+        assertEquals(0, instance.getCountOf(1));
+        assertEquals(1, instance.getCountOf(2));
     }
     
     @Test

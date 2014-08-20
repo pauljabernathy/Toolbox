@@ -22,9 +22,7 @@ public class Histogram {
     private int sum;
     
     public Histogram() {
-        this.values = new ArrayList();
-        this.counts = new ArrayList<Integer>();
-        this.probabilities = new ArrayList<Double>();
+        this.clear();
         this.label = "";
     }
     
@@ -34,11 +32,32 @@ public class Histogram {
     }
     
     public Histogram(DataList data) {
+        this();
         this.setDataList(data);
     }
     
     public Histogram(List data) {
+        this();
         this.setDataList(data);
+    }
+    
+    public Histogram(int[] data) {
+        if(data == null) {
+            this.clear();
+            return;
+        }
+        this.values = new ArrayList<Integer>();
+        this.counts = new ArrayList<Integer>();
+        for(int i = 0; i < data.length; i++) {
+            if(values.contains(data[i])) {
+                int index = values.indexOf(data[i]);
+                counts.set(index, counts.get(index) + 1);
+            } else {
+                values.add(data[i]);
+                counts.add(1);
+            }
+        }
+        this.updatePercents();
     }
     
     public <T> Histogram(T[] values, int[] counts) throws ProbabilityException {
@@ -59,9 +78,16 @@ public class Histogram {
         this.updatePercents();
     }
     
+    public void clear() {
+        this.values = new ArrayList();
+        this.counts = new ArrayList<Integer>();
+        this.probabilities = new ArrayList<Double>();
+    }
+    
     public <T> void setDataList(T[] data) {
         if(data == null) {
-            return;//?
+            this.clear();
+            return;
         }
         this.values = new ArrayList<T>();
         this.counts = new ArrayList<Integer>();
@@ -79,7 +105,8 @@ public class Histogram {
     
     public <T> void setDataList(DataList<T> data) {
         if(data == null) {
-            return;//?
+            this.clear();
+            return;
         }
         this.values = new ArrayList<T>();
         this.counts = new ArrayList<Integer>();
@@ -97,7 +124,8 @@ public class Histogram {
     
     public <T> void setDataList(List<T> data) {
         if(data == null) {
-            return;//?
+            this.clear();
+            return;
         }
         this.values = new ArrayList<T>();
         this.counts = new ArrayList<Integer>();
@@ -177,6 +205,16 @@ public class Histogram {
     
     public List<Integer> getCounts() {
         return this.counts;
+    }
+    
+    /**
+     * gives the count of the specified object
+     */
+    public int getCountOf(Object o) {
+        if(this.values == null || !this.values.contains(o)) {
+            return 0;
+        }       
+        return this.counts.get(this.values.indexOf(o));
     }
     
     public List<Double> getProbabilities() {
