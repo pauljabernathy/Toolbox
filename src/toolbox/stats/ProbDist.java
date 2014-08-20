@@ -81,7 +81,7 @@ public class ProbDist<T> {
             this.setProbabilities(probs);
         }
     }
-    
+    //TODO:  should probably throw a ProbabilityException for bad inputs
     public boolean add(T value, double probability) {
         //TODO:  value.equals("") does not work with generics
         if(value == null || value.equals("") || probability <= 0.0 || probability >= 1.0) {
@@ -120,10 +120,18 @@ public class ProbDist<T> {
         //TODO:  some kind of synchronization?
         this.getValues().add(value);
         this.getProbabilities().add(probability);
-        if(this.cumProbs.size() > 0) {
+        //the below block was apparently causing a situation where when you start to add, it does not update the prob of UNKNOWN at the beginning
+        /**if(this.cumProbs.size() > 0) {
             this.cumProbs.add(probability + this.cumProbs.get(this.cumProbs.size() - 1));
         } else {
             this.cumProbs.add(probability);
+        }/**/
+        //find out if we just added the first non UNKNOWN element
+        if(this.probabilities.size() == 2 && this.getValues().indexOf(UNKNOWN) > -1) {
+            this.cumProbs = new ArrayList<Double>();
+            this.cumProbs.add(probability);
+        } else {
+            this.cumProbs.add(probability + this.cumProbs.get(this.cumProbs.size() - 1));
         }
         return true;
     }
@@ -184,11 +192,13 @@ public class ProbDist<T> {
         return probabilities;
     }
 
+    //TODO:  check for normalized
     public void setProbabilities(List<Double> probabilities) throws ProbabilityException {
         if(probabilities == null || probabilities.size() == 0 || probabilities.size() != this.getValues().size()) {
             throw new ProbabilityException("The number of probabilities must match the number of values.");
         }
-        this.probabilities = (ArrayList)probabilities;
+        this.probabilities = (ArrayList<Double>)probabilities;
+        this.cumProbs = (ArrayList<Double>)getCumProbsFromProbs(this.probabilities);
     }
     
     public List<Double> getCumProbs() {
@@ -287,6 +297,14 @@ public class ProbDist<T> {
      */
     public static double getMutualInformation(ProbDist x, ProbDist y) {
         return x.getEntropy() + y.getEntropy() - ProbDist.getJointDistribution(x, y).getEntropy();
+    }
+    
+    public boolean isEmpty() {
+        if(this.values == null || this.values.isEmpty() || (this.values.size() == 1 && this.values.get(0) == null)) {
+            return true;
+        } else {
+            return false;
+        }
     }
     
     public String getLabel() {

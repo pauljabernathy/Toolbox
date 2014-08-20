@@ -82,6 +82,29 @@ public class ProbDistTest {
         assertEquals("A", result.get(1));
         assertEquals("B", result.get(2));
         assertEquals("C", result.get(3));
+        
+        try {
+            retirement.InvestmentCalculator calc = new retirement.InvestmentCalculator();
+            List<Double> ratios = calc.getRatios("sp500.csv");
+            Histogram hist = new Histogram(ratios);
+            logger.debug(hist.getEntropy());
+            if(hist.getEntropy() == 1.0) { 
+                fail("entropy was 1");
+            }
+            List values = hist.getValues();
+            
+            for(int i = 0; i < 10; i++) {
+                logger.debug(values.get(i));
+            }
+            logger.debug("\n");
+            ProbDist<Double> p = hist.getProbDist();
+            List<Double> v = p.getValues();
+            for(int i = 0; i < 10; i++) {
+                logger.debug(v.get(i));
+            }
+        } catch(java.io.IOException e) {
+            logger.error(e.getClass() + " in testConstructor_List():  " + e.getMessage());
+        }
     }
 
     /**
@@ -117,10 +140,18 @@ public class ProbDistTest {
     public void testAdd() {
         logger.info("\ntesting add()");
         ProbDist<String> instance = new ProbDist<String>();
+        List<Double> probs = instance.getProbabilities();
+        logger.debug("probs = " + ListArrayUtil.listToString(probs));
+        List<Double> cumprobs = instance.getCumProbs();
+        logger.debug("cumprobs = " + ListArrayUtil.listToString(cumprobs));
+        
         boolean result = false;
         logger.debug(instance.contains("Duke"));
+        assertEquals(1, probs.size());
         result = instance.add("Duke", 0.5);
         assertEquals(true, result);
+        probs = instance.getProbabilities();
+        assertEquals(2, probs.size());
         logger.debug(instance.toString());
         result = instance.add("UNC", 0.501);
         assertEquals(false, result);
@@ -130,12 +161,13 @@ public class ProbDistTest {
         assertEquals(true, result);
         logger.debug(instance.toString());
         
-        List<Double> probs = instance.getProbabilities();
+        probs = instance.getProbabilities();
         assertEquals(2, probs.size());
         assertEquals(.5, probs.get(0), 0.0);
         assertEquals(.5, probs.get(1), 0.0);
         
-        List<Double> cumprobs = instance.getCumProbs();
+        cumprobs = instance.getCumProbs();
+        logger.debug("cumprobs = " + ListArrayUtil.listToString(cumprobs));
         assertEquals(2, cumprobs.size());
         assertEquals(.5, cumprobs.get(0), 0.0);
         assertEquals(1.0, cumprobs.get(1), 0.0);
@@ -240,6 +272,57 @@ public class ProbDistTest {
             logger.debug(hist.toString());
         } catch(ProbabilityException e) {
             logger.error("ProbabilityException trying to make a histogram in testGetRandomValue():  " + e.getMessage());
+        }
+        
+        try {
+            retirement.InvestmentCalculator calc = new retirement.InvestmentCalculator();
+            List<Double> ratios = calc.getRatios("sp500.csv");
+            List<Double> ratios2 = new ArrayList<Double>();
+            for(int i = 0; i < 10; i++) {
+                ratios2.add(ratios.get(i));
+            }
+            Histogram hist = new Histogram(ratios2);
+            logger.debug(hist.getEntropy());
+            if(hist.getEntropy() == 1.0) { 
+                fail("entropy was 1");
+            }
+            List values = hist.getValues();
+            
+            for(int i = 0; i < 10; i++) {
+                logger.debug(values.get(i));
+            }
+            logger.debug("\n");
+            ProbDist<Double> p = hist.getProbDist();
+            List<Double> v = p.getValues();
+            for(int i = 0; i < 10; i++) {
+                logger.debug(v.get(i));
+            }
+            logger.debug("\n");
+            for(int i = 0; i < 10; i++) {
+                logger.debug("p.getRandomValue():  " + p.getRandomValue());
+                logger.debug("p.getRandomValue()2:  " + p.getRandomValue2());
+            }
+            
+            p = new ProbDist<Double>();
+            p.add(1.01140456182473, .1);
+            p.add(1.004747774480712, .1);
+            p.add(1.0029533372711164, .1);
+            p.add(1.0058892815076559, .1);
+            p.add(0.9970725995316161, .1);
+            p.add(1.0035231943628888, .1);
+            p.add(0.9806904622586309, .1);
+            p.add(0.9946300715990454, .1);
+            p.add(1.0029994001199758, .1);
+            p.add(1.0083732057416268, .1);
+            
+            v = p.getValues();
+            logger.debug("\n");
+            for(int i = 0; i < 10; i++) {
+                logger.debug("p.getRandomValue():  " + p.getRandomValue());
+                logger.debug("p.getRandomValue()2:  " + p.getRandomValue2());
+            }
+        } catch(java.io.IOException e) {
+            logger.error(e.getClass() + " in testConstructor_List():  " + e.getMessage());
         }
     }
     
@@ -581,5 +664,16 @@ public class ProbDistTest {
         mains.add("Maine Lobster", .4);
         
         logger.debug(ProbDist.getMutualInformation(fruit, mains));
+    }
+    
+    @Test
+    public void testIsEmpty() {
+        logger.info("\ntesting isEmpty()");
+        ProbDist<String> instance = new ProbDist<String>();
+        assertEquals(true, instance.isEmpty());
+        instance.add("a", 1.1);
+        assertEquals(true, instance.isEmpty());
+        instance.add("a", .3);
+        assertEquals(false, instance.isEmpty());
     }
 }
