@@ -433,6 +433,61 @@ public class ListArrayUtil {
         return true;
     }
     
+    public static int findNumDiffs(List a, List b) {
+        //if both are null and/or empty, return 0
+        if(a == null && b == null) {
+            return 0;
+        } else if(a == null && b != null) {
+            return b.size();
+        } else if(b == null && a != null) {
+            return a.size();
+        }
+        int numDiffs = 0;
+        for(int i = 0; i < a.size() && i < b.size(); i++) {
+            if(a.get(i).getClass() == b.get(i).getClass()) {
+                if(!a.get(i).equals(b.get(i))) {
+                    numDiffs++;
+                }
+            }
+        }
+        if(a.size() < b.size()) {
+            for(int i = a.size(); i < b.size(); i++) {
+                numDiffs++;
+            }
+        } else if(a.size() > b.size()) {
+            for(int i = b.size(); i < a.size(); i++) {
+                numDiffs++;
+            }
+        }
+        return numDiffs;
+    }
+    
+    public static int findNumDiffs(int[] a, int[] b) {
+        int numDiffs = 0;
+        if(a == null && b == null) {
+            return 0;
+        } else if(a == null && b != null) {
+            return b.length;
+        } else if(b == null && a != null) {
+            return a.length;
+        }
+        for(int i = 0; i < a.length && i < b.length; i++) {
+            if(a[i] != b[i]) {
+                numDiffs++;
+            }
+        }
+        if(a.length < b.length) {
+            for(int i = a.length; i < b.length; i++) {
+                numDiffs++;
+            }
+        } else if(a.length > b.length) {
+            for(int i = b.length; i < a.length; i++) {
+                numDiffs++;
+            }
+        }
+        return numDiffs;
+    }
+    
     //TODO:  move somewhere else!
     public static Logger getLogger(Class clazz, Level level) {
         Logger logger = Logger.getLogger(clazz);

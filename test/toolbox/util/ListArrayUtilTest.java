@@ -527,4 +527,145 @@ public class ListArrayUtilTest {
         assertEquals(false, ListArrayUtil.haveSameElements(a, b));
         assertEquals(false, ListArrayUtil.haveSameElements(b, a));
     }
+    
+    @Test
+    public void testFindNumDiffs_List_List() {
+        logger.info("\ntesting findNumDiffs(List<Double> a, List<Double> b)");
+        List a = null;
+        List b = null;
+        assertEquals(0, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(0, ListArrayUtil.findNumDiffs(b, a));
+        a = new ArrayList();
+        assertEquals(0, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(0, ListArrayUtil.findNumDiffs(b, a));
+        b = new ArrayList();
+        assertEquals(0, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(0, ListArrayUtil.findNumDiffs(b, a));
+        a = null;
+        assertEquals(0, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(0, ListArrayUtil.findNumDiffs(b, a));
+        
+        b.add("hi");
+        b.add("there");
+        assertEquals(2, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(2, ListArrayUtil.findNumDiffs(b, a));
+        
+        a = new ArrayList();
+        a.add("hi");
+        a.add("thar");
+        assertEquals(1, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(1, ListArrayUtil.findNumDiffs(b, a));
+        
+        a.set(1, "there");
+        assertEquals(0, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(0, ListArrayUtil.findNumDiffs(b, a));
+        
+        a.add("buddy");
+        assertEquals(1, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(1, ListArrayUtil.findNumDiffs(b, a));
+        
+        a.set(2, 2);
+        b.add(2);
+        assertEquals(0, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(0, ListArrayUtil.findNumDiffs(b, a));
+        
+        b.add(3);
+        /**a.add(3);
+        assertEquals(0, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(0, ListArrayUtil.findNumDiffs(b, a));
+        b.add(27.089);
+        a.add(27.089);
+        assertEquals(0, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(0, ListArrayUtil.findNumDiffs(b, a));
+        b.add(45l);
+        a.add(45l);
+        assertEquals(0, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(0, ListArrayUtil.findNumDiffs(b, a));*/
+        b.add(27.089);
+        b.add(45l);
+        assertEquals(3, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(3, ListArrayUtil.findNumDiffs(b, a));
+        
+        a.add(3);
+        a.add(27.089);
+        a.add(45l);
+        assertEquals(0, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(0, ListArrayUtil.findNumDiffs(b, a));
+        
+        a.add("a");
+        assertEquals(1, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(1, ListArrayUtil.findNumDiffs(b, a));
+        b.add("b");
+        
+        //a.add(new SomeClass("one", "two"));
+        //b.add(new SomeClass("one", "two"));
+        assertEquals(1, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(1, ListArrayUtil.findNumDiffs(b, a));
+        
+        a.add(new SomeClass("one", "two"));
+        b.add(new SomeClass("one", "two"));
+        logger.debug(a.equals(b));
+        assertEquals(1, ListArrayUtil.findNumDiffs(a, b));  //is 2 when there the equals method is not in SomeClass
+        assertEquals(1, ListArrayUtil.findNumDiffs(b, a));
+        /**/
+    }
+    
+    @Test
+    public void testFindNumDiffs_int_arrays() {
+        logger.info("\ntesting findNumDiffs(int[] a, int[] b)");
+        int[] a = null;
+        int[] b = null;
+        assertEquals(0, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(0, ListArrayUtil.findNumDiffs(b, a));
+        
+        a = new int[0];
+        assertEquals(0, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(0, ListArrayUtil.findNumDiffs(b, a));
+        
+        b = new int[0];
+        assertEquals(0, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(0, ListArrayUtil.findNumDiffs(b, a));
+        
+        a = null;   //redundant I suppose but won't hurt
+        assertEquals(0, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(0, ListArrayUtil.findNumDiffs(b, a));
+        
+        a = new int[] { 0 };
+        assertEquals(1, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(1, ListArrayUtil.findNumDiffs(b, a));
+        
+        b = new int[] { 0 };
+        assertEquals(0, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(0, ListArrayUtil.findNumDiffs(b, a));
+        
+        b[0] = 1;
+        assertEquals(1, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(1, ListArrayUtil.findNumDiffs(b, a));
+        
+        b = new int[] { 0, 1, 2, 3 };
+        assertEquals(3, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(3, ListArrayUtil.findNumDiffs(b, a));
+        
+        a = new int[] { -5, 2, 1, 8, 15, -27 };
+        b = new int[] { 4, 2, 1, -27, 15 };
+        assertEquals(3, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(3, ListArrayUtil.findNumDiffs(b, a));
+    }
+    
+    private class SomeClass {
+        String paramOne;
+        String paramTwo;
+        
+        public SomeClass(String paramOne, String paramTwo) {
+            this.paramOne = paramOne;
+            this.paramTwo = paramTwo;
+        }
+        
+        public boolean equals(Object other) {
+            if(other instanceof SomeClass && ((SomeClass)(other)).paramOne.equals(this.paramOne) && ((SomeClass)(other)).paramTwo.equals(this.paramTwo)) {
+                return true;
+            }
+            return false;
+        }
+    }
 }
