@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
 import toolbox.util.ListArrayUtil;
+import toolbox.util.MathUtil;
 
 /**
  *
@@ -68,10 +69,11 @@ public class Shannon {
         logger.debug("HR = " + HR);
         double HLR = new Histogram(combined).getEntropy();
         logger.debug("HLR = " + HLR);
-        return HLR / (HL + HR);     //TODO:  deal with case where HL + HR = 0
+        return HLR / (HL + HR);     //TODO:  deal with case where HL + HR = 0  HL + HR is only 0 if both are 0, right?  Then, wouldn't HLR also be 0?
+        //return (HL + HR) / HLR;     //TODO:  if HLR is 0, that means HL and HR are also 0, right?  So what would this be?  1?
     }
     
-    protected static <T> List<List<T>> getCombinedList(List<T> left, List<T> right) {
+    public static <T> List<List<T>> getCombinedList(List<T> left, List<T> right) {
         if(left == null || right == null || left.size() != right.size()) {
             return new ArrayList<List<T>>();
         }
@@ -85,5 +87,37 @@ public class Shannon {
         }
         
         return combined;
+    }
+    
+    public static <T> double getCombinedEntropy(List<T> left, List<T> right) {
+        List<List<T>> combined = getCombinedList(left, right);
+        return new Histogram(combined).getEntropy();
+    }
+    
+    /**
+     * gives the Kullback-Leibler divergence using 2 as the logarithm base
+     * @param p
+     * @param q
+     * @return
+     * @throws ProbabilityException 
+     */
+    public static double getKullbackLeiblerDivergence(ProbDist p, ProbDist q) throws ProbabilityException {
+        if(p == null || q == null || p.isEmpty() || q.isEmpty()) {
+            throw new ProbabilityException("cannot compute Kullback-Leibler divergence of a null probability distribution");
+        }
+        if(p.getProbabilities().size() != q.getProbabilities().size()) {
+            throw new ProbabilityException("probability distributions must be of the same size");
+        }
+        double result = 0.0;
+        List<Double> pProbs = p.getProbabilities();
+        List<Double> qProbs = q.getProbabilities();
+        for(int i = 0; i < pProbs.size(); i++) {
+            result += MathUtil.logBase2(pProbs.get(i) / qProbs.get(i)) * pProbs.get(i);
+        }
+        return result;
+    }
+    
+    public static double getKullbackLeiblerDivergence(List p, List q) throws ProbabilityException {
+        return getKullbackLeiblerDivergence(new Histogram(p).getProbDist(), new Histogram(q).getProbDist());
     }
 }
