@@ -491,6 +491,7 @@ public class ListArrayUtil {
     //TODO:  move somewhere else!
     public static Logger getLogger(Class clazz, Level level) {
         Logger logger = Logger.getLogger(clazz);
+        logger.removeAllAppenders();
         logger.addAppender(new ConsoleAppender(new PatternLayout(Constants.DEFAULT_LOG_FORMAT)));
         logger.setLevel(level);
         return logger;
@@ -498,6 +499,7 @@ public class ListArrayUtil {
     
     public static Logger getSameLineLogger(Class clazz, Level level) {
         Logger logger = Logger.getLogger(clazz + " same line");
+        logger.removeAllAppenders();
         logger.addAppender(new ConsoleAppender(new PatternLayout(Constants.SAME_LINE_LOG_FORMAT)));
         logger.setLevel(level);
         return logger;

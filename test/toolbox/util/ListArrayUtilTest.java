@@ -668,4 +668,13 @@ public class ListArrayUtilTest {
             return false;
         }
     }
+    
+    @Test
+    public void testGetLogger() {
+        logger.info("\ntesting getLogger");
+        Logger logger = ListArrayUtil.getLogger(MathUtil.class, Level.DEBUG);
+        logger.debug("first");
+        logger = ListArrayUtil.getLogger(MathUtil.class, Level.DEBUG);
+        logger.debug("second");     //Should only print once, not twice!
+    }
 }
