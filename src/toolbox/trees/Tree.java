@@ -67,7 +67,8 @@ public class Tree {
         }
         return result;
     }
-    
+    //TODO:  I don't like this.  You can have two completely different trees with different parents and children, but if you use setId()
+    //to se the id of one to the other's id, this function will say they are equal.
     @Override
     public boolean equals(Object o) {
         //TODO:  what if this's id is null?

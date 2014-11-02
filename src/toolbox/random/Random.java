@@ -109,7 +109,7 @@ public class Random {
         }
         return result;
     }
-    
+    //TODO:  refactor to use MathUtil.checkEndPoints
     protected static int[] checkEndPoints(int...endPoints) {
         //int[] result = new int[] { 0, 1 };
         int lower = 0;

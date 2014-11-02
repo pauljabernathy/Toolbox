@@ -120,12 +120,6 @@ public class ProbDist<T> {
         //TODO:  some kind of synchronization?
         this.getValues().add(value);
         this.getProbabilities().add(probability);
-        //the below block was apparently causing a situation where when you start to add, it does not update the prob of UNKNOWN at the beginning
-        /**if(this.cumProbs.size() > 0) {
-            this.cumProbs.add(probability + this.cumProbs.get(this.cumProbs.size() - 1));
-        } else {
-            this.cumProbs.add(probability);
-        }/**/
         //find out if we just added the first non UNKNOWN element
         if(this.probabilities.size() == 2 && this.getValues().indexOf(UNKNOWN) > -1) {
             this.cumProbs = new ArrayList<Double>();
