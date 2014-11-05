@@ -488,6 +488,33 @@ public class ListArrayUtil {
         return numDiffs;
     }
     
+    public static <T> List<T> merge(List<T> left, List<T> right) {
+        List<T> result = new ArrayList<>();
+        /*if(left == null && right == null){
+            return result;
+        } else if(left.isEmpty() && right == null) {
+            
+        } else if(left == null && right.isEmpty()) {
+            
+        } else if(left.isEmpty() && right.isEmpty()) {
+            
+        }*/
+        if(left == null || left.isEmpty()) {
+            if(right == null || right.isEmpty()) {
+                return result;
+            } else {
+                return right;
+            }
+        } else if(right == null || right.isEmpty()) {
+            if(left == null || left.isEmpty()) {
+                return result;
+            } else {
+                return right;
+            }
+        }
+        return null;
+    }
+    
     //TODO:  move somewhere else!
     public static Logger getLogger(Class clazz, Level level) {
         Logger logger = Logger.getLogger(clazz);

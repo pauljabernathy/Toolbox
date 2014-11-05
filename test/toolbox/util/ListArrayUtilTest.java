@@ -15,6 +15,7 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.ArrayList;
 import org.apache.log4j.*;
+import java.util.Arrays;
 
 /**
  *
@@ -650,6 +651,28 @@ public class ListArrayUtilTest {
         b = new int[] { 4, 2, 1, -27, 15 };
         assertEquals(3, ListArrayUtil.findNumDiffs(a, b));
         assertEquals(3, ListArrayUtil.findNumDiffs(b, a));
+    }
+    
+    @Test
+    public void testMerge() {
+        logger.info("\nteting merge()");
+        List<String> left = new ArrayList<String>();
+        List<String> right = new ArrayList<String>();
+        List<String> result = null;
+        
+        result = ListArrayUtil.merge(null, null);
+        assertEquals(0, ListArrayUtil.merge(null, null).size());
+        assertEquals(0, ListArrayUtil.merge(left, null).size());
+        assertEquals(0, ListArrayUtil.merge(null, left).size());
+        assertEquals(0, ListArrayUtil.merge(right, null).size());
+        assertEquals(0, ListArrayUtil.merge(null, right).size());
+        assertEquals(0, ListArrayUtil.merge(left, right).size());
+        assertEquals(0, ListArrayUtil.merge(right, left).size());
+        
+        left.addAll(Arrays.asList("hat", "ball", "gloves", "bat", "field"));
+        right.addAll(Arrays.asList("ball", "field", "cleats", "shin guards", "hat"));
+        result = ListArrayUtil.merge(left, right);
+        assertEquals(3, result.size());
     }
     
     private class SomeClass {
