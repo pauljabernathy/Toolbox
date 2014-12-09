@@ -150,9 +150,8 @@ public class Random {
             //replace is false, so once we select something from the input we can't select it again
             if(size > bag.size()) {
                 throw new Exception("cannot sample without replacement more elements than there are in the inuput");
-            } /*else if(size == bag.size()) {
-                //the below algorithm should work here but we can do it more quickly
-            }*/
+            }
+            //if size == bag size, the below algorithm should work here but we can do it more quickly
             for(int i = 0; i < size; i++) {
                 int index = uniformInts(size, 0, bag.size() - 1)[0];
                 result.add(bag.get(index));

@@ -34,24 +34,6 @@ public class ListArrayUtil {
     }
     
     public static String listToString(List input, String sep) {
-        /*if(input == null || input.isEmpty()) {
-            return ListArrayUtil.DEFAULT_LIST_TO_STRING_OPEN + " " + ListArrayUtil.DEFAULT_LIST_TO_STRING_CLOSE;
-        }
-        if(sep == null) {
-            sep = DEFAULT_LIST_TO_STRING_SEP;
-        }
-        if(input.size() == 1) {
-            return DEFAULT_LIST_TO_STRING_OPEN + input.get(0) + DEFAULT_LIST_TO_STRING_CLOSE;
-        }
-        StringBuilder sb = new StringBuilder();
-        sb.append(DEFAULT_LIST_TO_STRING_OPEN);
-        for(int i = 0; i < input.size() - 1; i++) {
-            Object current = input.get(i);
-            sb.append(current.toString()).append(sep);
-        }
-        sb.append(input.get(input.size() - 1));
-        sb.append(DEFAULT_LIST_TO_STRING_CLOSE);
-        return sb.toString();*/
         return listToString(input, sep, DEFAULT_LIST_TO_STRING_OPEN, DEFAULT_LIST_TO_STRING_CLOSE);
     }
     
@@ -173,8 +155,6 @@ public class ListArrayUtil {
         int to = (int)Math.pow(2, input.length );
         ArrayList<int[]> result = new ArrayList<int[]>();
         for(int i = 1; i < to; i++) {         
-            //Utilities.showArray(ListArrayUtil.toBinaryArray(i, input.length));
-            //Utilities.showArray(ListArrayUtil.and(input, ListArrayUtil.toBinaryArray(i, input.length)));
             result.add(ListArrayUtil.andAndCondense(input, ListArrayUtil.toBinaryArray(i, input.length)));
         }
         return result;
@@ -490,15 +470,6 @@ public class ListArrayUtil {
     
     public static <T> List<T> merge(List<T> left, List<T> right) {
         List<T> result = new ArrayList<>();
-        /*if(left == null && right == null){
-            return result;
-        } else if(left.isEmpty() && right == null) {
-            
-        } else if(left == null && right.isEmpty()) {
-            
-        } else if(left.isEmpty() && right.isEmpty()) {
-            
-        }*/
         if(left == null || left.isEmpty()) {
             if(right == null || right.isEmpty()) {
                 return result;

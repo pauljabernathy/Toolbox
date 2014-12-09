@@ -11,13 +11,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-//import learning.naivebayes.Classification;
-//import learning.naivebayes.Classifier;
 import toolbox.stats.Histogram;
 import toolbox.stats.ProbDist;
 import toolbox.information.Shannon;
 
-//import toolbox.stats.DataList;
 import toolbox.stats.*;
 import toolbox.util.ListArrayUtil;
 
@@ -56,7 +53,6 @@ public class CSVReader {
         } catch (IOException e) {
             System.out.println(e.getClass() + " in classify(" + filename + ") at line " + lineNum + ":  " + e.getMessage());
         }
-        //System.out.println("leaving loadFile(" + filename + ") at " + new Date());
         return result;
     }
     
