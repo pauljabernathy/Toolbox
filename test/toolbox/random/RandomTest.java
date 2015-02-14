@@ -16,7 +16,6 @@ import toolbox.util.ListArrayUtil;
 import toolbox.stats.*;
 import toolbox.io.CSVWriter;
 import java.util.GregorianCalendar;
-import RandomNumberGenerator.RandomNumberGenerator;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -82,7 +81,6 @@ public class RandomTest {
     public void testIntsPerformance() {
         logger.info("\ntestIntsPerformance()");
         GregorianCalendar g = new GregorianCalendar();
-        RandomNumberGenerator rand = new RandomNumberGenerator();
         int count = 100000000;
         long start1 = 0;
         long end1 = 0;
@@ -92,9 +90,6 @@ public class RandomTest {
         logger.debug(g.getTime());
         logger.debug(new java.util.Date());
         start1 = g.getTimeInMillis();
-        for(int i = 0; i < count; i++) {
-            RandomNumberGenerator.getIntInRange(2, 4);
-        }
         end1 = g.getTimeInMillis();
         logger.debug(g.getTimeInMillis());
         logger.debug(g.getTimeInMillis());
