@@ -6,7 +6,7 @@ package toolbox.util;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Collections;
 import org.apache.log4j.*;
 import toolbox.Constants;
 
@@ -468,7 +468,7 @@ public class ListArrayUtil {
         return numDiffs;
     }
     
-    public static <T> List<T> merge(List<T> left, List<T> right) {
+    public static <T extends Comparable> List<T> merge(List<T> left, List<T> right) {
         List<T> result = new ArrayList<>();
         if(left == null || left.isEmpty()) {
             if(right == null || right.isEmpty()) {
@@ -483,7 +483,36 @@ public class ListArrayUtil {
                 return right;
             }
         }
-        return null;
+        Collections.sort(left);
+        Collections.sort(right);
+        int l = 0;
+        int r = 0;
+        int comparison = 0;
+        while(l < left.size() && r < right.size()) {
+            comparison = left.get(l).compareTo(right.get(r));
+            if(comparison < 0) {
+                result.add(left.get(l));
+                l++;
+            } else if(comparison == 0) {
+                result.add(left.get(l));
+                result.add(right.get(r));
+                l++;
+                r++;
+            } else if(comparison > 0) {
+                result.add(right.get(r));
+                r++;
+            }
+        }
+        if(l < left.size()) {
+            for(int i = l; i < left.size(); i++) {
+                result.add(left.get(i));
+            }
+        } else if(r < right.size()) {
+            for(int i = r; i < right.size(); i++) {
+                result.add(right.get(r));
+            }
+        }
+        return result;
     }
     
     //TODO:  move somewhere else!
