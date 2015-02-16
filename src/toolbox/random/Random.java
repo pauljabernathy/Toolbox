@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import static java.lang.Math.*;
+import java.util.function.*;
 
 /**
  *
@@ -272,10 +273,8 @@ public class Random {
     public static double[] rexp(int count, double lambda) {
         
         double[] result = new double[count];
-        double current = 0;
         for(int i = 0; i < count; i++) {
-            current = (-1 * lambda) * Math.log(1 - Math.random());
-            result[i] = current;
+            result[i] = (-1 * lambda) * Math.log(1 - Math.random());
         }
         return result;
     }
@@ -283,10 +282,44 @@ public class Random {
     public static List<Double> rexpList(int count, double lambda) {
         
         List<Double> result = new ArrayList<Double>();
-        double current = 0;
         for(int i = 0; i < count; i++) {
-            current = (-1 * lambda) * Math.log(1 - Math.random());
-            result.add(current);
+            result.add((-1 * lambda) * Math.log(1 - Math.random()));
+        }
+        return result;
+    }
+    
+    public static double[] rexp2(int count, double lambda) {
+        double[] result = new double[count];
+        double current = 0;
+        DoubleFunction<Double> exp = x -> (-1 * x) * Math.log(1 - Math.random());
+        for(int i = 0; i < count; i++) {
+            result[i] = (exp.apply(lambda));
+        }
+        return result;
+    }
+
+    public static double[] rexp3(int count, double lambda) {
+        double[] result = new double[count];
+        double current = 0;
+        DoubleFunction<Double> exp = x -> (-1 * lambda) * Math.log(1 - x);
+        for(int i = 0; i < count; i++) {
+            result[i] = (getRandom(exp));
+        }
+        return result;
+    }
+    
+    public static double getRandom(DoubleSupplier f) {
+        return f.getAsDouble();
+    }
+    
+    public static double getRandom(DoubleFunction<Double> f) {
+        return f.apply(Math.random());
+    }
+    
+    public static double[] getRandom(DoubleFunction<Double> f, int count) {
+        double[] result = new double[count];
+        for(int i = 0; i < count; i++) {
+            result[i] = getRandom(f);
         }
         return result;
     }

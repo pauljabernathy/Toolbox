@@ -23,6 +23,8 @@ import java.util.ArrayList;
 
 import java.io.PrintWriter;
 import java.io.IOException;
+import java.util.function.*;
+import toolbox.util.MathUtil;
 
 /**
  *
@@ -474,17 +476,53 @@ public class RandomTest {
         
         result = Random.rexp(10000, 2);
         assertEquals(10000, result.length);
-        try {
-            /*PrintWriter writer = new PrintWriter(new java.io.FileWriter("rexp.csv"));
-            writer.println("number");
-            for(int i = 0; i < result.length; i++) {
-                writer.println(result[i]);
-            }
-            writer.flush();
-            writer.close();*/
+        /*try {
             CSVWriter.writeArray(result, "rexp.csv", "nums", "\n");
         } catch(IOException e) {
             logger.error(e.getClass() + " " + e.getMessage());
+        }*/
+        assertEquals(2.0, MathUtil.mean(result), 0.1);
+    }
+    
+    @Test
+    public void testRexpList() {
+        logger.info("\ntesting rexpList()");
+        List<Double> result = null;
+        result = Random.rexpList(0, 0);
+        assertEquals(0, result.size());
+        assertEquals(1, Random.rexp(1, 1).length);
+        
+        result = Random.rexpList(10000, 2);
+        assertEquals(10000, result.size());
+        assertEquals(2.0, MathUtil.mean(result), 0.1);
+    }
+    
+    @Test
+    public void testGetRandom() {
+        logger.info("\ntesting getRandom()");
+        List<Double> result = new ArrayList<Double>();
+        DoubleFunction f = x -> x;
+        for(int i = 0; i < 500; i++) {
+            result.add(Random.getRandom(f));
         }
+        System.out.println(MathUtil.mean(result));
+        assertEquals(.5, MathUtil.mean(result), .1);
+        
+        result = new ArrayList<Double>();
+        f = x -> Math.sqrt(x);
+        for(int i = 0; i < 500; i++) {
+            result.add(Random.getRandom(f));
+        }
+        System.out.println(MathUtil.mean(result));
+        //assertEquals(.5, MathUtil.mean(result), .1);
+        System.out.println(MathUtil.mean(Random.rexp(10000, 5)));
+        System.out.println(MathUtil.mean(Random.rexp2(10000, 5)));
+        System.out.println(MathUtil.mean(Random.rexp3(10000, 5)));
+        DoubleFunction<Double> exp = x -> (-1 * 5) * Math.log(1 - x);
+        System.out.println(MathUtil.mean(Random.getRandom(exp, 10000)));
+        System.out.println(MathUtil.mean(Random.getRandom(x -> (-1 * 5) * Math.log(1 - x), 10000)));
+        
+        System.out.println(MathUtil.mean(Random.getRandom(x -> (-1 * 6) * Math.log(1 - x), 10000)));
+        System.out.println(MathUtil.mean(Random.getRandom(x -> (-1 * 4) * Math.log(1 - x), 10000)));
     }
 }
