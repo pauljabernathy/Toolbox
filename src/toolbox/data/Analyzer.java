@@ -14,11 +14,6 @@ import toolbox.*;
 import toolbox.information.Shannon;
 import toolbox.io.CSVReader;
 import toolbox.stats.Histogram;
-//import org.apache.http.client.HttpClient;
-//import org.apache.http.impl.client.DefaultHttpClient;
-//import org.apache.http.client.methods.HttpPost;
-//import org.apache.http.entity.mime.MultipartEntity;
-//import org.apache.http.entity.mime.content.FileBody;
 
 /**
  *
