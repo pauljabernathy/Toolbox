@@ -7,7 +7,9 @@ package toolbox.util;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
-import org.apache.log4j.*;
+import org.apache.logging.log4j.*;
+import org.apache.logging.log4j.core.config.*;
+import org.apache.logging.log4j.core.LoggerContext;
 import toolbox.Constants;
 
 /**
@@ -517,18 +519,16 @@ public class ListArrayUtil {
     
     //TODO:  move somewhere else!
     public static Logger getLogger(Class clazz, Level level) {
-        Logger logger = Logger.getLogger(clazz);
-        logger.removeAllAppenders();
-        logger.addAppender(new ConsoleAppender(new PatternLayout(Constants.DEFAULT_LOG_FORMAT)));
-        logger.setLevel(level);
+        Logger logger = LogManager.getLogger(clazz);
+        /*LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+        Configuration config = ctx.getConfiguration();
+        LoggerConfig loggerConfig = config.getLoggerConfig(LogManager.ROOT_LOGGER_NAME); 
+        loggerConfig.setLevel(level);
+        ctx.updateLoggers();*/
         return logger;
     }
     
     public static Logger getSameLineLogger(Class clazz, Level level) {
-        Logger logger = Logger.getLogger(clazz + " same line");
-        logger.removeAllAppenders();
-        logger.addAppender(new ConsoleAppender(new PatternLayout(Constants.SAME_LINE_LOG_FORMAT)));
-        logger.setLevel(level);
-        return logger;
+        return getLogger(clazz, level);
     }
 }

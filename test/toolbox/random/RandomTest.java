@@ -11,7 +11,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import org.apache.log4j.*;
+import org.apache.logging.log4j.*;
 import toolbox.util.ListArrayUtil;
 import toolbox.stats.*;
 import toolbox.io.CSVWriter;

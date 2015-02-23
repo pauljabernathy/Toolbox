@@ -8,7 +8,7 @@ import toolbox.util.ListArrayUtil;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import org.apache.log4j.*;
+import org.apache.logging.log4j.*;
 
 import toolbox.*;
 import toolbox.information.Shannon;
@@ -54,9 +54,11 @@ public class Analyzer extends java.util.Observable {
         }
     }
     
-    public void addWriterAppender(java.io.Writer writer) {
+    //TODO:  see if this can be deleted
+    //TODO:  make it so you can add appenders with log4j2 as with 1.x
+    /*public void addWriterAppender(java.io.Writer writer) {
         logger.addAppender(new WriterAppender(new PatternLayout(Constants.WEB_PAGE_LOG_FORMAT), writer));
-    }
+    }*/
     
     public void analyzeFile(String filename, String columnSeparator) {
         Logger logger = ListArrayUtil.getLogger(this.getClass(), Level.DEBUG);
