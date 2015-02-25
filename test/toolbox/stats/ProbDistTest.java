@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 import java.util.TreeMap;
-import org.apache.log4j.*;
+import org.apache.logging.log4j.*;
 
 
 /**
@@ -35,9 +35,7 @@ public class ProbDistTest {
     
     @BeforeClass
     public static void setUpClass() {
-        logger = Logger.getLogger(ProbDistTest.class);
-        logger.addAppender(new ConsoleAppender(new PatternLayout(toolbox.Constants.DEFAULT_LOG_FORMAT)));
-        logger.setLevel(Level.DEBUG);
+        logger = ListArrayUtil.getLogger(ProbDistTest.class, Level.DEBUG);
     }
     
     @AfterClass

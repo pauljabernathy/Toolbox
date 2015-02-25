@@ -7,7 +7,9 @@ package toolbox.trees;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import org.apache.log4j.*;
+import org.apache.logging.log4j.*;
+
+import toolbox.util.ListArrayUtil;
 
 /**
  *
@@ -18,9 +20,7 @@ public class BreadthFirstSearch {
     private static Logger logger;
     
     static {
-        logger = Logger.getLogger(BreadthFirstSearch.class);
-        logger.addAppender(new ConsoleAppender(new PatternLayout("%m%n")));
-        logger.setLevel(Level.INFO);
+        logger = ListArrayUtil.getLogger(BreadthFirstSearch.class, Level.INFO);
         
     }
     /**

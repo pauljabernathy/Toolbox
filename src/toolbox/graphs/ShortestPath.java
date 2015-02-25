@@ -4,12 +4,14 @@
  */
 package toolbox.graphs;
 
-import org.apache.log4j.*;
+import org.apache.logging.log4j.*;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
+
+import toolbox.util.ListArrayUtil;
 
 /**
  *
@@ -19,9 +21,7 @@ public class ShortestPath {
     
     private static Logger logger;
     static {
-        logger = Logger.getLogger(toolbox.graphs.ShortestPath.class);
-        logger.addAppender(new ConsoleAppender(new PatternLayout("%m%n")));
-        logger.setLevel(Level.INFO);
+        logger = ListArrayUtil.getLogger(toolbox.graphs.ShortestPath.class, Level.INFO);
     }
     
     public static List<List<Node>> getOneToAllPaths(Node source) {

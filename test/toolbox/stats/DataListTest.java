@@ -12,8 +12,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import org.apache.log4j.*;
+import org.apache.logging.log4j.*;
 import java.util.ArrayList;
+import toolbox.util.ListArrayUtil;
 
 /**
  *
@@ -28,9 +29,7 @@ public class DataListTest {
     
     @BeforeClass
     public static void setUpClass() {
-        logger = Logger.getLogger(DataListTest.class);
-        logger.addAppender(new ConsoleAppender(new PatternLayout(Constants.DEFAULT_LOG_FORMAT)));
-        logger.setLevel(Level.DEBUG);
+        logger = ListArrayUtil.getLogger(DataListTest.class, Level.DEBUG);
     }
     
     @AfterClass
