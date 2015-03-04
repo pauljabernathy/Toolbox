@@ -5,20 +5,45 @@
     <version>2.0</version>
     <artifactId>Toolbox</artifactId>
     <packaging>jar</packaging>
+    <name>Toolbox</name>
+    <description>A Java library for a variety of utility tasks such as probability distributions and random number generation.</description>
+    <url>https://github.com/pauljabernathy/Toolbox</url>
+    <licenses>
+      <license>
+        <name>The GNU General Public License, Version 3.0</name>
+        <url>http://www.gnu.org/licenses/gpl.html</url>
+      </license>
+    </licenses>
+    <developers>
+      <developer>
+        <name>Paul Abernathy</name>
+        <email>pauljabernathy@gmail.com</email>
+      </developer>
+    </developers>
+    <scm>
+      <connection>scm:git:git@github.com:pauljabernathy/Toolbox.git</connection>
+      <developerConnection>scm:git:git@github.com:pauljabernathy/Toolbox.git</developerConnection>
+      <url>git@github.com:pauljabernathy/Toolbox.git</url>
+    </scm>
     <properties>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
     <build>
         <sourceDirectory>${project.basedir}/src/</sourceDirectory>
         <testSourceDirectory>${project.basedir}/test/</testSourceDirectory>
+        <resources>
+            <resource>
+              <directory>${project.basedir}/src/resources</directory>
+            </resource>
+          </resources>
+          <testResources>
+            <testResource>
+              <directory>${project.basedir}/src/resources</directory>
+            </testResource>
+          </testResources>
     </build>
     <dependencies>
-        <!--<dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.15</version>
-        </dependency>-->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
