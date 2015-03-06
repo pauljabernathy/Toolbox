@@ -25,8 +25,8 @@ public class BreadthFirstSearch {
     }
     /**
      * Finds node inside of the given Tree and returns the path in the form a list of Tree nodes, starting with the root and ending with the target node
-     * @param node
-     * @param tree
+     * @param target the node you are looking for
+     * @param tree the tree inside which you are looking
      * @return a List giving the path, starting with the root and ending with the target (both inclusive); an empty list if no path was found
      */
     public static List<Tree> find(Tree target, Tree tree) {

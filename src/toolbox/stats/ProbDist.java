@@ -163,7 +163,7 @@ public class ProbDist<T> {
     
     /** This is this original version but is much slower that the new one in the majority of tests I have run.
      * @deprecated 
-     * @return 
+     * @return a random value
      */
     public T getRandomValue2() {
         double rand = Math.random();
@@ -285,9 +285,9 @@ public class ProbDist<T> {
      * This function as it currently is is worthless because it calculate the joint distribution under the assumption that the two
      * variables are independent, meaning mutual information will always be 0.  We need to get a joint distribution empirically
      * (or some means other than the getJointDistribution() function) before the mutual information will mean anything.
-     * @param x
-     * @param y
-     * @return 
+     * @param x one probability distribution
+     * @param y the other probability distribution
+     * @return  the mutual information
      */
     public static double getMutualInformation(ProbDist x, ProbDist y) {
         return x.getEntropy() + y.getEntropy() - ProbDist.getJointDistribution(x, y).getEntropy();

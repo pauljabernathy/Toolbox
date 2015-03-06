@@ -31,8 +31,8 @@ public class ShortestPath {
     
     /**
      * an attempt to make a shortest path algorithm that can handle negative paths like Bellman/Ford, not yet complete or correct
-     * @param source
-     * @return 
+     * @param source the source node
+     * @return a HashMap of all shortests paths
      */
     public static HashMap<Node, Node> getOneToAllPathsMap(Node source) {
         
@@ -135,8 +135,8 @@ public class ShortestPath {
     
     /**
      * requires no negative weight paths
-     * @param source
-     * @return 
+     * @param source the source node
+     * @return  a HashMap of paths
      */
     public static HashMap<Node, Node> getDijkstraMap(Node source) {
         //TODO:  check for negative weight paths

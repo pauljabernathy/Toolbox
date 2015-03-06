@@ -174,10 +174,10 @@ public class CSVReader {
     
     /**
      *
-     * @param line
-     * @param columns
-     * @param columnSeparator must be an non empty String; will return an empty List if this is null or empty
-     * @return
+     * @param line the lines of the csv file, which should be in csv format
+     * @param columns an array of column numbers to read
+     * @param columnSeparator what separates columns (most likely a comma) must be an non empty String; will return an empty List if this is null or empty
+     * @return a list of String, each element being the value of input line at the index of the corresponding column from the columns array
      */
     public static List<String> parseLine(String line, int[] columns, String columnSeparator) {
         ArrayList<String> row = new ArrayList<String>();
@@ -196,10 +196,13 @@ public class CSVReader {
     
     /**
      *
-     * @param filename
-     * @param classColumn
-     * @param classification
+     * @param filename the name of the file
+     * @param classColumn the index of the column you are trying to classify
+     * @param classification the name of the classification you are looking at
+     * @param featureColumns a list of which columns will be used to classify the column indexed by classColumn
+     * @param columnSeparator what separates columns; typically a comma
      * @return a list of the distributions for the given classification name
+     * @throws IOException if the file cannot be read
      */
     public static List<ProbDist> getFeatureDists(String filename, int classColumn, String classification, int[] featureColumns, String columnSeparator) throws IOException {
         verifyParameters(filename, classColumn, classification, featureColumns, columnSeparator);
@@ -226,13 +229,13 @@ public class CSVReader {
     //TODO: change name or move to the project that uses this
     /**
      *
-     * @param filename
-     * @param classColumn
-     * @param classification
-     * @param featureColumns
-     * @param columnSeparator
+     * @param filename the name of the file
+     * @param classColumn the index of the column you are trying to classify
+     * @param classification the name of the classification you are looking at
+     * @param featureColumns a list of which columns will be used to classify the column indexed by classColumn
+     * @param columnSeparator what separates columns; typically a comma
      * @return a two dimensional list containing the data from the specified columns when the classification name matched the specified classification name
-     * @throws Exception
+     * @throws IOException if the file cannot be read
      */
     public static List<? extends List<String>> parseFile(String filename, int classColumn, String classification, int[] featureColumns, String columnSeparator) throws IOException {
         verifyParameters(filename, classColumn, classification, featureColumns, columnSeparator);
@@ -269,11 +272,11 @@ public class CSVReader {
     
     /**
      * Returns a single column from the csv file.
-     * @param filename
-     * @param column
-     * @param columnSeparator
-     * @return
-     * @throws IOException 
+     * @param filename the name of the file
+     * @param column the index of the column you are getting
+     * @param columnSeparator what separates columns (probably a comma)
+     * @return a DataList representing the one column
+     * @throws IOException if the file cannot be read
      */
     public static DataList getSingleColumn(String filename, int column, String columnSeparator) throws IOException {
         if(filename == null || filename.equals("") || column < 0 || columnSeparator == null || columnSeparator.equals("")) {
@@ -293,12 +296,12 @@ public class CSVReader {
     }
     
     /**
-     * Returns the specified columns of the csv file, with columns being the outer list of the 2 dimensional List, instead of the rows being the outer list.
-     * @param filename
-     * @param columns
-     * @param columnSeparator
-     * @return
-     * @throws IOException 
+     * Returns the specified columns of the csv file, where each List of Strings is a column, instead of a row as is typical of database queries.
+     * @param filename the name of the file
+     * @param columns the index of the column you are getting
+     * @param columnSeparator what separates columns (probably a comma)
+     * @return a List of Lists of Strings, each list representing one column
+     * @throws IOException if the file cannot be read
      */
     public static List<List<String>> getColumns(String filename, int[] columns, String columnSeparator) throws IOException {
         if(filename == null || filename.equals("") || columns == null || columns.length < 1 || columnSeparator == null || columnSeparator.equals("")) {
@@ -333,8 +336,11 @@ public class CSVReader {
         return data;
     }
     
-    /**
-     * 
+    /** gets all columns, where each List of Strings is a column, instead of a row as is typical of database queries.
+     * @param filename the name of the file
+     * @param columnSeparator what separates columns (probably a comma)
+     * @return a List of Lists of Strings, each list representing one column
+     * @throws IOException if the file cannot be read
      */
     public static List<List<String>> getAllColumns(String filename, String columnSeparator) throws IOException {
         if(filename == null || filename.equals("") || columnSeparator == null || columnSeparator.equals("")) {
@@ -360,10 +366,11 @@ public class CSVReader {
     
     /**
      * Gets a histogram for a single variable (column) for the entire file.  Returns and empty histogram if the filename or column separator are null or empty or if the column is less than 0.
-     * @param filename
-     * @param column
-     * @return
-     * @throws IOException 
+     * @param filename the name of the file
+     * @param column the index of the column to get a Histogram of
+     * @param columnSeparator what separates columns (probably a comma)
+     * @return a Histogram of the data in the given column
+     * @throws IOException if the file cannot be read
      */
     public static Histogram getSingleHistogram(String filename, int column, String columnSeparator) throws IOException {
         

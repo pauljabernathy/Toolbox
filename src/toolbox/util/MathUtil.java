@@ -125,9 +125,9 @@ public class MathUtil {
     
     /**
      * Gives the sum bounded by the (optional) endpoints.  If the endpoints are reversed, it reverses them.
-     * @param input
-     * @param endPoints
-     * @return 
+     * @param input the array to take the sum of
+     * @param endPoints (optional) the first and last indeces to include in the calculation
+     * @return the sum of the array
      */
     public static double sum(double[] input, int...endPoints) {
         if(input == null || input.length == 0) {
@@ -145,9 +145,9 @@ public class MathUtil {
     
     /**
      * Gives the sum bounded by the (optional) endpoints.  If the endpoints are reversed, it reverses them.
-     * @param input
-     * @param endPoints
-     * @return 
+     * @param input the array to sum up
+     * @param endPoints (optional) the first and last elements to sum
+     * @return the sum of the array
      */
     public static int sum(int[] input, int...endPoints) {
         if(input == null || input.length == 0) {
@@ -226,10 +226,10 @@ public class MathUtil {
      * calculates the product of the list, from the start of the index labeled "start" to the end of the index labeled "end"
      * If start and end are beyond the bounds of the input (less than 0 or greater than list.size() - 1), it adjusts start and end to fit the bounds of the input.
      * If start is greater than end, start and end are switched.
-     * @param list
-     * @param start
-     * @param end
-     * @return 
+     * @param list the list to take the product of
+     * @param start the first element to use
+     * @param end the last element to use
+     * @return the product of multiplying all the given elements
      */
     public static double prod(List<Double> list, int start, int end) {
         if(list == null || list.isEmpty()) {
@@ -269,10 +269,10 @@ public class MathUtil {
      * calculates the product of the input, from the start of the index labeled "start" to the end of the index labeled "end"
      * If start and end are beyond the bounds of the input (less than 0 or greater than input.size() - 1), it adjusts start and end to fit the bounds of the input.
      * If start is greater than end, start and end are switched.
-     * @param input
-     * @param start
-     * @param end
-     * @return 
+     * @param input the array to take the product of
+     * @param start the first element to use
+     * @param end the last element to use
+     * @return the product
      */
     public static double prod(double[] input, int start, int end) {
         if(input == null || input.length == 0) {
@@ -353,7 +353,7 @@ public class MathUtil {
     /**
      * Calculates the ratios of each element of the input to the previous element.  For example, if the input is 1.0, 2.0, 1.0, 5.0, the result would be 2.0, 0.5, 5.0.
      * Currently does not check for 0s, so the user should check for it and act accordingly.
-     * @param input
+     * @param input the array to take the difference ratios of
      * @return an array of length one less than the input length
      */
     public static double[] diffRatios(double[] input) {
@@ -402,7 +402,7 @@ public class MathUtil {
     
     /**
      * Gives the sample standard deviation (divide by n - 1 instead of n)
-     * @param input
+     * @param input the array to take the standard deviation of
      * @return 
      */
     public static double sd(double[] input) {

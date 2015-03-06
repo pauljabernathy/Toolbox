@@ -70,9 +70,9 @@ public class BreadthFirstSearch {
     /**
      * returns the path from start to target, using the visited map to trace the history of what node was visited from which node
      * visited must have the destination node as the key and the node it was visited from as the value
-     * @param target
-     * @param start
-     * @param visited
+     * @param target the target node
+     * @param start the node you are starting at
+     * @param visited a HashMap contains pairs of nodes that have a path from the key node to the value node
      * @return 
      */
     public static LinkedList<Node> getPath(Node target, Node start, HashMap<Node, Node> visited) {
