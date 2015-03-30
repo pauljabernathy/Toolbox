@@ -274,7 +274,7 @@ public class Random {
         double[] result = new double[count];
         double current = 0;
         for(int i = 0; i < count; i++) {
-            current = (-1 * lambda) * Math.log(1 - Math.random());
+            current = (-1 / lambda) * Math.log(1 - Math.random());
             result[i] = current;
         }
         return result;
