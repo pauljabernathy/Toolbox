@@ -7,8 +7,10 @@ package toolbox.graphs;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import org.apache.log4j.*;
+import org.apache.logging.log4j.*;
 import java.util.HashMap;
+
+import toolbox.util.ListArrayUtil;
 
 /**
  *
@@ -19,9 +21,7 @@ public class BreadthFirstSearch {
     private static Logger logger;
     
     static {
-        logger = Logger.getLogger(toolbox.trees.BreadthFirstSearch.class);
-        logger.addAppender(new ConsoleAppender(new PatternLayout("%m%n")));
-        logger.setLevel(Level.INFO);
+        logger = ListArrayUtil.getLogger(BreadthFirstSearch.class, Level.INFO);
         
     }
     
@@ -70,9 +70,9 @@ public class BreadthFirstSearch {
     /**
      * returns the path from start to target, using the visited map to trace the history of what node was visited from which node
      * visited must have the destination node as the key and the node it was visited from as the value
-     * @param target
-     * @param start
-     * @param visited
+     * @param target the target node
+     * @param start the node you are starting at
+     * @param visited a HashMap contains pairs of nodes that have a path from the key node to the value node
      * @return 
      */
     public static LinkedList<Node> getPath(Node target, Node start, HashMap<Node, Node> visited) {

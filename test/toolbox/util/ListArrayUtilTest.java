@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.ArrayList;
-import org.apache.log4j.*;
+import org.apache.logging.log4j.*;
 import java.util.Arrays;
 
 /**

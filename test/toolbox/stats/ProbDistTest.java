@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 import java.util.TreeMap;
-import org.apache.log4j.*;
+import org.apache.logging.log4j.*;
 
 
 /**
@@ -35,9 +35,7 @@ public class ProbDistTest {
     
     @BeforeClass
     public static void setUpClass() {
-        logger = Logger.getLogger(ProbDistTest.class);
-        logger.addAppender(new ConsoleAppender(new PatternLayout(toolbox.Constants.DEFAULT_LOG_FORMAT)));
-        logger.setLevel(Level.DEBUG);
+        logger = ListArrayUtil.getLogger(ProbDistTest.class, Level.DEBUG);
     }
     
     @AfterClass
@@ -83,7 +81,7 @@ public class ProbDistTest {
         assertEquals("B", result.get(2));
         assertEquals("C", result.get(3));
         
-        try {
+        /**try {
             retirement.InvestmentCalculator calc = new retirement.InvestmentCalculator();
             List<Double> ratios = calc.getRatios("sp500.csv");
             Histogram hist = new Histogram(ratios);
@@ -104,7 +102,7 @@ public class ProbDistTest {
             }
         } catch(java.io.IOException e) {
             logger.error(e.getClass() + " in testConstructor_List():  " + e.getMessage());
-        }
+        }/**/
     }
 
     /**
@@ -274,7 +272,7 @@ public class ProbDistTest {
             logger.error("ProbabilityException trying to make a histogram in testGetRandomValue():  " + e.getMessage());
         }
         
-        try {
+        /**try {
             retirement.InvestmentCalculator calc = new retirement.InvestmentCalculator();
             List<Double> ratios = calc.getRatios("sp500.csv");
             List<Double> ratios2 = new ArrayList<Double>();
@@ -323,7 +321,7 @@ public class ProbDistTest {
             }
         } catch(java.io.IOException e) {
             logger.error(e.getClass() + " in testConstructor_List():  " + e.getMessage());
-        }
+        }/**/
     }
     
     @Test

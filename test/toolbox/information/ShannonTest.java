@@ -12,7 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import org.apache.log4j.*;
+import org.apache.logging.log4j.*;
 import java.util.ArrayList;
 import java.util.List;
 import toolbox.io.CSVReader;
@@ -322,7 +322,7 @@ public class ShannonTest {
         right.add(9.0);
         this.showEntropies(left, right);
         
-        /**try {
+        /**/try {
             DataList<String> pclass = CSVReader.getSingleColumn("titanic.csv", 2, ",");
             DataList<String> sex = CSVReader.getSingleColumn("titanic.csv", 5, ",");
             DataList<String> sibsp = CSVReader.getSingleColumn("titanic.csv", 7, ",");

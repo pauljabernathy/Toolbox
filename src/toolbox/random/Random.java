@@ -215,10 +215,10 @@ public class Random {
      * From http://en.wikipedia.org/wiki/Normal_distribution we see that the cummulative probability distribution function of the Gaussian is .5 + .5 * erf((x - mu)/(sigma * square root of two)).  
      * But at http://en.wikipedia.org/wiki/Error_function we see that the erf function and its inverse are hard to calculate exactly so we can use an approximation.
      * 
-     * @param count
-     * @param mu
-     * @param sigma
-     * @return 
+     * @param count how many numbers to generate
+     * @param mu the mean
+     * @param sigma the standard deviation
+     * @return an array of random values, which should be approximately normally distributed
      */
     public static double[] rnorm(int count, double mu, double sigma) {
         if(count <= 0) {
