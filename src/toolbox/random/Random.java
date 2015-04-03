@@ -210,6 +210,24 @@ public class Random {
         return result;
     }
     
+    public static int[] rbinom(int count, int size, double prob) {
+        if(count <= 0 || prob < 0.0 || prob > 1.0) {
+            return new int[0];
+        }
+        int[] result = new int[count];
+        int currentCount = 0;
+        for(int i = 0; i < count; i++) {
+            currentCount = 0;
+            for(int j = 0; j < size; j++) {
+                if(random() < prob) {
+                    currentCount++;
+                }
+            }
+            result[i] = currentCount;
+        }
+        return result;
+    }
+    
     /** Returns an array of approximately normally distributed numbers.
      * The normal random number generation is somewhat of an approximation.  
      * From http://en.wikipedia.org/wiki/Normal_distribution we see that the cummulative probability distribution function of the Gaussian is .5 + .5 * erf((x - mu)/(sigma * square root of two)).  

@@ -21,9 +21,26 @@ public class MathUtil {
      */
     public static double logBase2(double x) {
         return 3.3219281 * Math.log10(x);
+        //TODO: bitwise calculation if possible
     }
     
     public static Summary summary(double[] array) {
+        Arrays.sort(array);
+        Summary s = new Summary();
+        s.min = array[0];
+        //TODO: firstQ and thirdQ
+        if(array.length % 2 == 1) {
+            s.median = array[array.length / 2];
+        } else {
+            s.median = .5 * array[array.length / 2 - 1] + .5 * array[array.length / 2];
+        }
+        s.mean = mean(array);
+        s.max = array[array.length - 1];
+        s.sd = sd(array);
+        return s;
+    }
+    
+    public static Summary summary(int[] array) {
         Arrays.sort(array);
         Summary s = new Summary();
         s.min = array[0];
@@ -406,6 +423,22 @@ public class MathUtil {
      * @return 
      */
     public static double sd(double[] input) {
+        if(input == null || input.length == 0 || input.length == 1) {
+            return 0.0;
+        }
+        double mean = mean(input);
+        double[] squaredDiffs = new double[input.length];
+        for(int i = 0; i < input.length; i++) {
+            squaredDiffs[i] = Math.pow((input[i] - mean), 2.0);
+        }
+        double sum = 0.0;
+        for(double d : squaredDiffs) {
+            sum += d;
+        }
+        return Math.sqrt(sum / (double)(squaredDiffs.length - 1));
+    }
+    
+    public static double sd(int[] input) {
         if(input == null || input.length == 0 || input.length == 1) {
             return 0.0;
         }
