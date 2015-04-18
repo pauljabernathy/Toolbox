@@ -674,4 +674,19 @@ public class MathUtilTest {
         
         logger.debug(ListArrayUtil.arrayToString(MathUtil.seqInteger(0, 40)));
     }
+    
+    @Test
+    public void testIntToDouble() {
+        logger.info("\ntesting intoToDouble()");
+        assertEquals(MathUtil.intToDouble(null).length, 0);
+        assertEquals(MathUtil.intToDouble(new int[0]).length, 0);
+        assertEquals(MathUtil.intToDouble(new int[] { }).length, 0);
+        
+        double[] result = null;
+        result = MathUtil.intToDouble(new int[] { 1, 2, 3 });
+        assertEquals(result.length, 3);
+        assertEquals(result[0], 1.0, 0.0);
+        assertEquals(result[1], 2.0, 0.0);
+        assertEquals(result[2], 3.0, 0.0);
+    }
 }

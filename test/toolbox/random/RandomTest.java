@@ -440,7 +440,33 @@ public class RandomTest {
         
         //TODO:  make a way to test the shape
         try {
-            CSVWriter.writeArray(result, "rbinom.csv", "nums", "\n");
+            CSVWriter.writeArray(result, "rbinom_10000_10_p5.csv", "nums", "\n");
+        } catch(IOException e) {
+            logger.error(e.getClass() + " trying to write binom array in testRbinom_count_size_prob():  " + e.getMessage());
+        }
+        
+        result = Random.rbinom(10000, 10, 0.7);
+        summary = MathUtil.summary(result);
+        assertEquals(true, 0 <= summary.min);
+        assertEquals(true, 10.0 >= summary.max);
+        assertEquals(7.0, summary.mean, 0.1);
+        
+        //TODO:  make a way to test the shape
+        try {
+            CSVWriter.writeArray(result, "rbinom_10000_10_p7.csv", "nums", "\n");
+        } catch(IOException e) {
+            logger.error(e.getClass() + " trying to write binom array in testRbinom_count_size_prob():  " + e.getMessage());
+        }
+        
+        result = Random.rbinom(10000, 5, 0.5);
+        summary = MathUtil.summary(result);
+        assertEquals(true, 0 <= summary.min);
+        assertEquals(true, 10.0 >= summary.max);
+        assertEquals(2.5, summary.mean, 0.1);
+        
+        //TODO:  make a way to test the shape
+        try {
+            CSVWriter.writeArray(result, "rbinom_10000_5_p5.csv", "nums", "\n");
         } catch(IOException e) {
             logger.error(e.getClass() + " trying to write binom array in testRbinom_count_size_prob():  " + e.getMessage());
         }

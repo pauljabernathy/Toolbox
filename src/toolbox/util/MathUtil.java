@@ -523,6 +523,8 @@ public class MathUtil {
         return (double)((int)(amount * Math.pow(10, places))) / Math.pow(10, places);
     }
     
+    //TODO:  seq double functions
+    
     public static int[] seqInt(int start, int end) {
         int length = Math.abs(end - start) + 1;
         int[] result = new int[length];
@@ -559,5 +561,18 @@ public class MathUtil {
             }
         }
         return result;
+    }
+    
+    //TODO: unit test
+    public static double[] intToDouble(int[] input) {
+        if(input == null) {
+            return new double[0];
+        }
+        int length = input.length;
+        double[] output = new double[length];
+        for(int i = 0; i < length; i++) {
+            output[i] = (double)input[i];
+        }
+        return output;
     }
 }
