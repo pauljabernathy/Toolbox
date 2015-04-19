@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.ArrayList;
-import org.apache.log4j.*;
+import org.apache.logging.log4j.*;
 import toolbox.util.ListArrayUtil;
 
 /**
@@ -29,9 +29,7 @@ public class HistogramTest {
     
     @BeforeClass
     public static void setUpClass() {
-        logger = Logger.getLogger(HistogramTest.class);
-        logger.addAppender(new ConsoleAppender(new PatternLayout(toolbox.Constants.DEFAULT_LOG_FORMAT)));
-        logger.setLevel(Level.DEBUG);
+        logger = ListArrayUtil.getLogger(HistogramTest.class, Level.DEBUG);
     }
     
     @AfterClass
@@ -64,6 +62,11 @@ public class HistogramTest {
     @Test
     public void testConstructor_List() {
         logger.info("\ntesting Constructor_List()");
+        String log4jProperty = "log4j.configurationFile";
+        System.out.println(System.getProperty(log4jProperty));
+        System.setProperty(log4jProperty, "log4j2-test.xml");
+        System.out.println(System.getProperty("java.class.path"));
+        System.out.println(System.getProperty(log4jProperty));
         
         List<String> list = null;
         Histogram instance = new Histogram(list);
@@ -79,7 +82,7 @@ public class HistogramTest {
         instance = new Histogram(list);
         assertEquals(2, instance.size());
         
-        try {
+        /**try {
             retirement.InvestmentCalculator calc = new retirement.InvestmentCalculator();
             List<Double> ratios = calc.getRatios("sp500.csv");
             instance = new Histogram(ratios);
@@ -94,7 +97,7 @@ public class HistogramTest {
             
         } catch(java.io.IOException e) {
             logger.error(e.getClass() + " in testConstructor_List():  " + e.getMessage());
-        }
+        }/**/
     }
     
     @Test
@@ -325,7 +328,7 @@ public class HistogramTest {
             logger.error(e.getClass() + " in testGetEntropy():  " + e.getMessage());
         }
          
-         try {
+        /**try {
             retirement.InvestmentCalculator calc = new retirement.InvestmentCalculator();
             List<Double> ratios = calc.getRatios("sp500.csv");
             instance = new Histogram(ratios);
@@ -346,7 +349,7 @@ public class HistogramTest {
             }
         } catch(java.io.IOException e) {
             logger.error(e.getClass() + " in testConstructor_List():  " + e.getMessage());
-        }
+        }/**/
     }
     
     @Test

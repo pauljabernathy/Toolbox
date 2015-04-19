@@ -11,7 +11,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import org.apache.log4j.*;
+import org.apache.logging.log4j.*;
+import toolbox.util.ListArrayUtil;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.HashMap;
@@ -29,9 +30,7 @@ public class BreadthFirstSearchTest {
     
     @BeforeClass
     public static void setUpClass() {
-        logger = Logger.getLogger(BreadthFirstSearchTest.class);
-        logger.addAppender(new ConsoleAppender(new PatternLayout("%m%n")));
-        logger.setLevel(Level.DEBUG);
+        logger = ListArrayUtil.getLogger(BreadthFirstSearchTest.class, Level.DEBUG);
     }
     
     @AfterClass

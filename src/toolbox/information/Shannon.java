@@ -8,8 +8,8 @@ import toolbox.stats.*;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Level;
 import toolbox.util.ListArrayUtil;
 import toolbox.util.MathUtil;
 
@@ -37,10 +37,10 @@ public class Shannon {
     
     /**
      * finds the mutual information of the two lists, using the formula HL + HR - HLR where HL is the entropy of the left list, HR is the entropy of the right, and HLR is the entropy of the combined list
-     * @param <T>
-     * @param left
-     * @param right
-     * @return 
+     * @param <T> the list type
+     * @param left one list
+     * @param right the other list
+     * @return the mutual information
      */
     public static <T> double getMutualInformation(List<T> left, List<T> right) {
         if(left == null || right == null || left.size() != right.size()) {
@@ -96,10 +96,10 @@ public class Shannon {
     
     /**
      * gives the Kullback-Leibler divergence using 2 as the logarithm base
-     * @param p
-     * @param q
-     * @return
-     * @throws ProbabilityException 
+     * @param p one probability distribution
+     * @param q the other probability distribution
+     * @return the Kullback / Leibler Divergence
+     * @throws ProbabilityException if one or more of the given probability distributions is invalid
      */
     public static double getKullbackLeiblerDivergence(ProbDist p, ProbDist q) throws ProbabilityException {
         if(p == null || q == null || p.isEmpty() || q.isEmpty()) {

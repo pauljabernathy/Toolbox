@@ -7,7 +7,9 @@ package toolbox.trees;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import org.apache.log4j.*;
+import org.apache.logging.log4j.*;
+
+import toolbox.util.ListArrayUtil;
 
 /**
  *
@@ -18,15 +20,13 @@ public class BreadthFirstSearch {
     private static Logger logger;
     
     static {
-        logger = Logger.getLogger(BreadthFirstSearch.class);
-        logger.addAppender(new ConsoleAppender(new PatternLayout("%m%n")));
-        logger.setLevel(Level.INFO);
+        logger = ListArrayUtil.getLogger(BreadthFirstSearch.class, Level.INFO);
         
     }
     /**
      * Finds node inside of the given Tree and returns the path in the form a list of Tree nodes, starting with the root and ending with the target node
-     * @param node
-     * @param tree
+     * @param target the node you are looking for
+     * @param tree the tree inside which you are looking
      * @return a List giving the path, starting with the root and ending with the target (both inclusive); an empty list if no path was found
      */
     public static List<Tree> find(Tree target, Tree tree) {

@@ -211,15 +211,33 @@ public class Random {
         return result;
     }
     
+    public static int[] rbinom(int count, int size, double prob) {
+        if(count <= 0 || prob < 0.0 || prob > 1.0) {
+            return new int[0];
+        }
+        int[] result = new int[count];
+        int currentCount = 0;
+        for(int i = 0; i < count; i++) {
+            currentCount = 0;
+            for(int j = 0; j < size; j++) {
+                if(random() < prob) {
+                    currentCount++;
+                }
+            }
+            result[i] = currentCount;
+        }
+        return result;
+    }
+    
     /** Returns an array of approximately normally distributed numbers.
      * The normal random number generation is somewhat of an approximation.  
      * From http://en.wikipedia.org/wiki/Normal_distribution we see that the cummulative probability distribution function of the Gaussian is .5 + .5 * erf((x - mu)/(sigma * square root of two)).  
      * But at http://en.wikipedia.org/wiki/Error_function we see that the erf function and its inverse are hard to calculate exactly so we can use an approximation.
      * 
-     * @param count
-     * @param mu
-     * @param sigma
-     * @return 
+     * @param count how many numbers to generate
+     * @param mu the mean
+     * @param sigma the standard deviation
+     * @return an array of random values, which should be approximately normally distributed
      */
     public static double[] rnorm(int count, double mu, double sigma) {
         if(count <= 0) {
@@ -273,8 +291,11 @@ public class Random {
     public static double[] rexp(int count, double lambda) {
         
         double[] result = new double[count];
+        double current = 0;
         for(int i = 0; i < count; i++) {
             result[i] = (-1 * lambda) * Math.log(1 - Math.random());
+            current = (-1 / lambda) * Math.log(1 - Math.random());
+            result[i] = current;
         }
         return result;
     }

@@ -6,8 +6,10 @@ package toolbox.util;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.log4j.*;
+import java.util.Collections;
+import org.apache.logging.log4j.*;
+import org.apache.logging.log4j.core.config.*;
+import org.apache.logging.log4j.core.LoggerContext;
 import toolbox.Constants;
 
 /**
@@ -66,7 +68,7 @@ public class ListArrayUtil {
     //TODO:  remove this
     /**
      * @deprecated 
-     * @param a 
+     * @param a the array to show
      */
     public static void showArray(int[] a) {
         if(a == null) {
@@ -228,8 +230,8 @@ public class ListArrayUtil {
 
     /**
      * 
-     * @param source
-     * @param bits
+     * @param source one array in the logical AND, not necessarily binary
+     * @param bits the other array in the logical AND; this does not actually have to be binary - non zero elements have the same effect whether they are 1 or something else
      * @return The first array ("source") anded with the second ("bit").  For each index, if either element is 0, zero is placed at that index in the return array.  If both elements are non zero, that element will be the value of source at that index.
      * If the arrays do not have the same length or either is null, an empty array is returned.
      */
@@ -250,8 +252,8 @@ public class ListArrayUtil {
 
     /**
      * 
-     * @param source
-     * @param bits
+     * one array in the logical AND, not necessarily binary
+     * @param bits the other array in the logical AND; this does not actually have to be binary - non zero elements have the same effect whether they are 1 or something else
      * @return the source array anded with the bits array (as in and()) but omitting elements with zero as the value.
      */
     public static int[] andAndCondense(int[] source, int[] bits) {
@@ -302,7 +304,7 @@ public class ListArrayUtil {
     
     /**
      * gives the dimensions of a list of list as { num rows, num columns }
-     * @param data
+     * @param data List of Lists to get the dimensions of
      * @return 
      */
     public static int[] dim(List<List> data) {
@@ -328,8 +330,8 @@ public class ListArrayUtil {
     
     /**
      * checks element by element to see if the elements in the two arrays are the same (that is, checks not just that the values from one array are in the other, but that they are in the same order)
-     * @param left
-     * @param right
+     * @param left one of the arrays
+     * @param right the other array
      * @return 
      */
     public static boolean haveSameElements(double[] left, double[] right) {
@@ -468,7 +470,7 @@ public class ListArrayUtil {
         return numDiffs;
     }
     
-    public static <T> List<T> merge(List<T> left, List<T> right) {
+    /*public static <T> List<T> merge(List<T> left, List<T> right) {
         List<T> result = new ArrayList<>();
         if(left == null || left.isEmpty()) {
             if(right == null || right.isEmpty()) {
@@ -483,23 +485,51 @@ public class ListArrayUtil {
                 return right;
             }
         }
-        return null;
-    }
+        Collections.sort(left);
+        Collections.sort(new ArrayList<String>());
+        Collections.sort(right);
+        int l = 0;
+        int r = 0;
+        int comparison = 0;
+        while(l < left.size() && r < right.size()) {
+            comparison = left.get(l).compareTo(right.get(r));
+            if(comparison < 0) {
+                result.add(left.get(l));
+                l++;
+            } else if(comparison == 0) {
+                result.add(left.get(l));
+                result.add(right.get(r));
+                l++;
+                r++;
+            } else if(comparison > 0) {
+                result.add(right.get(r));
+                r++;
+            }
+        }
+        if(l < left.size()) {
+            for(int i = l; i < left.size(); i++) {
+                result.add(left.get(i));
+            }
+        } else if(r < right.size()) {
+            for(int i = r; i < right.size(); i++) {
+                result.add(right.get(r));
+            }
+        }
+        return result;
+    }*/
     
     //TODO:  move somewhere else!
     public static Logger getLogger(Class clazz, Level level) {
-        Logger logger = Logger.getLogger(clazz);
-        logger.removeAllAppenders();
-        logger.addAppender(new ConsoleAppender(new PatternLayout(Constants.DEFAULT_LOG_FORMAT)));
-        logger.setLevel(level);
+        Logger logger = LogManager.getLogger(clazz);
+        /*LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+        Configuration config = ctx.getConfiguration();
+        LoggerConfig loggerConfig = config.getLoggerConfig(LogManager.ROOT_LOGGER_NAME); 
+        loggerConfig.setLevel(level);
+        ctx.updateLoggers();*/
         return logger;
     }
     
     public static Logger getSameLineLogger(Class clazz, Level level) {
-        Logger logger = Logger.getLogger(clazz + " same line");
-        logger.removeAllAppenders();
-        logger.addAppender(new ConsoleAppender(new PatternLayout(Constants.SAME_LINE_LOG_FORMAT)));
-        logger.setLevel(level);
-        return logger;
+        return getLogger(clazz, level);
     }
 }

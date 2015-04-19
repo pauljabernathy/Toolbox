@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import toolbox.Constants;
 import toolbox.util.ListArrayUtil;
 
-import org.apache.log4j.*;
+import org.apache.logging.log4j.*;
 
 //import toolbox.stats.DataList;
 import toolbox.stats.*;
@@ -40,9 +40,7 @@ public class CSVReaderTest {
     
     @BeforeClass
     public static void setUpClass() {
-        logger = Logger.getLogger(CSVReaderTest.class);
-        logger.addAppender(new ConsoleAppender(new PatternLayout( Constants.DEFAULT_LOG_FORMAT)));
-        logger.setLevel(Level.DEBUG);
+        logger = ListArrayUtil.getLogger(CSVReaderTest.class, Level.DEBUG);
     }
     
     @AfterClass

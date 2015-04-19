@@ -168,6 +168,8 @@ public class Histogram {
     /**
      * gets the probability distribution; any elements with a count of 0 are omitted 
      * because this causes getEntropy() to return NaN (ProbDist is not designed to have probabilities of 0)
+     * It returns the probability distribution derived from assuming the proportions of this histogram are representative of the underlying probability distribution.  Another way to look at it is the probability of getting each element if you were to randomly sample from the histogram.
+     * @return the probability distribution of the histogram
      */
     public ProbDist getProbDist() {
         ProbDist result = new ProbDist();
@@ -209,6 +211,8 @@ public class Histogram {
     
     /**
      * gives the count of the specified object
+     * @param o the object to find the count of
+     * @return the count
      */
     public int getCountOf(Object o) {
         if(this.values == null || !this.values.contains(o)) {

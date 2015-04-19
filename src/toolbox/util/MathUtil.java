@@ -21,9 +21,26 @@ public class MathUtil {
      */
     public static double logBase2(double x) {
         return 3.3219281 * Math.log10(x);
+        //TODO: bitwise calculation if possible
     }
     
     public static Summary summary(double[] array) {
+        Arrays.sort(array);
+        Summary s = new Summary();
+        s.min = array[0];
+        //TODO: firstQ and thirdQ
+        if(array.length % 2 == 1) {
+            s.median = array[array.length / 2];
+        } else {
+            s.median = .5 * array[array.length / 2 - 1] + .5 * array[array.length / 2];
+        }
+        s.mean = mean(array);
+        s.max = array[array.length - 1];
+        s.sd = sd(array);
+        return s;
+    }
+    
+    public static Summary summary(int[] array) {
         Arrays.sort(array);
         Summary s = new Summary();
         s.min = array[0];
@@ -125,9 +142,9 @@ public class MathUtil {
     
     /**
      * Gives the sum bounded by the (optional) endpoints.  If the endpoints are reversed, it reverses them.
-     * @param input
-     * @param endPoints
-     * @return 
+     * @param input the array to take the sum of
+     * @param endPoints (optional) the first and last indeces to include in the calculation
+     * @return the sum of the array
      */
     public static double sum(double[] input, int...endPoints) {
         if(input == null || input.length == 0) {
@@ -145,9 +162,9 @@ public class MathUtil {
     
     /**
      * Gives the sum bounded by the (optional) endpoints.  If the endpoints are reversed, it reverses them.
-     * @param input
-     * @param endPoints
-     * @return 
+     * @param input the array to sum up
+     * @param endPoints (optional) the first and last elements to sum
+     * @return the sum of the array
      */
     public static int sum(int[] input, int...endPoints) {
         if(input == null || input.length == 0) {
@@ -226,10 +243,10 @@ public class MathUtil {
      * calculates the product of the list, from the start of the index labeled "start" to the end of the index labeled "end"
      * If start and end are beyond the bounds of the input (less than 0 or greater than list.size() - 1), it adjusts start and end to fit the bounds of the input.
      * If start is greater than end, start and end are switched.
-     * @param list
-     * @param start
-     * @param end
-     * @return 
+     * @param list the list to take the product of
+     * @param start the first element to use
+     * @param end the last element to use
+     * @return the product of multiplying all the given elements
      */
     public static double prod(List<Double> list, int start, int end) {
         if(list == null || list.isEmpty()) {
@@ -269,10 +286,10 @@ public class MathUtil {
      * calculates the product of the input, from the start of the index labeled "start" to the end of the index labeled "end"
      * If start and end are beyond the bounds of the input (less than 0 or greater than input.size() - 1), it adjusts start and end to fit the bounds of the input.
      * If start is greater than end, start and end are switched.
-     * @param input
-     * @param start
-     * @param end
-     * @return 
+     * @param input the array to take the product of
+     * @param start the first element to use
+     * @param end the last element to use
+     * @return the product
      */
     public static double prod(double[] input, int start, int end) {
         if(input == null || input.length == 0) {
@@ -353,7 +370,7 @@ public class MathUtil {
     /**
      * Calculates the ratios of each element of the input to the previous element.  For example, if the input is 1.0, 2.0, 1.0, 5.0, the result would be 2.0, 0.5, 5.0.
      * Currently does not check for 0s, so the user should check for it and act accordingly.
-     * @param input
+     * @param input the array to take the difference ratios of
      * @return an array of length one less than the input length
      */
     public static double[] diffRatios(double[] input) {
@@ -402,10 +419,26 @@ public class MathUtil {
     
     /**
      * Gives the sample standard deviation (divide by n - 1 instead of n)
-     * @param input
+     * @param input the array to take the standard deviation of
      * @return 
      */
     public static double sd(double[] input) {
+        if(input == null || input.length == 0 || input.length == 1) {
+            return 0.0;
+        }
+        double mean = mean(input);
+        double[] squaredDiffs = new double[input.length];
+        for(int i = 0; i < input.length; i++) {
+            squaredDiffs[i] = Math.pow((input[i] - mean), 2.0);
+        }
+        double sum = 0.0;
+        for(double d : squaredDiffs) {
+            sum += d;
+        }
+        return Math.sqrt(sum / (double)(squaredDiffs.length - 1));
+    }
+    
+    public static double sd(int[] input) {
         if(input == null || input.length == 0 || input.length == 1) {
             return 0.0;
         }
@@ -490,6 +523,8 @@ public class MathUtil {
         return (double)((int)(amount * Math.pow(10, places))) / Math.pow(10, places);
     }
     
+    //TODO:  seq double functions
+    
     public static int[] seqInt(int start, int end) {
         int length = Math.abs(end - start) + 1;
         int[] result = new int[length];
@@ -526,5 +561,18 @@ public class MathUtil {
             }
         }
         return result;
+    }
+    
+    //TODO: unit test
+    public static double[] intToDouble(int[] input) {
+        if(input == null) {
+            return new double[0];
+        }
+        int length = input.length;
+        double[] output = new double[length];
+        for(int i = 0; i < length; i++) {
+            output[i] = (double)input[i];
+        }
+        return output;
     }
 }

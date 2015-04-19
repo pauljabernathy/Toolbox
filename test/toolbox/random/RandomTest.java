@@ -11,7 +11,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import org.apache.log4j.*;
+import org.apache.logging.log4j.*;
 import toolbox.util.ListArrayUtil;
 import toolbox.stats.*;
 import toolbox.io.CSVWriter;
@@ -33,6 +33,8 @@ public class RandomTest {
     
     private static Logger logger;
     private static Logger sameLineLogger;
+    private static final String HEADS = "heads";
+    private static final String TAILS = "tails";
     
     public RandomTest() {
     }
@@ -380,11 +382,12 @@ public class RandomTest {
         assertEquals(0, Random.rbinom(0, .8, "heads", "tails").size());
         
         List result = null;
-        result = Random.rbinom(10000, .5, "heads", "tails");
+        result = Random.rbinom(10000, .5, HEADS, TAILS);
         assertEquals(10000, result.size());
         Histogram hist = new Histogram(result);
         ProbDist p = hist.getProbDist();
         logger.debug(hist.toString());
+        assertEquals(1.0, (double)hist.getCountOf(HEADS) / (double)hist.getCountOf(TAILS), 0.1);
         assertEquals(1, hist.getEntropy(), 0.01);
         if((double)(p.getProbabilities().get(0)) > .55) {
             fail("probabilities out of balance");
@@ -392,18 +395,81 @@ public class RandomTest {
         if((double)(p.getProbabilities().get(0)) < .45) {
             fail("probabilities out of balance");
         }
+        try {
+            CSVWriter.writeList(result, "rbinom_obj.csv", "objects", "\n");
+        } catch(IOException e) {
+            logger.error(e.getClass() + " trying to write binom array in testRbinom_count_p_success_failure():  " + e.getMessage());
+        }
         
-        result = Random.rbinom(10000, .5, new Integer(1), new Integer(0));
+        result = Random.rbinom(10000, .5, 1, 0);
         assertEquals(10000, result.size());
         hist = new Histogram(result);
         p = hist.getProbDist();
         logger.debug(hist.toString());
+        assertEquals(1.0, (double)hist.getCountOf(1) / (double)hist.getCountOf(0), 0.1);
         assertEquals(1, hist.getEntropy(), 0.01);
         if((double)(p.getProbabilities().get(0)) > .52) {
             fail("probabilities out of balance");
         }
         if((double)(p.getProbabilities().get(0)) < .48) {
             fail("probabilities out of balance");
+        }
+    }
+    
+    @Test
+    public void testRbinom_count_size_prob() {
+        logger.info("\ntesting rbinom(int count, int size, double prob)");
+        int[] result = null;
+        assertEquals(0, Random.rbinom(0, 0, 0).length);
+        assertEquals(1, Random.rbinom(1, 0, 0).length);
+        assertEquals(10, Random.rbinom(10, 0, 0).length);
+        assertEquals(0, Random.rbinom(0, 0, -.001).length);
+        assertEquals(0, Random.rbinom(0, 0, 1.1).length);
+        
+        //result = Random.rbinom(1000, 0, 0);
+        assertEquals(0.0, MathUtil.sum(Random.rbinom(1000, 0, 0)), 0.0);
+        assertEquals(0.0, MathUtil.sum(Random.rbinom(1000, 10, 0)), 0.0);
+        assertEquals(0.0, MathUtil.sum(Random.rbinom(1000, 0, 1.0)), 0.0);
+        assertEquals(1000.0, MathUtil.sum(Random.rbinom(1000, 1, 1.0)), 0.0);
+        assertEquals(10000.0, MathUtil.sum(Random.rbinom(1000, 10, 1.0)), 0.0);
+        
+        result = Random.rbinom(10000, 10, 0.5);
+        Summary summary = MathUtil.summary(result);//Random.rbinom(1000, 10, 0.5));
+        assertEquals(true, 0 <= summary.min);
+        assertEquals(true, 10.0 >= summary.max);
+        assertEquals(5.0, summary.mean, 0.1);
+        
+        //TODO:  make a way to test the shape
+        try {
+            CSVWriter.writeArray(result, "rbinom_10000_10_p5.csv", "nums", "\n");
+        } catch(IOException e) {
+            logger.error(e.getClass() + " trying to write binom array in testRbinom_count_size_prob():  " + e.getMessage());
+        }
+        
+        result = Random.rbinom(10000, 10, 0.7);
+        summary = MathUtil.summary(result);
+        assertEquals(true, 0 <= summary.min);
+        assertEquals(true, 10.0 >= summary.max);
+        assertEquals(7.0, summary.mean, 0.1);
+        
+        //TODO:  make a way to test the shape
+        try {
+            CSVWriter.writeArray(result, "rbinom_10000_10_p7.csv", "nums", "\n");
+        } catch(IOException e) {
+            logger.error(e.getClass() + " trying to write binom array in testRbinom_count_size_prob():  " + e.getMessage());
+        }
+        
+        result = Random.rbinom(10000, 5, 0.5);
+        summary = MathUtil.summary(result);
+        assertEquals(true, 0 <= summary.min);
+        assertEquals(true, 10.0 >= summary.max);
+        assertEquals(2.5, summary.mean, 0.1);
+        
+        //TODO:  make a way to test the shape
+        try {
+            CSVWriter.writeArray(result, "rbinom_10000_5_p5.csv", "nums", "\n");
+        } catch(IOException e) {
+            logger.error(e.getClass() + " trying to write binom array in testRbinom_count_size_prob():  " + e.getMessage());
         }
     }
     
@@ -476,7 +542,7 @@ public class RandomTest {
         } catch(IOException e) {
             logger.error(e.getClass() + " " + e.getMessage());
         }*/
-        assertEquals(2.0, MathUtil.mean(result), 0.1);
+        assertEquals(0.5, MathUtil.mean(result), 0.1);
     }
     
     @Test

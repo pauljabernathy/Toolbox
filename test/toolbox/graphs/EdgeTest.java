@@ -11,7 +11,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import org.apache.log4j.*;
+import org.apache.logging.log4j.*;
+import toolbox.util.ListArrayUtil;
 
 /**
  *
@@ -26,9 +27,7 @@ public class EdgeTest {
     
     @BeforeClass
     public static void setUpClass() {
-        logger = Logger.getLogger(EdgeTest.class);
-        logger.addAppender(new ConsoleAppender(new PatternLayout("%m%n")));
-        logger.setLevel(Level.DEBUG);
+        logger = ListArrayUtil.getLogger(EdgeTest.class, Level.DEBUG);
     }
     
     @AfterClass

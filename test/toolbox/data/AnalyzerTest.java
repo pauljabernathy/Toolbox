@@ -11,7 +11,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import org.apache.log4j.*;
+import org.apache.logging.log4j.*;
 import toolbox.util.ListArrayUtil;
 
 /**
@@ -68,7 +68,7 @@ public class AnalyzerTest {
     
     @Test
     public void testHasChanged() {
-        logger.info("\ntesting hasChanged()");
+        logger.error("\ntesting hasChanged()");
         Analyzer instance = new Analyzer();
         logger.debug(instance.hasChanged());
         instance.notifyObservers();
