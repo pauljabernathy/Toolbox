@@ -194,6 +194,20 @@ public class HistogramTest {
     }
     
     @Test
+    public void testConstructor_array_and_counts() {
+        logger.info("\ntesting Histogram(T[] values, int[] counts");
+        String[] data = new String[] { "a", "b", "c", "a" };
+        int[] counts = new int[] { 3, 2, 1, 1 };
+        try {
+            Histogram h = new Histogram(data, counts);
+            System.out.println(h);
+            assertEquals(3, h.size());
+        } catch(ProbabilityException e) {
+            logger.error("ProbabilibyException:  " + e.getMessage());
+        }
+    }
+    
+    @Test
     public void testClear() {
         logger.info("\ntesting clear()");
         List<String> data = null;
