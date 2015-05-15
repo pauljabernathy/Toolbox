@@ -542,7 +542,7 @@ public class RandomTest {
         } catch(IOException e) {
             logger.error(e.getClass() + " " + e.getMessage());
         }*/
-        assertEquals(0.5, MathUtil.mean(result), 0.1);
+        assertEquals(2.0, MathUtil.mean(result), 0.1);
     }
     
     @Test
