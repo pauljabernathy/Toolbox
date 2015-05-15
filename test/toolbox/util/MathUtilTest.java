@@ -484,6 +484,30 @@ public class MathUtilTest {
     }
     
     @Test
+    public void testCov_double_array() {
+        logger.info("\ntesting cov(double[] x, double[] y)");
+        assertEquals(0.0, MathUtil.cov(null, null), 0.0);
+        assertEquals(0.0, MathUtil.cov(new double[0], null), 0.0);
+        assertEquals(0.0, MathUtil.cov(new double[] { 1.0, 2.0 }, null), 0.0);
+        assertEquals(0.0, MathUtil.cov(null, new double[] { 1.0, 2.0 }), 0.0);
+        assertEquals(0.0, MathUtil.cov(null, new double[0]), 0.0);
+        
+        assertEquals(0.5, MathUtil.cov(new double[]{1, 2}, new double[]{1, 2}), 0.0);
+    }
+    
+    @Test
+    public void testCor_double_array() {
+        logger.info("\ntesting cor(double[] x, double[] y)");
+        assertEquals(0.0, MathUtil.cor(null, null), 0.0);
+        assertEquals(0.0, MathUtil.cor(new double[0], null), 0.0);
+        assertEquals(0.0, MathUtil.cor(new double[] { 1.0, 2.0 }, null), 0.0);
+        assertEquals(0.0, MathUtil.cor(null, new double[] { 1.0, 2.0 }), 0.0);
+        assertEquals(0.0, MathUtil.cor(null, new double[0]), 0.0);
+        
+        assertEquals(1.0, MathUtil.cor(new double[]{1, 2}, new double[]{1, 2}), 0.00000001);
+    }
+    
+    @Test
     public void testCheckEndPoints() {
         logger.info("\ntesting checkEndPoints()");
         int[] input = null;

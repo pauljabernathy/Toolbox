@@ -7,7 +7,7 @@ package toolbox.util;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
-import toolbox.stats.Summary;
+import toolbox.stats.*;
 
 /**
  *
@@ -454,23 +454,47 @@ public class MathUtil {
         return Math.sqrt(sum / (double)(squaredDiffs.length - 1));
     }
     
-     public static double sd(List<Double> input) {
-         if(input == null || input.size() == 0 || input.size() == 1) {
-             return 0.0;
-         }
-         double mean = mean(input);
-         List<Double> squaredDiffs = new ArrayList<Double>();
-         for(int i = 0; i < input.size(); i++) {
-            squaredDiffs.add(Math.pow((input.get(i) - mean), 2.0));
+    public static double sd(List<Double> input) {
+        if(input == null || input.size() == 0 || input.size() == 1) {
+            return 0.0;
         }
-         double sum = 0.0;
+        double mean = mean(input);
+        List<Double> squaredDiffs = new ArrayList<Double>();
+        for(int i = 0; i < input.size(); i++) {
+           squaredDiffs.add(Math.pow((input.get(i) - mean), 2.0));
+        }
+        double sum = 0.0;
         for(double d : squaredDiffs) {
             sum += d;
         }
         return Math.sqrt(sum / (double)(squaredDiffs.size() - 1));
-     }
-     
-     public static int[] checkEndPoints(int defaultLower, int defaultUpper, int...endPoints) {
+    }
+    
+    public static double cov(double[] x, double[] y) {
+        if(x == null || y == null || x.length < 2 || y.length < 2) {
+            return 0.0;
+        }
+        if(x.length != y.length) {
+            return 0.0;
+        }
+        //TODO: throw an exception for an error
+        double meanX = mean(x);
+        double meanY = mean(y);
+        double nMeans = x.length * meanX * meanY;
+        double cov = 0.0;
+        for(int i = 0; i < x.length; i++) {
+            //cor += x[i] * y[i] - nMeans;
+            cov += (x[i] - meanX) * (y[i] - meanY);
+        }
+        
+        return cov / (double)(x.length - 1);
+    }
+    
+    public static double cor(double[] x, double[] y) {
+        return cov(x, y) / (sd(x) * sd(y));
+    }
+    
+    public static int[] checkEndPoints(int defaultLower, int defaultUpper, int...endPoints) {
         //int[] result = new int[] { 0, 1 };
         int lower = defaultLower;
         int upper = defaultUpper;
