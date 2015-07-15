@@ -17,6 +17,7 @@ import toolbox.information.Shannon;
 
 import toolbox.stats.*;
 import toolbox.util.ListArrayUtil;
+import toolbox.util.MathUtil;
 
 /**
  *
@@ -156,7 +157,7 @@ public class CSVReader {
             return row;
         }
         String[] vars = line.split(columnSeparator);
-        if (vars == null || vars.length < columns[columns.length - 1]) {
+        if (vars == null || vars.length - 1 < MathUtil.max(columns)) {
             return row;
         }
         for (int column : columns) {

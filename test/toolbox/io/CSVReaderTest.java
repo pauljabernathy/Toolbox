@@ -14,8 +14,6 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
-//import learning.naivebayes.Classification;
-//import learning.stats.*;
 import toolbox.Constants;
 import toolbox.util.ListArrayUtil;
 
@@ -255,15 +253,54 @@ public class CSVReaderTest {
         result = CSVReader.parseLine(LINE_ONE, columns, null);
         result = CSVReader.parseLine(LINE_ONE, columns, "");
         assertEquals(0, result.size());
-        //Utilities.showList(result);
+        
+        //indexes out of range
+        columns = new int[] { 2, 5, 15 };
+        result = CSVReader.parseLine(LINE_ONE, columns, ",");
+        assertEquals(0, result.size());
+        logger.debug(ListArrayUtil.arrayToString(columns) + ":  " + result);
+        
+        columns = new int[] { 15, 5, 2 };
+        result = CSVReader.parseLine(LINE_ONE, columns, ",");
+        assertEquals(0, result.size());
+        logger.debug(ListArrayUtil.arrayToString(columns) + ":  " + result);
+        
+        columns = new int[] { 2, 5, 14 };
+        result = CSVReader.parseLine(LINE_ONE, columns, ",");
+        assertEquals(0, result.size());
+        logger.debug(ListArrayUtil.arrayToString(columns) + ":  " + result);
+        
+        columns = new int[] { 14, 5, 2 };
+        result = CSVReader.parseLine(LINE_ONE, columns, ",");
+        assertEquals(0, result.size());
+        logger.debug(ListArrayUtil.arrayToString(columns) + ":  " + result);
+        
         
         //now the legit inputs
+        columns = new int[] { 2, 5, 13 };
         result = CSVReader.parseLine(LINE_ONE, columns, ",");
         assertEquals(3, result.size());
-        //Utilities.showList(result);
+        logger.debug(ListArrayUtil.listToString(result));
         assertEquals("3", result.get(0));
         assertEquals("male", result.get(1));
         assertEquals("FALSE", result.get(2));
+        
+        columns = new int[] { 2, 13, 5 };
+        result = CSVReader.parseLine(LINE_ONE, columns, ",");
+        assertEquals(3, result.size());
+        logger.debug(ListArrayUtil.listToString(result));
+        assertEquals("3", result.get(0));
+        assertEquals("FALSE", result.get(1));
+        assertEquals("male", result.get(2));
+        
+        columns = new int[] { 13, 5, 2 };
+        result = CSVReader.parseLine(LINE_ONE, columns, ",");
+        assertEquals(3, result.size());
+        logger.debug(ListArrayUtil.listToString(result));
+        assertEquals("FALSE", result.get(0));
+        assertEquals("male", result.get(1));
+        assertEquals("3", result.get(2));
+        
     }
 
     @Test
