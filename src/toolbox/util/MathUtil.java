@@ -424,7 +424,7 @@ public class MathUtil {
      */
     public static double sd(double[] input) {
         if(input == null || input.length == 0 || input.length == 1) {
-            return 0.0;
+            return Double.NaN;
         }
         double mean = mean(input);
         double[] squaredDiffs = new double[input.length];
@@ -440,7 +440,7 @@ public class MathUtil {
     
     public static double sd(int[] input) {
         if(input == null || input.length == 0 || input.length == 1) {
-            return 0.0;
+            return Double.NaN;
         }
         double mean = mean(input);
         double[] squaredDiffs = new double[input.length];
@@ -456,7 +456,7 @@ public class MathUtil {
     
     public static double sd(List<Double> input) {
         if(input == null || input.size() == 0 || input.size() == 1) {
-            return 0.0;
+            return Double.NaN;
         }
         double mean = mean(input);
         List<Double> squaredDiffs = new ArrayList<Double>();
@@ -472,10 +472,10 @@ public class MathUtil {
     
     public static double cov(double[] x, double[] y) {
         if(x == null || y == null || x.length < 2 || y.length < 2) {
-            return 0.0;
+            return Double.NaN;
         }
         if(x.length != y.length) {
-            return 0.0;
+            return Double.NaN;
         }
         //TODO: throw an exception for an error
         double meanX = mean(x);
