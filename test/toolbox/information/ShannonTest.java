@@ -28,6 +28,8 @@ public class ShannonTest {
     private static Logger logger;
     private static Logger sameLineLogger;
     
+    private static final double EPSILON = 0.0000001;
+    
     public ShannonTest() {
     }
     
@@ -78,6 +80,29 @@ public class ShannonTest {
         input.add("blueberry");
         
         assertEquals(1.5, Shannon.getEntropy(input), 0.0000001);
+    }
+    
+    //TODO: some more testing
+    @Test
+    public void testGetEntropyOfCharacters() {
+        logger.info("\ntesting getEntropyOfCharacters()");
+        assertEquals(Double.NaN, Shannon.getEntropyOfCharacters(null), EPSILON);
+        assertEquals(Double.NaN, Shannon.getEntropyOfCharacters(""), EPSILON);
+        assertEquals(0.0, Shannon.getEntropyOfCharacters("a"), EPSILON);
+        assertEquals(1.0, Shannon.getEntropyOfCharacters("ab"), EPSILON);
+        assertEquals(.9182958, Shannon.getEntropyOfCharacters("abb"), EPSILON);
+        assertEquals(2.0, Shannon.getEntropyOfCharacters("abcd"), EPSILON);
+    }
+    
+    @Test
+    public void testGetBitwiseEntropyOfCharacters() {
+        logger.info("\ntesting getBitwiseEntropyOfCharacters()");
+        assertEquals(Double.NaN, Shannon.getBitwiseEntropyOfCharacters(null), EPSILON);
+        assertEquals(Double.NaN, Shannon.getBitwiseEntropyOfCharacters(""), EPSILON);
+        assertEquals(0.954434, Shannon.getBitwiseEntropyOfCharacters("a"), EPSILON);
+        assertEquals(0.954434, Shannon.getBitwiseEntropyOfCharacters("aa"), EPSILON);
+        assertEquals(0.954434, Shannon.getBitwiseEntropyOfCharacters("ab"), EPSILON);
+        assertEquals(0.9886994, Shannon.getBitwiseEntropyOfCharacters("ac"), EPSILON);
     }
 
     @Test
