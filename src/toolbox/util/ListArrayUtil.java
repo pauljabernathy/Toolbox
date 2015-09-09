@@ -470,7 +470,7 @@ public class ListArrayUtil {
         return numDiffs;
     }
     
-    /*public static <T> List<T> merge(List<T> left, List<T> right) {
+    public static <T extends Comparable> List<T> merge(List<T> left, List<T> right) {
         List<T> result = new ArrayList<>();
         if(left == null || left.isEmpty()) {
             if(right == null || right.isEmpty()) {
@@ -516,7 +516,7 @@ public class ListArrayUtil {
             }
         }
         return result;
-    }*/
+    }
     
     //TODO:  move somewhere else!
     public static Logger getLogger(Class clazz, Level level) {
