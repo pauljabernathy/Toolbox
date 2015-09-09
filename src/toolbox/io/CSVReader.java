@@ -236,8 +236,14 @@ public class CSVReader {
     }
 
     public static boolean verifyParameters(String filename, int classColumn, String classification, int[] featureColumns, String columnSeparator) throws IOException {
-        if (filename == null || filename.equals("") || featureColumns == null || featureColumns.length == 0) {
-            throw new IOException("bad input");
+        if(filename == null) {
+            throw new IOException(Constants.FILENAME_CANNOT_BE_NULL);
+        } else if(filename.equals("")) {
+            throw new IOException(Constants.FILENAME_CANNOT_BE_EMPTY);
+        } else if (featureColumns == null) {
+            throw new IOException(Constants.FEATURE_COLUMNS_CANNOT_BE_NULL);
+        } else if(featureColumns.length == 0) {
+            throw new IOException(Constants.FEATURE_COLUMNS_CANNOT_BE_EMPTY);
         }
         return true;
     }

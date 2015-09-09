@@ -305,6 +305,34 @@ public class CSVReaderTest {
 
     @Test
     public void testVerifyParameters() throws Exception {
+        logger.info("\ntestVerifyParameters()");
+        try {
+            CSVReader.verifyParameters(null, 1, "class a", new int[] { 1, 2 }, ",");
+            fail("no exception was thrown");
+        } catch(IOException e) {
+            assertEquals("bad input - filename cannot be null", e.getMessage());
+        }
+        
+        try {
+            CSVReader.verifyParameters("", 1, "class a", new int[] { 1, 2 }, ",");
+            fail("no exception was thrown");
+        } catch(IOException e) {
+            assertEquals("bad input - filename cannot be empty", e.getMessage());
+        }
+        
+        try {
+            CSVReader.verifyParameters("dummyfilename.csv", 1, "class a", null, ",");
+            fail("no exception was thrown");
+        } catch(IOException e) {
+            assertEquals("bad input - feature columns cannot be null", e.getMessage());
+        }
+        
+        try {
+            CSVReader.verifyParameters("dummyfilename.csv", 1, "class a", new int[] { }, ",");
+            fail("no exception was thrown");
+        } catch(IOException e) {
+            assertEquals("bad input - feature columns cannot be empty", e.getMessage());
+        }
     }
     
     @Test

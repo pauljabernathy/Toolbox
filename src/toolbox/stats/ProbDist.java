@@ -267,6 +267,8 @@ public class ProbDist<T> {
         return this.calculateEntropy();
     }
     
+    //TODO:  return NAN for null probabilities
+    //TODO:  move this calculation to Shannon class?
     private double calculateEntropy() {//throws ProbabilityException {
         if(this.probabilities == null) {
             return 0.0;
