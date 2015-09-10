@@ -7,6 +7,7 @@ package toolbox.util;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
+import static java.util.stream.Collectors.toList;
 import org.apache.logging.log4j.*;
 import org.apache.logging.log4j.core.config.*;
 import org.apache.logging.log4j.core.LoggerContext;
@@ -485,9 +486,10 @@ public class ListArrayUtil {
                 return right;
             }
         }
-        Collections.sort(left);
-        Collections.sort(new ArrayList<String>());
-        Collections.sort(right);
+        //Collections.sort(left);
+        //Collections.sort(right);
+        left = left.stream().sorted().collect(toList());
+        right = right.stream().sorted().collect(toList());
         int l = 0;
         int r = 0;
         int comparison = 0;
@@ -498,7 +500,7 @@ public class ListArrayUtil {
                 l++;
             } else if(comparison == 0) {
                 result.add(left.get(l));
-                result.add(right.get(r));
+                //result.add(right.get(r));
                 l++;
                 r++;
             } else if(comparison > 0) {

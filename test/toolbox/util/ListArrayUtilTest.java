@@ -672,7 +672,15 @@ public class ListArrayUtilTest {
         left.addAll(Arrays.asList("hat", "ball", "gloves", "bat", "field"));
         right.addAll(Arrays.asList("ball", "field", "cleats", "shin guards", "hat"));
         result = ListArrayUtil.merge(left, right);
-        assertEquals(10, result.size());
+        assertEquals(7, result.size());
+        logger.info(ListArrayUtil.listToString(result));
+        assertEquals("ball", result.get(0));
+        assertEquals("bat", result.get(1));
+        assertEquals("cleats", result.get(2));
+        assertEquals("field", result.get(3));
+        assertEquals("gloves", result.get(4));
+        assertEquals("hat", result.get(5));
+        assertEquals("shin guards", result.get(6));
     }
     
     private class SomeClass {
