@@ -458,29 +458,72 @@ public class MathUtilTest {
     }
     
     @Test
+    public void testSD_int_array() {
+        logger.info("\ntesting sd(int[] input)");
+        int[] input = null;
+        assertEquals(Double.NaN, MathUtil.sd(input), 0.0);
+        assertEquals(Double.NaN, MathUtil.sd(new int[] {}), 0.0);
+        assertEquals(Double.NaN, MathUtil.sd(new int[] { 1 }), 0.0);
+        
+        assertEquals(1.581139, MathUtil.sd(new int[] { 1, 2, 3, 4, 5 }), 0.0001);
+    }
+    
+    @Test
     public void testSD_double_Array() {
         logger.info("\ntesting sd(double[] input)");
         double[] input = null;
-        assertEquals(0.0, MathUtil.sd(input), 0.0);
-        input = new double[] { 1.0 };
-        assertEquals(0.0, MathUtil.sd(input), 0.0);
-        input = new double[] { 1.0, 2.0, 3.0, 4.0, 5.0 };
-        assertEquals(1.581139, MathUtil.sd(input), 0.0001);
+        assertEquals(Double.NaN, MathUtil.sd(input), 0.0);
+        assertEquals(Double.NaN, MathUtil.sd(new double[] { }), 0.0);
+        assertEquals(Double.NaN, MathUtil.sd(new double[] { 1.0 }), 0.0);
+        
+        assertEquals(1.581139, MathUtil.sd(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0 }), 0.0001);
     }
     
     @Test
     public void testSD_List_Double() {
         logger.info("\ntesting sd(List<Double> input)");
         List<Double> input = null;
-        assertEquals(0.0, MathUtil.sd(input), 0.0);
+        assertEquals(Double.NaN, MathUtil.sd(input), 0.0);
+        
         input = new ArrayList<Double>();
+        assertEquals(Double.NaN, MathUtil.sd(input), 0.0);
         input.add(1.0);
-        assertEquals(0.0, MathUtil.sd(input), 0.0);
+        assertEquals(Double.NaN, MathUtil.sd(input), 0.0);
         input.add(2.0);
         input.add(3.0);
         input.add(4.0);
         input.add(5.0);
         assertEquals(1.581139, MathUtil.sd(input), 0.0001);
+    }
+    
+    @Test
+    public void testCov_double_array() {
+        logger.info("\ntesting cov(double[] x, double[] y)");
+        assertEquals(Double.NaN, MathUtil.cov(null, null), 0.0);
+        assertEquals(Double.NaN, MathUtil.cov(new double[0], null), 0.0);
+        assertEquals(Double.NaN, MathUtil.cov(new double[] { 1.0, 2.0 }, null), 0.0);
+        assertEquals(Double.NaN, MathUtil.cov(null, new double[] { 1.0, 2.0 }), 0.0);
+        assertEquals(Double.NaN, MathUtil.cov(null, new double[0]), 0.0);
+        
+        assertEquals(Double.NaN, MathUtil.cov(new double[]{1, 2}, new double[]{1, 2, 3}), 0.0);
+        
+        assertEquals(0.5, MathUtil.cov(new double[]{1, 2}, new double[]{1, 2}), 0.0);
+    }
+    
+    @Test
+    public void testCor_double_array() {
+        logger.info("\ntesting cor(double[] x, double[] y)");
+        assertEquals(Double.NaN, MathUtil.cor(null, null), 0.0);
+        assertEquals(Double.NaN, MathUtil.cor(new double[0], null), 0.0);
+        assertEquals(Double.NaN, MathUtil.cor(new double[] { 1.0, 2.0 }, null), 0.0);
+        assertEquals(Double.NaN, MathUtil.cor(null, new double[] { 1.0, 2.0 }), 0.0);
+        assertEquals(Double.NaN, MathUtil.cor(null, new double[0]), 0.0);
+        
+        assertEquals(Double.NaN, MathUtil.cor(new double[] { 1.0 }, new double[] { 1.0 }), 0.0);
+        assertEquals(Double.NaN, MathUtil.cor(new double[]{1, 2}, new double[]{1, 2, 3}), 0.0);
+        
+        assertEquals(1.0, MathUtil.cor(new double[]{1, 2}, new double[]{1, 2}), 0.00000001);
+        System.out.println(Math.sqrt(-1));
     }
     
     @Test

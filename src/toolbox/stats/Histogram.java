@@ -12,14 +12,13 @@ import java.util.ArrayList;
  * @author paul
  */
 public class Histogram {
+    private String label;
     private ArrayList values;
     private ArrayList<Integer> counts;
     
-    private String label;
-    
     //percents and sum are technically redundant but here to make returning them faster than calculating them from counts each time
     private ArrayList<Double> probabilities;
-    private int sum;
+    private int length;
     
     public Histogram() {
         this.clear();
@@ -46,8 +45,8 @@ public class Histogram {
             this.clear();
             return;
         }
-        this.values = new ArrayList<Integer>();
-        this.counts = new ArrayList<Integer>();
+        this.values = new ArrayList<>();
+        this.counts = new ArrayList<>();
         for(int i = 0; i < data.length; i++) {
             if(values.contains(data[i])) {
                 int index = values.indexOf(data[i]);
@@ -67,13 +66,13 @@ public class Histogram {
             throw new ProbabilityException("length of values and counts must match");
         }
         
-        this.values = new ArrayList();
-        this.counts = new ArrayList<Integer>();
-        for(T value : values) {
-            this.values.add(value);
-        }
-        for(int count : counts) {
-            this.counts.add(count);
+        this.values = new ArrayList<>();
+        this.counts = new ArrayList<>();
+        for(int i = 0; i < values.length; i++) {
+            if(!this.values.contains(values[i])) {
+                this.values.add(values[i]);
+                this.counts.add(counts[i]);
+            }
         }
         this.updatePercents();
     }
@@ -145,15 +144,16 @@ public class Histogram {
         return this.label;
     }
     
-    public void setLabel(String label) {
+    public Histogram setLabel(String label) {
         this.label = label;
+        return this;
     }
     
     private void updateSum() {
         for(int i = 0; i < this.counts.size(); i++) {
-            sum += this.counts.get(i);
+            length += this.counts.get(i);
         }
-        this.sum = sum;
+        this.length = length;
     }
     
     private void updatePercents() {
@@ -161,7 +161,7 @@ public class Histogram {
         int sum = 0;
         this.updateSum();
         for(int i = 0; i < this.counts.size(); i++) {
-            this.probabilities.add((double)this.counts.get(i) / (double) this.sum);
+            this.probabilities.add((double)this.counts.get(i) / (double) this.length);
         }
     }
     
@@ -189,7 +189,7 @@ public class Histogram {
                 if(count != 0) {
                     c.add(count);
                     v.add(this.values.get(i));
-                    p.add((double)count / this.sum);
+                    p.add((double)count / this.length);
                 }
             }
             try {
@@ -248,7 +248,7 @@ public class Histogram {
             sb.append(this.values.get(i)).append("  ").append(this.counts.get(i)).append("  ").append(this.probabilities.get(i));
             sb.append(endLine);
         }
-        sb.append("Total").append("  ").append(this.sum).append("  ");
+        sb.append("Total").append("  ").append(this.length).append("  ");
         double d = 0.0;
         for(int i = 0; i < this.probabilities.size(); i++) {
             d += this.probabilities.get(i);
@@ -267,7 +267,7 @@ public class Histogram {
         for(int i = 0; i < this.getCounts().size(); i++) {
             sb.append("<tr><td>").append(this.values.get(i)).append("</td><td>").append(this.counts.get(i)).append("</td><td>").append(this.probabilities.get(i)).append("</td></tr>");
         }
-        sb.append("<tr><td>").append("Total").append("</td><td>").append(this.sum);
+        sb.append("<tr><td>").append("Total").append("</td><td>").append(this.length);
         double d = 0.0;
         for(int i = 0; i < this.probabilities.size(); i++) {
             d += this.probabilities.get(i);

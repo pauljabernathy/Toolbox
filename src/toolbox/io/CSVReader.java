@@ -17,6 +17,7 @@ import toolbox.information.Shannon;
 
 import toolbox.stats.*;
 import toolbox.util.ListArrayUtil;
+import toolbox.util.MathUtil;
 
 /**
  *
@@ -91,7 +92,6 @@ public class CSVReader {
         /*} catch (IOException e) {
             System.out.println(e.getClass() + " in classify(" + filename + ") at line " + lineNum + ":  " + e.getMessage());
         }*/
-        //System.out.println("leaving loadFile(" + filename + ") at " + new Date());
         return result;
     }
     
@@ -129,34 +129,6 @@ public class CSVReader {
         return result;
     }
     */
-    public static ProbDist<String> getClassificationDists(String filename, int classColumn, String columnSeparator) throws IOException {
-        if (filename == null || filename.equals("") || classColumn < 0 || columnSeparator == null || columnSeparator.equals("")) {
-            return new ProbDist<String>();
-        }
-        BufferedReader reader = new BufferedReader(new FileReader(filename));
-        if (reader.ready()) {
-            reader.readLine();
-        }
-        String line = "";
-        ArrayList<String> names = new ArrayList<String>();
-        ArrayList<Integer> counts = new ArrayList<Integer>();
-        int total = 0;
-        String currentName = "";
-        while (reader.ready()) {
-            line = reader.readLine();
-            currentName = parseLine(line, classColumn, columnSeparator);
-            if (!names.contains(currentName)) {
-                names.add(currentName);
-                counts.add(1);
-            } else {
-                int index = names.indexOf(currentName);
-                counts.set(index, counts.get(index) + 1);
-            }
-            total++;
-        }
-        ProbDist<String> dist = ProbDist.createInstanceFromCounts(names, counts);
-        return dist;
-    }
 
     public static String parseLine(String line, int column, String columnSeparator) {
         if (column == -1) {
@@ -185,7 +157,7 @@ public class CSVReader {
             return row;
         }
         String[] vars = line.split(columnSeparator);
-        if (vars == null || vars.length < columns[columns.length - 1]) {
+        if (vars == null || vars.length - 1 < MathUtil.max(columns)) {
             return row;
         }
         for (int column : columns) {
@@ -264,8 +236,14 @@ public class CSVReader {
     }
 
     public static boolean verifyParameters(String filename, int classColumn, String classification, int[] featureColumns, String columnSeparator) throws IOException {
-        if (filename == null || filename.equals("") || featureColumns == null || featureColumns.length == 0) {
-            throw new IOException("bad input");
+        if(filename == null) {
+            throw new IOException(Constants.FILENAME_CANNOT_BE_NULL);
+        } else if(filename.equals("")) {
+            throw new IOException(Constants.FILENAME_CANNOT_BE_EMPTY);
+        } else if (featureColumns == null) {
+            throw new IOException(Constants.FEATURE_COLUMNS_CANNOT_BE_NULL);
+        } else if(featureColumns.length == 0) {
+            throw new IOException(Constants.FEATURE_COLUMNS_CANNOT_BE_EMPTY);
         }
         return true;
     }

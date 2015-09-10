@@ -35,6 +35,39 @@ public class Shannon {
         return new Histogram(input).getEntropy();
     }
     
+    public static double getEntropyOfCharacters(String text) {
+        if(text == null || text.equals("")) {
+            return Double.NaN;
+        }
+        List<Character> list = new ArrayList<Character>();
+        for(int i = 0; i < text.length(); i++) {
+            list.add(text.charAt(i));
+        }
+        return getEntropy(list);
+    }
+    
+    public static double getBitwiseEntropyOfCharacters(String text) {
+        if(text == null || text.equals("")) {
+            return Double.NaN;
+        }
+        int[] current = null;
+        int sum = 0;
+        for(int i = 0; i < text.length(); i++) {
+            current = ListArrayUtil.toBinaryArray(text.charAt(i), 8);
+            sum += MathUtil.sum(current);
+            //System.out.println(ListArrayUtil.arrayToString(current) + " " + sum);
+        }
+        double[] probs = new double[2];
+        probs[1] = (double)sum / (double)(text.length() * 8.0);
+        probs[0] = 1.0 - probs[1];
+        //System.out.println(ListArrayUtil.arrayToString(probs));
+        double H = 0.0;
+        for(int i = 0; i < probs.length; i++) {
+            H -= probs[i] * MathUtil.logBase2(probs[i]);
+        }
+        return H;
+    }
+    
     /**
      * finds the mutual information of the two lists, using the formula HL + HR - HLR where HL is the entropy of the left list, HR is the entropy of the right, and HLR is the entropy of the combined list
      * @param <T> the list type

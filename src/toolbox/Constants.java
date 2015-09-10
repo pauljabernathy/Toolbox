@@ -17,4 +17,9 @@ public class Constants {
     public static final String WEB_PAGE_LOG_FORMAT = "<br>%m%n";
     public static final String DEFAULT_SEPARATOR = ",";
     public static final String UNKNOWN = "unknown";
+    
+    public static final String FILENAME_CANNOT_BE_NULL = "bad input - filename cannot be null";
+    public static final String FILENAME_CANNOT_BE_EMPTY = "bad input - filename cannot be empty";
+    public static final String FEATURE_COLUMNS_CANNOT_BE_NULL = "bad input - feature columns cannot be null";
+    public static final String FEATURE_COLUMNS_CANNOT_BE_EMPTY = "bad input - feature columns cannot be empty";
 }
