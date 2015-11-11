@@ -570,6 +570,121 @@ public class ProbDistTest {
     }
     
     @Test
+    public void testSplit() {
+        logger.info("\ntesting split");
+        ArrayList<String> values = new ArrayList<>();//(ArrayList)java.util.Arrays.asList("d", "b", "a", "c");
+        ArrayList<Double> probs = new ArrayList<>();//(ArrayList)java.util.Arrays.asList(.1, .3, .4, .2);
+        String[] v = new String[]{ "d", "b", "a", "c" };
+        values.add("d");
+        values.add("b");
+        values.add("a");
+        values.add("c");
+        probs.add(.1);
+        probs.add(.3);
+        probs.add(.4);
+        probs.add(.2);
+        logger.info(values);
+        logger.info(probs);
+        
+        logger.info(probs.stream().sorted((Double a, Double b) -> b.compareTo(a)).collect(java.util.stream.Collectors.toList()));
+        logger.info(values.stream().sorted((String a, String b) -> 
+            probs.get(values.indexOf(b)).compareTo(probs.get(values.indexOf(a)))
+        ).collect(java.util.stream.Collectors.toList()));
+        
+        try {
+            ProbDist<String> input = new ProbDist<String>().setValuesAndProbabilities(values, probs);
+            /**/List<ProbDist<String>> result = input.split(.5, true);
+            /**/assertEquals(2, result.size());
+            assertEquals(1, result.get(0).getValues().size());
+            assertEquals(3, result.get(1).getValues().size());
+            logger.info("first:  " + result.get(0));
+            logger.info("second:  " + result.get(1));/**/
+        } catch(ProbabilityException e) {
+            logger.error(e.getClass() + " testing split():  " + e.getMessage());
+        }
+        try {
+            ProbDist<String> input = new ProbDist<String>().setValuesAndProbabilities(values, probs);
+            /**/List<ProbDist<String>> result = input.split(.5, false);
+            /**/assertEquals(2, result.size());
+            assertEquals(2, result.get(0).getValues().size());
+            assertEquals(2, result.get(1).getValues().size());
+            logger.info("first:  " + result.get(0));
+            logger.info("second:  " + result.get(1));/**/
+        } catch(ProbabilityException e) {
+            logger.error(e.getClass() + " testing split():  " + e.getMessage());
+        }
+        try {
+            ProbDist<String> input = new ProbDist<String>().setValuesAndProbabilities(values, probs);
+            /**/List<ProbDist<String>> result = input.split(.7, true);
+            /**/assertEquals(2, result.size());
+            assertEquals(2, result.get(0).getValues().size());
+            assertEquals(2, result.get(1).getValues().size());
+            logger.info("first:  " + result.get(0));
+            logger.info("second:  " + result.get(1));/**/
+        } catch(ProbabilityException e) {
+            logger.error(e.getClass() + " testing split():  " + e.getMessage());
+        }
+        try {
+            ProbDist<String> input = new ProbDist<String>().setValuesAndProbabilities(values, probs);
+            /**/List<ProbDist<String>> result = input.split(.7, false);
+            /**/assertEquals(2, result.size());
+            assertEquals(2, result.get(0).getValues().size());
+            assertEquals(2, result.get(1).getValues().size());
+            logger.info("first:  " + result.get(0));
+            logger.info("second:  " + result.get(1));/**/
+        } catch(ProbabilityException e) {
+            logger.error(e.getClass() + " testing split():  " + e.getMessage());
+        }
+        
+        //boundary conditions
+        try {
+            ProbDist<String> input = new ProbDist<String>().setValuesAndProbabilities(values, probs);
+            List<ProbDist<String>> result = input.split(1.0, true);
+            assertEquals(2, result.size());
+            assertEquals(4, result.get(0).getValues().size());
+            assertEquals(0, result.get(1).getValues().size());
+            logger.info("first:  " + result.get(0));
+            logger.info("second:  " + result.get(1));/**/
+        } catch(ProbabilityException e) {
+            logger.error(e.getClass() + " testing split():  " + e.getMessage());
+        }
+        /**/try {
+            ProbDist<String> input = new ProbDist<String>().setValuesAndProbabilities(values, probs);
+            List<ProbDist<String>> result = input.split(1.0, false);
+            assertEquals(2, result.size());
+            assertEquals(4, result.get(0).getValues().size());
+            assertEquals(0, result.get(1).getValues().size());
+            logger.info("first:  " + result.get(0));
+            logger.info("second:  " + result.get(1));
+        } catch(ProbabilityException e) {
+            logger.error(e.getClass() + " testing split():  " + e.getMessage());
+        }/**/
+        
+        /**try {
+            ProbDist<String> input = new ProbDist<String>().setValuesAndProbabilities(values, probs);
+            List<ProbDist<String>> result = input.split(0.0, true);
+            assertEquals(2, result.size());
+            assertEquals(0, result.get(0).getValues().size());
+            assertEquals(4, result.get(1).getValues().size());
+            logger.info("first:  " + result.get(0));
+            logger.info("second:  " + result.get(1));
+        } catch(ProbabilityException e) {
+            logger.error(e.getClass() + " testing split():  " + e.getMessage());
+        }/**/
+        try {
+            ProbDist<String> input = new ProbDist<String>().setValuesAndProbabilities(values, probs);
+            List<ProbDist<String>> result = input.split(0.0, false);
+            assertEquals(2, result.size());
+            assertEquals(1, result.get(0).getValues().size());
+            assertEquals(3, result.get(1).getValues().size());
+            logger.info("first:  " + result.get(0));
+            logger.info("second:  " + result.get(1));/**/
+        } catch(ProbabilityException e) {
+            logger.error(e.getClass() + " testing split():  " + e.getMessage());
+        }
+    }
+    
+    @Test
     public void testGetJointDistribution() {
         logger.info("\ntesting getJointDistribution()");
         ProbDist<String> fruit = new ProbDist<String>();

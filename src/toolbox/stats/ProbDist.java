@@ -8,6 +8,8 @@ import java.util.*;
 import java.math.BigDecimal;
 import java.math.MathContext;
 
+import java.util.stream.Collectors;
+
 /**
  *
  * @author paul
@@ -64,7 +66,7 @@ public class ProbDist<T> {
     }
 
     //TODO:  check for probabilites of 0 since add() will not allow a 0 probability, or allow zero probabilites (but make sure to change getEntropy to ignore them)
-    public void setValuesAndProbabilities(List<T> values, List<Double> probs) throws ProbabilityException {
+    public ProbDist<T> setValuesAndProbabilities(List<T> values, List<Double> probs) throws ProbabilityException {
         if(values == null) {
             throw new ProbabilityException("values must be non null");
         } else if(values.isEmpty()) {
@@ -80,7 +82,9 @@ public class ProbDist<T> {
             this.setValues(values);
             this.setProbabilities(probs);
         }
+        return this;
     }
+    
     //TODO:  should probably throw a ProbabilityException for bad inputs
     public boolean add(T value, double probability) {
         //TODO:  value.equals("") does not work with generics
@@ -98,10 +102,9 @@ public class ProbDist<T> {
         if(unknownIndex > -1 && unknownIndex < this.getProbabilities().size()) {
             unknownProb = this.getProbabilities().get(unknownIndex);
         }
-        //System.out.println("unknownProb = " + unknownProb);
+        
         //see if there is still space
         if(probability > unknownProb + MIN_UNKNOWN) {
-            System.out.println(probability + " > " + unknownProb + " + " + MIN_UNKNOWN + "; returning false");
             return false;
         }
         
@@ -243,6 +246,67 @@ public class ProbDist<T> {
             //should not get here since values and counts are already checked
             System.err.println(e.getClass() + " in createInstanceFromCounts():  " + e.getMessage());
         }
+        return result;
+    }
+    
+    /**
+     * 
+     * @param probThreshold the threshold probability; for example, if you want the top 25%, this would be .25
+     * @param roundDown whether or not you should round down since it is likely that there will not be an exact match for the probability you specify; 
+     * for example, if you want the top 50% and you can break the list into the top 48.5% or the top 53%, roundDown = true would give you the top 48.5%
+     * @return a List of ProbDists
+     */
+    public List<ProbDist<T>> split(double probThreshold, boolean roundDown) throws ProbabilityException {
+        List<T> sortedValues = this.values.stream().sorted((T a, T b) -> 
+                this.probabilities.get(this.values.indexOf(b)).compareTo(this.probabilities.get(this.values.indexOf(a))))
+                .collect(Collectors.toList());
+        List<Double> sortedProbs = this.probabilities.stream().sorted((Double a, Double b) -> b.compareTo(a)).collect(Collectors.toList());
+        List<Double> cumProbs = MathUtil.cumsumList(sortedProbs);
+        
+        List<ProbDist<T>> result = new ArrayList<>();
+        //find the place where the top x places ends
+        int index = 0;
+        int i = -1;
+        boolean foundExactMatch = false;
+        while(i + 1 < cumProbs.size() && cumProbs.get(i + 1) < probThreshold) {
+            //if(cumProbs.get(i) == probThreshold) {
+            //    foundExactMatch = true;
+            //}
+            i++;
+        }
+        System.out.println(cumProbs);
+        //If we were looking for an exact match, the next one will be that match.  Just check that we aren't at the end of the list.
+        if(i < cumProbs.size() -1 && cumProbs.get(i + 1) == probThreshold) {
+            index = i + 1;
+        }
+        else if(roundDown) {
+            //no exact match, and using the lower number
+            index = i;
+            //looking for a percentage so small that it does not exist in this distribution
+            if(index < 0) {
+                result.add(new ProbDist<T>());
+                result.add(new ProbDist<T>().setValuesAndProbabilities(sortedValues, sortedProbs));
+                return result;
+            }
+        } else {
+            //no exact match, using the higher number
+            index = i + 1;
+        }
+        
+        List<Double> topProbs = new ArrayList<>();
+        List<T> topValues = new ArrayList<>();
+        List<Double> bottomProbs = new ArrayList<>();
+        List<T> bottomValues = new ArrayList<>();
+        for(int j = 0; j <= index; j++) {
+            topProbs.add(sortedProbs.get(j));
+            topValues.add(sortedValues.get(j));
+        }
+        for(int k = index + 1; k < this.values.size(); k++) {
+            bottomProbs.add(sortedProbs.get(k));
+            bottomValues.add(sortedValues.get(k));
+        }
+        result.add(new ProbDist<T>().setValuesAndProbabilities(topValues, topProbs));
+        result.add(new ProbDist<T>().setValuesAndProbabilities(bottomValues, bottomProbs));
         return result;
     }
     
