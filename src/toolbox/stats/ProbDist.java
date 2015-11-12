@@ -20,6 +20,8 @@ public class ProbDist<T> {
     private ArrayList<Double> cumProbs;     //cumulative probabilities
     private final T UNKNOWN = null;
     private static final double MIN_UNKNOWN = 0.0001;
+    private static final double DEFAULT_PRECISION = 0.0001;
+    private double precision = DEFAULT_PRECISION;
     private String label;
     
     public ProbDist() {
@@ -268,7 +270,7 @@ public class ProbDist<T> {
         int index = 0;
         int i = -1;
         boolean foundExactMatch = false;
-        while(i + 1 < cumProbs.size() && cumProbs.get(i + 1) < probThreshold) {
+        while(i + 1 < cumProbs.size() && cumProbs.get(i + 1) < probThreshold - precision) {
             //if(cumProbs.get(i) == probThreshold) {
             //    foundExactMatch = true;
             //}
@@ -276,7 +278,9 @@ public class ProbDist<T> {
         }
         System.out.println(cumProbs);
         //If we were looking for an exact match, the next one will be that match.  Just check that we aren't at the end of the list.
-        if(i < cumProbs.size() -1 && cumProbs.get(i + 1) == probThreshold) {
+        System.out.println(cumProbs.get(i + 1) + precision);
+        System.out.println(cumProbs.get(i + 1) - precision);
+        if(i < cumProbs.size() -1 && (cumProbs.get(i + 1) + precision >= probThreshold && cumProbs.get(i + 1) - precision <= probThreshold)) {
             index = i + 1;
         }
         else if(roundDown) {

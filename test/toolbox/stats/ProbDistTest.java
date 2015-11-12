@@ -660,7 +660,7 @@ public class ProbDistTest {
             logger.error(e.getClass() + " testing split():  " + e.getMessage());
         }/**/
         
-        /**try {
+        /**/try {
             ProbDist<String> input = new ProbDist<String>().setValuesAndProbabilities(values, probs);
             List<ProbDist<String>> result = input.split(0.0, true);
             assertEquals(2, result.size());
