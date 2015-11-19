@@ -20,7 +20,8 @@ public class ProbDist<T> {
     private ArrayList<Double> cumProbs;     //cumulative probabilities
     private final T UNKNOWN = null;
     private static final double MIN_UNKNOWN = 0.0001;
-    private static final double DEFAULT_PRECISION = 0.0001;
+    private static final double DEFAULT_PRECISION = 0.000000000000001;
+                                                    //0.0000000000000001
     private double precision = DEFAULT_PRECISION;
     private String label;
     
@@ -270,7 +271,8 @@ public class ProbDist<T> {
         int index = 0;
         int i = -1;
         boolean foundExactMatch = false;
-        while(i + 1 < cumProbs.size() && cumProbs.get(i + 1) < probThreshold - precision) {
+        while(i + 1 < cumProbs.size() && MathUtil.lessThanOrApprox(cumProbs.get(i + 1), probThreshold, precision)) {
+        //while(i + 1 < cumProbs.size() && cumProbs.get(i + 1) < probThreshold - precision) {
             //if(cumProbs.get(i) == probThreshold) {
             //    foundExactMatch = true;
             //}
@@ -278,22 +280,44 @@ public class ProbDist<T> {
         }
         System.out.println(cumProbs);
         //If we were looking for an exact match, the next one will be that match.  Just check that we aren't at the end of the list.
-        System.out.println(cumProbs.get(i + 1) + precision);
-        System.out.println(cumProbs.get(i + 1) - precision);
-        if(i < cumProbs.size() -1 && (cumProbs.get(i + 1) + precision >= probThreshold && cumProbs.get(i + 1) - precision <= probThreshold)) {
+        //System.out.println(cumProbs.get(i + 1) + precision);
+        //System.out.println(cumProbs.get(i + 1) - precision);
+        if(i < cumProbs.size() -1 && MathUtil.approx(cumProbs.get(i), probThreshold, precision)) {
+            //found the "exact" threshold
+            index = i;
+        } else if(i < cumProbs.size() -1 && MathUtil.approx(cumProbs.get(i + 1), probThreshold, precision)) {
+            //next value is the threshold; this check is being done due to CPU approximation where the while statement above could be false when it should be true
+            //System.out.println("was approx");
             index = i + 1;
-        }
-        else if(roundDown) {
+        } else if(roundDown) {
             //no exact match, and using the lower number
             index = i;
             //looking for a percentage so small that it does not exist in this distribution
             if(index < 0) {
-                result.add(new ProbDist<T>());
-                result.add(new ProbDist<T>().setValuesAndProbabilities(sortedValues, sortedProbs));
+                //result.add(new ProbDist<T>().setValuesAndProbabilities((ArrayList<T>)sortedValues.subList(0, 1), (ArrayList<Double>)sortedProbs.subList(0, 1)));
+                //result.add(new ProbDist<T>().setValuesAndProbabilities(sortedValues.subList(1, sortedValues.size()), 
+                //    sortedProbs.subList(1, sortedValues.size())));
+                //compiler doesn't like the cast to an ArrayList, so let's populate it manaully
+                
+                ArrayList<T> v0 = new ArrayList<T>();
+                v0.add(sortedValues.get(0));
+                ArrayList<Double> p0 = new ArrayList<>();
+                p0.add(sortedProbs.get(0));
+                
+                ArrayList<T> v1 = new ArrayList<T>();
+                ArrayList<Double> p1 = new ArrayList<Double>();
+                for(int j = 1; j < sortedValues.size() && j < sortedProbs.size(); j++) {
+                    v1.add(sortedValues.get(j));
+                    p1.add(sortedProbs.get(j));
+                }
+                
+                result.add(new ProbDist<T>().setValuesAndProbabilities(v0, p0));
+                result.add(new ProbDist<T>().setValuesAndProbabilities(v1, p1 ));
                 return result;
             }
         } else {
             //no exact match, using the higher number
+            System.out.println("no exact match");
             index = i + 1;
         }
         

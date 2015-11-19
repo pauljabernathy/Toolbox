@@ -547,6 +547,38 @@ public class MathUtil {
         return (double)((int)(amount * Math.pow(10, places))) / Math.pow(10, places);
     }
     
+    public static boolean approx(double a, double b, double error) {
+        System.out.println("approx(" + a + ", " + b + ", " + error + ")");
+        if(Math.abs(a - b) <= error) {
+            return true;
+        }
+        return false;
+    }
+    
+    public static boolean lessThan(double a, double b, double error) {
+        if(a < b && !approx(a, b, error)) {
+            System.out.println("true");
+            return true;
+        }
+        System.out.println("false");
+        return false;
+    }
+    
+    public static boolean lessThanOrApprox(double a, double b, double error) {
+        System.out.println("lessThanOrApprox(" + a + ", " + b + ", " + error + ")");
+        if(a < b || approx(a, b, error)) {
+            System.out.println("true");
+            return true;
+        }
+        System.out.println("false");
+        return false;
+    }
+    
+    public static boolean greaterThanOrApprox(double a, double b, double error) {
+        
+        return false;
+    }
+    
     //TODO:  seq double functions
     
     public static int[] seqInt(int start, int end) {

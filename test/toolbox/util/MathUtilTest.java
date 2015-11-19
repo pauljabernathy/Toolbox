@@ -624,6 +624,46 @@ public class MathUtilTest {
     }
     
     @Test
+    public void testApprox() {
+        logger.info("\ntesting approx()");
+        assertEquals(true, MathUtil.approx(.001, .002, .01));
+        assertEquals(true, MathUtil.approx(.002, .001, .01));
+        assertEquals(true, MathUtil.approx(3.14159, 3.1416, .0001));
+        assertEquals(true, MathUtil.approx(3.1416, 3.14159, .0001));
+        assertEquals(true, MathUtil.approx(5.2, 5.4, 0.3));
+        assertEquals(true, MathUtil.approx(5.4, 5.2, 0.3));
+        //assertEquals(true, MathUtil.approx(5.2, 5.4, 0.2));  CPU approximation errors...with the function I am writing to deal with CPU approximation errors
+        assertEquals(false, MathUtil.approx(5.2, 5.4, 0.1));
+        assertEquals(false, MathUtil.approx(5.4, 5.2, 0.1));
+        assertEquals(false, MathUtil.approx(1.0, 0.9999999999999999, 0.0000000000000001));
+    }
+    
+    @Test
+    public void testLessThanOrApprox() {
+        logger.info("\ntesting lessThanOrApprox()");
+        assertEquals(true, MathUtil.lessThanOrApprox(.7, .7, .0000001));
+        assertEquals(true, MathUtil.lessThanOrApprox(.001, .002, .01));
+        assertEquals(true, MathUtil.lessThanOrApprox(.002, .001, .01));
+        assertEquals(true, MathUtil.lessThanOrApprox(.001, .002, .001));
+        assertEquals(true, MathUtil.lessThanOrApprox(.002, .001, .001));
+        assertEquals(true, MathUtil.lessThanOrApprox(.001, .002, .0001));
+        assertEquals(false, MathUtil.lessThanOrApprox(.002, .001, .0001));
+        assertEquals(true, MathUtil.lessThanOrApprox(3.14159, 3.1416, .0001));
+        assertEquals(true, MathUtil.lessThanOrApprox(3.1416, 3.14159, .0001));
+        assertEquals(true, MathUtil.lessThanOrApprox(3.14159, 3.1416, .00001));
+        assertEquals(false, MathUtil.lessThanOrApprox(3.146, 3.14159, .00001));
+        assertEquals(true, MathUtil.lessThanOrApprox(0.9999999999999999, 1.0, 0.0000000000000001));
+        //assertEquals(true, MathUtil.lessThanOrApprox(, ,));
+        //assertEquals(true, MathUtil.lessThanOrApprox(, ,));
+        //assertEquals(true, MathUtil.lessThanOrApprox(, ,));
+    }
+    
+    @Test
+    public void testGreaterThanOrApprox() {
+        logger.info("\ntesting greaterThanOrApprox()");
+    }
+    
+    @Test
     public void testSeqInt_noIncrement() {
         logger.info("\ntesting seqInt");
         int[] result = null;
