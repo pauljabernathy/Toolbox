@@ -338,7 +338,6 @@ public class CSVReader {
             columns[i] = i;
         }
         reader.close();
-        toolbox.util.ListArrayUtil.showArray(columns);
         return getColumns(filename, columns, columnSeparator);
     }
     
