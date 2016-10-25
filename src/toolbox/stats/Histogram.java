@@ -16,6 +16,20 @@ public class Histogram {
     private ArrayList values;
     private ArrayList<Integer> counts;
     
+    public static final String VALUES = "VALUES";
+    public static final String COUNTS = "COUNTS";
+    public static final String PERCENTAGES = "PERCENTAGES";
+    public static final String ASCENDING = "ASCENDING";
+    public static final String DESCENDING = "DESCENDING";
+    
+    public static enum Column {
+        VALUES, COUNTS, PERCENTAGES;
+    }
+    
+    public static enum Direction {
+        ASC, DESC;
+    }
+    
     //percents and sum are technically redundant but here to make returning them faster than calculating them from counts each time
     private ArrayList<Double> probabilities;
     private int length;
@@ -280,5 +294,23 @@ public class Histogram {
     
     public double getEntropy() {
         return this.getProbDist().getEntropy();
+    }
+    
+    //need to be able to sort on the sort column and bring the other rows along with it
+    public Histogram sort(Column column, Direction direction) {
+        
+        /*can't sort on values until we can guarantee that the values have the .compareTo method
+        if(column == Column.VALUES) {
+            
+            this.values.stream().sorted();
+            if(direction == Direction.DESC) {
+                this.values.stream().sorted((a, b) -> b.compareTo(a));
+            }
+        }*/
+        if(column == Column.COUNTS) {
+            //this.counts.stream().sorted();
+            //this.values.stream().sorted
+        }
+        return this;
     }
 }
