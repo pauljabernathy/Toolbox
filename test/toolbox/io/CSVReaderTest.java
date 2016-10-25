@@ -224,6 +224,12 @@ public class CSVReaderTest {
         } catch(Exception e) {
             fail(e.getClass() + " " + e.getMessage());
         }
+        
+        /*try {
+            List<List<String>> data = (List<List<String>>)CSVReader.parseFile("donations_sample.bsv", SURVIVED_COLUMN, "0", featureColumns, Constants.DEFAULT_SEPARATOR);
+        } catch(Exception e) {
+            fail(e.getClass() + " " + e.getMessage());
+        }*/
     }
     
     @Test
@@ -524,6 +530,24 @@ public class CSVReaderTest {
             assertEquals(14, CSVReader.getAllColumns("titanic.csv", ",").size());   //14, not 13, because of the comma in the name
         } catch(IOException e) {
             fail(e.getClass() + " in testGetAllColumns():  " + e.getMessage());
+        }
+    }
+    
+    @Test
+    public void testGetAllColumnsBSV() {
+        logger.debug("\ntesting getAllColumnsBSV()");
+        List<List<String>> result = null;
+        try {
+            List<List<String>> data = CSVReader.getAllColumns("donations_sample.bsv", "|");
+            System.out.println(data.size());
+            System.out.println(data.get(0).size());
+            System.out.println(ListArrayUtil.listToString(data.get(0)));
+            System.out.println(ListArrayUtil.listToString(data.get(1)));
+            
+            DataList<String> col = CSVReader.getSingleColumn("donations_sample.bsv", 1, "|");
+            System.out.println(ListArrayUtil.listToString(col.getData()));
+        } catch(IOException e) {
+            fail(e.getClass() + " in testGetAllColumnsBSV():  " + e.getMessage());
         }
     }
     

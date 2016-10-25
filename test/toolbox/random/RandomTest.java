@@ -19,7 +19,8 @@ import java.util.GregorianCalendar;
 
 import java.util.List;
 import java.util.ArrayList;
-
+import java.util.Collections;
+import static java.util.stream.Collectors.*;
 import java.io.PrintWriter;
 import java.io.IOException;
 import toolbox.util.MathUtil;
@@ -215,7 +216,7 @@ public class RandomTest {
     public void testSample() {
         logger.info("\ntesting sample()");
         List<Integer> input = null;
-        List result = null;
+        List<Integer> result = null;
         try {
             assertEquals(0, Random.sample(input, 1, true).size());
             input = new ArrayList<Integer>();
@@ -291,12 +292,31 @@ public class RandomTest {
             }
             result = Random.sample(input, 100, false);
             assertEquals(100, result.size());
-            java.util.Collections.sort(result);
+            Collections.sort(result);
             for(int i = 1; i < result.size(); i++) {
                 if(result.get(i) == result.get(i-1)) {
                     fail("non unique list");
                 }
             }
+            
+            
+            input = new ArrayList<Integer>();
+            for(int i = 0; i < 100; i++) {
+                input.add(i);
+            }
+            logger.info(input);
+            logger.info(input.size());
+            result = Random.sample(input, input.size(), false);
+            logger.info(result);
+            assertEquals(100, result.size());
+            List<Integer> sortedResult = result.stream().sorted().collect(java.util.stream.Collectors.toList());
+            input = new ArrayList<Integer>();
+            for(int i = 0; i < 100; i++) {
+                input.add(i);
+            }
+            logger.info(input);
+            logger.info(sortedResult);
+            assertEquals(0, ListArrayUtil.findNumDiffs(input, sortedResult));
         } catch(Exception e) {
             logger.error(e.getClass() + " in testSample():  " + e.getMessage());
         }
