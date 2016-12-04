@@ -13,7 +13,8 @@ import java.util.LinkedList;
  */
 public class BalancedBinaryTree<T extends Comparable> {
     
-    public static double DEFAULT_WEIGHT = 1.0;
+    public static final double DEFAULT_WEIGHT = 1.0;
+    public static final DuplicateEntryOption DEFAULT_DUPLICATE_ENTRY_OPTION = DuplicateEntryOption.UPDATE;
     
     public T value;
     public double weight;
@@ -129,88 +130,14 @@ public class BalancedBinaryTree<T extends Comparable> {
     //If insert(BalancedBinaryTree<T> node) is implemented, will need to check its decendents to see if those values are in the existing tree, or ensure that it has no decendents.
     //TODO: this is copied from the basic binary tree; adapt to this class
     public LinkedList<BalancedBinaryTree> insert(T value) {
-        /*int compare = value.compareTo(this.value);
-        if(compare < 0) {
-            if(left != null) {
-                return left.insert(value);
-            } else {
-                left = new BalancedBinaryTree<>(value, this);
-                return left;
-            }
-            //return left;
-        } else if(compare > 0) {
-            if(right != null) {
-                return right.insert(value);
-            } else {
-                right = new BalancedBinaryTree<>(value, this);
-                return right;
-            }
-            //return right;
-        }
-        return null;
-        */
         return insertWeighted(value, DEFAULT_WEIGHT);
     }
     
     //TODO:  at some point, maybe an insert(BalancedBinaryTree<T> node); would have to deal with inserting nodes that could have children and reshuffling some connections; low priority at the moment
-    
-    //TODO: ensure that inserting a value that is already present causes no affect - it is not inserted
     public LinkedList<BalancedBinaryTree> insertWeighted(T value, double weight) {
-        if(value == null) {
-            return new LinkedList<BalancedBinaryTree>();
-        }
-        int compare = value.compareTo(this.value);
-        //System.out.println("insertWeighted(" + value + ", " + weight + ") into " + this + ";  compare == " + compare);
-        if(compare == 0) {
-            //System.out.println("compare is 0");
-            return this.getPathFromRoot();
-        }
-        if(compare < 0) {
-            if(this.left != null && weight > this.left.weight && !value.equals(this.left.value)) {
-                //insert the new node between this and the left child
-                BalancedBinaryTree newNode = new BalancedBinaryTree<>(value, weight, this);
-                BalancedBinaryTree formerLeftChild = this.left;
-                formerLeftChild.parent = newNode;
-                this.left = newNode;
-                if(value.compareTo(formerLeftChild.value) < 0) {
-                    newNode.right = formerLeftChild;
-                } else {
-                    newNode.left = formerLeftChild;
-                }
-                return newNode.getPathFromRoot();
-            } else {
-                //insert it as a descendant of this, same as a simple binary tree
-                if(left != null) {
-                    return left.insertWeighted(value, weight);
-                } else {
-                    left = new BalancedBinaryTree<>(value, weight, this);
-                    return left.getPathFromRoot();
-                }
-            }
-        } else if(compare > 0) {
-            if(this.right != null && weight > this.right.weight && !value.equals(this.right.value)) {
-                BalancedBinaryTree newNode = new BalancedBinaryTree(value, weight, this);
-                BalancedBinaryTree formerRightChild = this.right;
-                formerRightChild.parent = newNode;
-                this.right = newNode;
-                if(value.compareTo(formerRightChild.value) < 0) {
-                    newNode.right = formerRightChild;
-                } else {
-                    newNode.left = formerRightChild;
-                }
-                return newNode.getPathFromRoot();
-            } else {
-                if(right != null) {
-                    return right.insertWeighted(value, weight);
-                } else {
-                    right = new BalancedBinaryTree<>(value, weight, this);
-                    return right.getPathFromRoot();
-                }
-            }
-            //return right;
-        }
-        return getPathFromRoot();
+        return insert(value, weight, DEFAULT_DUPLICATE_ENTRY_OPTION);
     }
+    
     
     public LinkedList<BalancedBinaryTree> insertAndBalance(T value) {
         return getPathFromRoot();
@@ -221,29 +148,7 @@ public class BalancedBinaryTree<T extends Comparable> {
      * @param value
      * @return 
      */
-    public BalancedBinaryTree insertOrUpdate(T value) {
-        int compare = value.compareTo(this.value);
-        BalancedBinaryTree node = null;
-        if(compare < 0) {
-            node = this.left;
-        } else if(compare > 0) {
-            node = this.right;
-        } else {
-            //the item being inserted "equals" this
-            //TODO:  maybe force T to be an interface that can handle updates
-            this.value = value;
-            return this;
-        }
-        
-        if(node != null) {
-            node.insert(value);
-        } else {
-            node = new BalancedBinaryTree<>(value);
-        }
-        return node;
-    }
-    
-    public LinkedList<BalancedBinaryTree> insertOrAddWeight(T value, double weight) {
+    public LinkedList<BalancedBinaryTree> insert(T value, double weight, DuplicateEntryOption option) {
         System.out.println("insertWeighted(" + value + ", " + weight + ") into " + this);
         if(value == null) {
             return new LinkedList<BalancedBinaryTree>();
@@ -252,6 +157,16 @@ public class BalancedBinaryTree<T extends Comparable> {
         System.out.println("insertWeighted(" + value + ", " + weight + ") into " + this + ";  compare == " + compare);
         if(compare == 0) {
             System.out.println("compare is 0");
+            switch(option) {
+                case IGNORE:
+                    return this.getPathFromRoot();
+                case REPLACE:
+                    this.weight = weight;
+                    return this.getPathFromRoot();
+                case UPDATE:
+                    this.weight += weight;
+                    return this.getPathFromRoot();
+            }
             this.weight += weight;
             return this.getPathFromRoot();
         }
@@ -300,25 +215,27 @@ public class BalancedBinaryTree<T extends Comparable> {
                     return right.getPathFromRoot();
                 }
             }
-            //return right;
         }
         return getPathFromRoot();
+    }
+    
+    public LinkedList<BalancedBinaryTree> insertOrAddWeight(T value, double weight) {
+        return this.insert(value, weight, DuplicateEntryOption.UPDATE);
     }
     
     public LinkedList<BalancedBinaryTree> getPathToRoot() {
         LinkedList<BalancedBinaryTree> result = new LinkedList<>();
         if(this.parent != null) {
             result = this.parent.getPathToRoot();
-            result.addFirst(this.parent);
         }
+        result.addFirst(this);
         return result;
     }
     
     public LinkedList<BalancedBinaryTree> getPathFromRoot() {
         LinkedList<BalancedBinaryTree> result = new LinkedList<>();
         if(this.parent != null) {
-            result = this.parent.getPathToRoot();
-            result.add(this.parent);
+            result = this.parent.getPathFromRoot();
         }
         result.add(this);
         return result;

@@ -110,13 +110,13 @@ public class BalancedBinaryTreeTest {
     @Test
     public void testGet() {
         logger.info("\ntesting get()");
-        BalancedBinaryTree<String> instance = new BalancedBinaryTree<String>("ijkl");
+        BalancedBinaryTree<String> instance = new BalancedBinaryTree<>("ijkl");
         assertEquals(instance, instance.get("ijkl"));
-        BalancedBinaryTree<String> abcd = instance.insert("abcd").get(0);
+        BalancedBinaryTree<String> abcd = instance.insert("abcd").get(1);
         assertEquals(abcd, abcd.get("abcd"));
         assertEquals(abcd, instance.get("abcd"));
-        BalancedBinaryTree<String> efgh = instance.insert("efgh").get(0);
-        BalancedBinaryTree<String> mnop = instance.insert("mnop").get(0);
+        BalancedBinaryTree<String> efgh = instance.insert("efgh").get(2);
+        BalancedBinaryTree<String> mnop = instance.insert("mnop").get(1);
         assertEquals("efgh", instance.get("efgh").value);
         assertEquals(efgh, instance.get("efgh"));
         assertEquals(mnop, instance.get("mnop"));
@@ -370,22 +370,18 @@ public class BalancedBinaryTreeTest {
         if(result == null) {
             fail("result was null");
         }
-        assertEquals(0, result.size());
-        BalancedBinaryTree<String> c = f.insert("C").get(0);
-        result = c.getPathToRoot();
         assertEquals(1, result.size());
-        for(BalancedBinaryTree tree : result) {
-            logger.info(tree);
-        }
-        
-        BalancedBinaryTree b = f.insert("B").get(0);
-        result = b.getPathToRoot();
+        BalancedBinaryTree<String> c = f.insert("C").get(1);
+        result = c.getPathToRoot();
         assertEquals(2, result.size());
-        for(BalancedBinaryTree tree : result) {
-            logger.info(tree);
-        }
-        assertEquals(c, result.get(0));
-        assertEquals(f, result.get(1));
+        result.forEach(tree -> logger.info(tree));
+        
+        BalancedBinaryTree b = f.insert("B").get(2);
+        result = b.getPathToRoot();
+        assertEquals(3, result.size());
+        result.forEach(tree -> logger.info(tree));
+        assertEquals(c, result.get(1));
+        assertEquals(f, result.get(2));
     }
     
     @Test
