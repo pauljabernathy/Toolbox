@@ -353,6 +353,12 @@ public class BalancedBinaryTreeTest {
         assertEquals(null, list.get(0).left);
         assertEquals("n", list.get(1).left.value);
         assertEquals(null, list.get(1).right);
+        
+        //now, some updates
+        list = m.insertOrAddWeight("o", 1);
+        logger.info(list);
+        assertEquals("o", list.get(1).value);
+        assertEquals(4.0, list.get(1).weight, 0.0);
     }
     
     @Test

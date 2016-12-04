@@ -244,7 +244,65 @@ public class BalancedBinaryTree<T extends Comparable> {
     }
     
     public LinkedList<BalancedBinaryTree> insertOrAddWeight(T value, double weight) {
-        return this.getPathFromRoot();
+        System.out.println("insertWeighted(" + value + ", " + weight + ") into " + this);
+        if(value == null) {
+            return new LinkedList<BalancedBinaryTree>();
+        }
+        int compare = value.compareTo(this.value);
+        System.out.println("insertWeighted(" + value + ", " + weight + ") into " + this + ";  compare == " + compare);
+        if(compare == 0) {
+            System.out.println("compare is 0");
+            this.weight += weight;
+            return this.getPathFromRoot();
+        }
+        if(compare < 0) {
+            if(this.left != null && weight > this.left.weight && !value.equals(this.left.value)) {
+                //insert the new node between this and the left child
+                BalancedBinaryTree newNode = new BalancedBinaryTree<>(value, weight, this);
+                BalancedBinaryTree formerLeftChild = this.left;
+                formerLeftChild.parent = newNode;
+                this.left = newNode;
+                if(value.compareTo(formerLeftChild.value) < 0) {
+                    newNode.right = formerLeftChild;
+                } else {
+                    newNode.left = formerLeftChild;
+                }
+                return newNode.getPathFromRoot();
+            } else {
+                //insert it as a descendant of this, same as a simple binary tree
+                if(left != null) {
+                    return left.insertWeighted(value, weight);
+                } else {
+                    left = new BalancedBinaryTree<>(value, weight, this);
+                    return left.getPathFromRoot();
+                }
+            }
+        } else if(compare > 0) {
+            if(this.right != null && weight > this.right.weight && !value.equals(this.right.value)) {
+                System.out.println("this.right != null && " + weight + " > " + this.right.weight + " && !" + value + ".equals(" + this.right.value + ")");
+                BalancedBinaryTree newNode = new BalancedBinaryTree(value, weight, this);
+                BalancedBinaryTree formerRightChild = this.right;
+                formerRightChild.parent = newNode;
+                this.right = newNode;
+                if(value.compareTo(formerRightChild.value) < 0) {
+                    newNode.right = formerRightChild;
+                } else {
+                    newNode.left = formerRightChild;
+                }
+                return newNode.getPathFromRoot();
+            } else {
+                if(right != null) {
+                    System.out.println("right != null => right.insertOrAddWeight(" + value + "," + weight + ")");
+                    return right.insertOrAddWeight(value, weight);
+                } else {
+                    System.out.println("recreate right");
+                    right = new BalancedBinaryTree<>(value, weight, this);
+                    return right.getPathFromRoot();
+                }
+            }
+            //return right;
+        }
+        return getPathFromRoot();
     }
     
     public LinkedList<BalancedBinaryTree> getPathToRoot() {
