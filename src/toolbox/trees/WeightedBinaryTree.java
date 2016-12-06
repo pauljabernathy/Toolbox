@@ -6,27 +6,31 @@
 package toolbox.trees;
 
 import java.util.LinkedList;
+import java.util.PriorityQueue;
 
 /**
  *
  * @author pabernathy
  */
-public class BalancedBinaryTree<T extends Comparable> {
+public class WeightedBinaryTree<T extends Comparable> {
     
     public static final double DEFAULT_WEIGHT = 1.0;
     public static final DuplicateEntryOption DEFAULT_DUPLICATE_ENTRY_OPTION = DuplicateEntryOption.UPDATE;
+    public static enum SortType {
+        NATURAL_ORDER, WEIGHT;
+    }
     
     public T value;
     public double weight;
-    public BalancedBinaryTree parent;
-    public BalancedBinaryTree left;
-    public BalancedBinaryTree right;
+    public WeightedBinaryTree parent;
+    public WeightedBinaryTree left;
+    public WeightedBinaryTree right;
     
-    public BalancedBinaryTree(T value) {
+    public WeightedBinaryTree(T value) {
         this(value, DEFAULT_WEIGHT, null, null, null);
     }
     
-    public BalancedBinaryTree(T value, double weight) {
+    public WeightedBinaryTree(T value, double weight) {
         this(value, weight, null, null, null);
     }
     
@@ -34,7 +38,7 @@ public class BalancedBinaryTree<T extends Comparable> {
         this(value, parent, null, null);
     }*/
     
-    public BalancedBinaryTree(T value, double weight, BalancedBinaryTree parent) {
+    public WeightedBinaryTree(T value, double weight, WeightedBinaryTree parent) {
         this(value, weight, parent, null, null);
     }
     
@@ -47,7 +51,7 @@ public class BalancedBinaryTree<T extends Comparable> {
         this(value, DEFAULT_WEIGHT, parent, left, right);
     }*/
     
-    public BalancedBinaryTree(T value, double weight, BalancedBinaryTree<T> parent, BalancedBinaryTree<T> left, BalancedBinaryTree<T> right) {
+    public WeightedBinaryTree(T value, double weight, WeightedBinaryTree<T> parent, WeightedBinaryTree<T> left, WeightedBinaryTree<T> right) {
         this.value = value;
         this.weight = weight;
         this.parent = parent;
@@ -60,7 +64,7 @@ public class BalancedBinaryTree<T extends Comparable> {
      * @param node
      * @return 
      */
-    public boolean valueEquals(BalancedBinaryTree<T> node) {
+    public boolean valueEquals(WeightedBinaryTree<T> node) {
         if(this.value != null) {
             if(node != null) {
                 return this.value.equals(node.value);
@@ -105,7 +109,7 @@ public class BalancedBinaryTree<T extends Comparable> {
         return false;
     }
     
-    public BalancedBinaryTree<T> get(T value) {
+    public WeightedBinaryTree<T> get(T value) {
         if(value == null && this.value != null) {
             return null;
         } else if(value == null && this.value == null) {
@@ -129,17 +133,21 @@ public class BalancedBinaryTree<T extends Comparable> {
     //could check the parent chain to the root to make sure you aren't trying to insert a parent value
     //If insert(BalancedBinaryTree<T> node) is implemented, will need to check its decendents to see if those values are in the existing tree, or ensure that it has no decendents.
     //TODO: this is copied from the basic binary tree; adapt to this class
-    public LinkedList<BalancedBinaryTree> insert(T value) {
+    public LinkedList<WeightedBinaryTree<T>> insert(T value) {
         return insertWeighted(value, DEFAULT_WEIGHT);
     }
     
+    public LinkedList<WeightedBinaryTree<T>> insert(T value, double weight) {
+        return this.insert(value, weight, DEFAULT_DUPLICATE_ENTRY_OPTION);
+    }
+    
     //TODO:  at some point, maybe an insert(BalancedBinaryTree<T> node); would have to deal with inserting nodes that could have children and reshuffling some connections; low priority at the moment
-    public LinkedList<BalancedBinaryTree> insertWeighted(T value, double weight) {
+    public LinkedList<WeightedBinaryTree<T>> insertWeighted(T value, double weight) {
         return insert(value, weight, DEFAULT_DUPLICATE_ENTRY_OPTION);
     }
     
     
-    public LinkedList<BalancedBinaryTree> insertAndBalance(T value) {
+    public LinkedList<WeightedBinaryTree<T>> insertAndBalance(T value) {
         return getPathFromRoot();
     }
     /**
@@ -148,10 +156,10 @@ public class BalancedBinaryTree<T extends Comparable> {
      * @param value
      * @return 
      */
-    public LinkedList<BalancedBinaryTree> insert(T value, double weight, DuplicateEntryOption option) {
+    public LinkedList<WeightedBinaryTree<T>> insert(T value, double weight, DuplicateEntryOption option) {
         System.out.println("insertWeighted(" + value + ", " + weight + ") into " + this);
         if(value == null) {
-            return new LinkedList<BalancedBinaryTree>();
+            return new LinkedList<WeightedBinaryTree<T>>();
         }
         int compare = value.compareTo(this.value);
         System.out.println("insertWeighted(" + value + ", " + weight + ") into " + this + ";  compare == " + compare);
@@ -173,8 +181,8 @@ public class BalancedBinaryTree<T extends Comparable> {
         if(compare < 0) {
             if(this.left != null && weight > this.left.weight && !value.equals(this.left.value)) {
                 //insert the new node between this and the left child
-                BalancedBinaryTree newNode = new BalancedBinaryTree<>(value, weight, this);
-                BalancedBinaryTree formerLeftChild = this.left;
+                WeightedBinaryTree newNode = new WeightedBinaryTree<>(value, weight, this);
+                WeightedBinaryTree formerLeftChild = this.left;
                 formerLeftChild.parent = newNode;
                 this.left = newNode;
                 if(value.compareTo(formerLeftChild.value) < 0) {
@@ -188,15 +196,15 @@ public class BalancedBinaryTree<T extends Comparable> {
                 if(left != null) {
                     return left.insertWeighted(value, weight);
                 } else {
-                    left = new BalancedBinaryTree<>(value, weight, this);
+                    left = new WeightedBinaryTree<>(value, weight, this);
                     return left.getPathFromRoot();
                 }
             }
         } else if(compare > 0) {
             if(this.right != null && weight > this.right.weight && !value.equals(this.right.value)) {
                 System.out.println("this.right != null && " + weight + " > " + this.right.weight + " && !" + value + ".equals(" + this.right.value + ")");
-                BalancedBinaryTree newNode = new BalancedBinaryTree(value, weight, this);
-                BalancedBinaryTree formerRightChild = this.right;
+                WeightedBinaryTree newNode = new WeightedBinaryTree(value, weight, this);
+                WeightedBinaryTree formerRightChild = this.right;
                 formerRightChild.parent = newNode;
                 this.right = newNode;
                 if(value.compareTo(formerRightChild.value) < 0) {
@@ -211,7 +219,7 @@ public class BalancedBinaryTree<T extends Comparable> {
                     return right.insertOrAddWeight(value, weight);
                 } else {
                     System.out.println("recreate right");
-                    right = new BalancedBinaryTree<>(value, weight, this);
+                    right = new WeightedBinaryTree<>(value, weight, this);
                     return right.getPathFromRoot();
                 }
             }
@@ -219,12 +227,12 @@ public class BalancedBinaryTree<T extends Comparable> {
         return getPathFromRoot();
     }
     
-    public LinkedList<BalancedBinaryTree> insertOrAddWeight(T value, double weight) {
+    public LinkedList<WeightedBinaryTree<T>> insertOrAddWeight(T value, double weight) {
         return this.insert(value, weight, DuplicateEntryOption.UPDATE);
     }
     
-    public LinkedList<BalancedBinaryTree> getPathToRoot() {
-        LinkedList<BalancedBinaryTree> result = new LinkedList<>();
+    public LinkedList<WeightedBinaryTree<T>> getPathToRoot() {
+        LinkedList<WeightedBinaryTree<T>> result = new LinkedList<>();
         if(this.parent != null) {
             result = this.parent.getPathToRoot();
         }
@@ -232,8 +240,8 @@ public class BalancedBinaryTree<T extends Comparable> {
         return result;
     }
     
-    public LinkedList<BalancedBinaryTree> getPathFromRoot() {
-        LinkedList<BalancedBinaryTree> result = new LinkedList<>();
+    public LinkedList<WeightedBinaryTree<T>> getPathFromRoot() {
+        LinkedList<WeightedBinaryTree<T>> result = new LinkedList<>();
         if(this.parent != null) {
             result = this.parent.getPathFromRoot();
         }
@@ -245,11 +253,85 @@ public class BalancedBinaryTree<T extends Comparable> {
         return new StringBuilder(this.value.toString()).append(" ").append(this.weight).toString();
     }
     
-    //TODO: at some point, add a RebalanceResult class, which tells before and after paths
-    public RebalanceResult rebalance() {
-        RebalanceResult result = new RebalanceResult();
-        result.beforePathFromRoot = this.getPathFromRoot();
-        
+    public LinkedList<WeightedBinaryTree<T>> getAsList(SortType sortType) {
+        if(sortType == SortType.NATURAL_ORDER) {
+            return this.getAsListDepthFirst();
+        } else {
+            return this.getAsListBreadthFirst(null);
+        }
+    }
+    
+    private LinkedList<WeightedBinaryTree<T>> getAsListDepthFirst() {
+        LinkedList<WeightedBinaryTree<T>> result = new LinkedList<>();
+        if(this.left != null) {
+            result.addAll(this.left.getAsListDepthFirst());
+        }
+        result.add(this);
+        if(this.right != null) {
+            result.addAll(this.right.getAsListDepthFirst());
+        }
+        return result;
+    }
+    
+    //TODO:  complete;  And a simple depth first search probably will not give things in weighted order so make on that gives things in weighted order
+    /**
+     * Does sort of a breadth first search of the tree in order to return a list of nodes on order of weight;
+     * Assumes the tree is such that at every level, the children are of equal or less weight than the parent.
+     * @param pq
+     * @return 
+     */
+    private LinkedList<WeightedBinaryTree<T>> getAsListBreadthFirst(PriorityQueue<WeightedBinaryTree> pq) {
+        LinkedList<WeightedBinaryTree<T>> result = new LinkedList<>();
+        /*result.add(this);
+        if(this.left == null && this.right == null) {
+            return result;
+        } else if(this.left == null && this.right != null) {
+            result.addAll(this.right.getAsListBreadthFirst());
+        }
+        if(this.left != null && this.right != null && this.left.weight > this.right.weight) {
+            
+        }*/
+        if(pq == null) {
+            /*pq = new PriorityQueue<WeightedBinaryTree>(new java.util.Comparator<WeightedBinaryTree>()) {
+                public int  compare(WeightedBinaryTree left, WeightedBinaryTree right) {
+                    //return (int)(right.weight - left.weight);  won't quite work because weight is a double, not and int, and if the difference is between -1.0 and 1.0 but not 0.0, it will be changed to 0 when it could be something like .03
+                    double diff = right.weight - left.weight;
+                    if(Math.abs(diff) > 1.0 || diff == 0.0) {
+                        return (int)diff;
+                    } else {
+                        if(diff < 0) {
+                            return -1;
+                        } else if(diff > 0) {
+                            return 1;
+                        } else {
+                            return 0; //should not get here, the the compiler wanted something here or at the bottom
+                        }
+                    }
+                    //return 0;   //should not get here, the the compiler wanted something here
+                }
+            });*/
+            pq = new PriorityQueue(new WeightComparator());
+        }
+        /*//If there are items on the queue with higher weight, do them first and put this on the queue to wait its turn.
+        //If no no higher weight items are on the queue, keep them waiting and do this one first. 
+        if(pq.peek() != null && pq.peek().weight > this.weight) { 
+            pq.add(this);
+        } else {
+            
+        }*/
+        //OK, new algorithm.  Look at each node one and only one time.  If we are looking at it, assume that it is at the correct time.
+        //Add this object to the beginning of the list.  Put both children in the PriorityQueue, then process the next item from the queue, 
+        //which should be the one with the highest weight remaining.
+        result.add(this);
+        if(this.left != null) {
+            pq.add(this.left);
+        }
+        if(this.right != null) {
+            pq.add(this.right);
+        }
+        if(pq.peek() != null) {
+            result.addAll(pq.poll().getAsListBreadthFirst(pq));
+        }
         return result;
     }
 }
