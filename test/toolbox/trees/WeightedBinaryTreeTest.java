@@ -148,11 +148,35 @@ public class WeightedBinaryTreeTest {
         assertEquals(true, instance.right.right.valueEquals("mmnn"));*/
         
         WeightedBinaryTree<String> m = new WeightedBinaryTree<>("m", 5);
-        LinkedList<WeightedBinaryTree<String>> list = m.insertOrAddWeight("n", 4);
+        LinkedList<WeightedBinaryTree<String>> list = m.insert("n", 4);
         logger.info(list);
         assertEquals(2, list.size());
         assertEquals(m, list.get(0));
         assert(m == list.get(0));
+        
+        //Adding a new node with greater weight, but no child node to switch with
+        list = m.insert("k", 6);
+        logger.info(list);
+        logger.info(m.getAsList(WeightedBinaryTree.SortType.WEIGHT));
+        assertEquals(1, list.size());
+        assertEquals("k", list.get(0).value);
+        assertEquals("m", list.get(0).right.value);
+        
+        m = new WeightedBinaryTree<>("m", 5);
+        list = m.insert("n", 4);
+        list = m.insert("o", 7);
+        logger.info(list);
+        assertEquals(1, list.size());
+        assertEquals("o", list.get(0).value);
+        assertEquals("m", list.get(0).left.value);
+        
+        m = new WeightedBinaryTree<>("and", 5);
+        m.insert("aardvark", 6);
+        m.insert("make", 2);
+        logger.info(m.getPathFromRoot());
+        logger.info(m.parent);
+        logger.info(m.getAsList(WeightedBinaryTree.SortType.WEIGHT));
+        logger.info(m.parent.getAsList(WeightedBinaryTree.SortType.WEIGHT));
     }
     
     /**
@@ -413,6 +437,13 @@ public class WeightedBinaryTreeTest {
         assertEquals("C", result.get(1).value);
         assertEquals("F", result.get(0).value);
     }
+    @Test
+    public void testGetRoot() {
+        logger.info("\ntesting getRoot()");
+        WeightedBinaryTree<String> m = new WeightedBinaryTree<>("m", 5);
+        LinkedList<WeightedBinaryTree<String>> list = m.insert("n", 4);
+        assertEquals("m", list.get(1).getRoot().value);
+    }
     
     @Test
     public void testGetAsList() {
@@ -421,18 +452,20 @@ public class WeightedBinaryTreeTest {
         LinkedList<WeightedBinaryTree<String>> list = tree.getAsList(WeightedBinaryTree.SortType.NATURAL_ORDER);
         logger.info(list);
         
+        tree.display();
         list = tree.getAsList(WeightedBinaryTree.SortType.WEIGHT);
         logger.info(list);
     }
     
     private WeightedBinaryTree<String> getBasicTree() {
-        WeightedBinaryTree<String> treebeard = new WeightedBinaryTree<>("m", 5);
-        treebeard.insert("n", 2);
+        WeightedBinaryTree<String> treebeard = new WeightedBinaryTree<>("n", 2);
+        treebeard = treebeard.insert("m", 5).get(0);
+        logger.info(treebeard);
         treebeard.insert("o", 3);
-        treebeard.insert("l", 4);
+        treebeard = treebeard.insert("l", 6).get(0);
         treebeard.insert("k", 3);
         
-        treebeard = new WeightedBinaryTree<>("a", 1.0);
+        /**treebeard = new WeightedBinaryTree<>("a", 1.0);
         treebeard.insert("and", 1.0, DuplicateEntryOption.UPDATE);
         treebeard.insert("I", 1.0, DuplicateEntryOption.UPDATE);
         treebeard.insert("want", 1.0, DuplicateEntryOption.UPDATE);
@@ -456,7 +489,7 @@ public class WeightedBinaryTreeTest {
         treebeard.insert("word", 1.0, DuplicateEntryOption.UPDATE);
         treebeard.insert("make", 1.0, DuplicateEntryOption.UPDATE);
         treebeard.insert("histogram", 2.0, DuplicateEntryOption.UPDATE);
-        treebeard.insert("aardvark", 5.0, DuplicateEntryOption.UPDATE);
+        treebeard.insert("aardvark", 5.0, DuplicateEntryOption.UPDATE);/**/
         
         return treebeard;
     }

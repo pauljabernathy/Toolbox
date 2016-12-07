@@ -134,7 +134,7 @@ public class WeightedBinaryTree<T extends Comparable> {
     //If insert(BalancedBinaryTree<T> node) is implemented, will need to check its decendents to see if those values are in the existing tree, or ensure that it has no decendents.
     //TODO: this is copied from the basic binary tree; adapt to this class
     public LinkedList<WeightedBinaryTree<T>> insert(T value) {
-        return insertWeighted(value, DEFAULT_WEIGHT);
+        return insert(value, DEFAULT_WEIGHT, DEFAULT_DUPLICATE_ENTRY_OPTION);
     }
     
     public LinkedList<WeightedBinaryTree<T>> insert(T value, double weight) {
@@ -147,9 +147,6 @@ public class WeightedBinaryTree<T extends Comparable> {
     }
     
     
-    public LinkedList<WeightedBinaryTree<T>> insertAndBalance(T value) {
-        return getPathFromRoot();
-    }
     /**
      * inserts the given value, or updates the node in the tree if one is found with the given value
      * For example, if the class T here is a node that stores key value pairs, if we find the key we could update the value in some way which might be specific to class T.
@@ -179,18 +176,25 @@ public class WeightedBinaryTree<T extends Comparable> {
             return this.getPathFromRoot();
         }
         if(compare < 0) {
+            if(this.parent == null && weight > this.weight) {
+                //need to make the new node the root
+                WeightedBinaryTree newNode = new WeightedBinaryTree<>(value, weight, null);
+                this.parent = newNode;
+                newNode.right = this;
+                return newNode.getPathFromRoot();
+            }
             if(this.left != null && weight > this.left.weight && !value.equals(this.left.value)) {
                 //insert the new node between this and the left child
                 WeightedBinaryTree newNode = new WeightedBinaryTree<>(value, weight, this);
-                WeightedBinaryTree formerLeftChild = this.left;
-                formerLeftChild.parent = newNode;
+                    WeightedBinaryTree formerLeftChild = this.left;
+                    formerLeftChild.parent = newNode;
                 this.left = newNode;
-                if(value.compareTo(formerLeftChild.value) < 0) {
-                    newNode.right = formerLeftChild;
-                } else {
-                    newNode.left = formerLeftChild;
-                }
-                return newNode.getPathFromRoot();
+                    if(value.compareTo(formerLeftChild.value) < 0) {
+                        newNode.right = formerLeftChild;
+                    } else {
+                        newNode.left = formerLeftChild;
+                    }
+                    return newNode.getPathFromRoot();
             } else {
                 //insert it as a descendant of this, same as a simple binary tree
                 if(left != null) {
@@ -201,6 +205,12 @@ public class WeightedBinaryTree<T extends Comparable> {
                 }
             }
         } else if(compare > 0) {
+            if(parent == null && weight > this.weight) {
+                WeightedBinaryTree newNode = new WeightedBinaryTree<>(value, weight, null);
+                this.parent = newNode;
+                newNode.left = this;
+                return newNode.getPathFromRoot();
+            }
             if(this.right != null && weight > this.right.weight && !value.equals(this.right.value)) {
                 System.out.println("this.right != null && " + weight + " > " + this.right.weight + " && !" + value + ".equals(" + this.right.value + ")");
                 WeightedBinaryTree newNode = new WeightedBinaryTree(value, weight, this);
@@ -247,6 +257,10 @@ public class WeightedBinaryTree<T extends Comparable> {
         }
         result.add(this);
         return result;
+    }
+    
+    public WeightedBinaryTree<T> getRoot() {
+        return this.getPathFromRoot().get(0);
     }
     
     public String toString() {
@@ -333,5 +347,23 @@ public class WeightedBinaryTree<T extends Comparable> {
             result.addAll(pq.poll().getAsListBreadthFirst(pq));
         }
         return result;
+    }
+    
+    public void display() {
+        this.display(0);
+    }
+    
+    public void display(int depth) {
+        String indent = "";
+        for(int i = 0; i < depth; i ++) {
+            indent += ".";
+        }
+        System.out.println(indent + this);
+        if(this.left != null) {
+            this.left.display(depth + 1);
+        }
+        if(this.right != null) {
+            this.right.display(depth + 1);
+        }
     }
 }
