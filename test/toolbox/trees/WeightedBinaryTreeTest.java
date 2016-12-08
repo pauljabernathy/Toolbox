@@ -112,11 +112,11 @@ public class WeightedBinaryTreeTest {
         logger.info("\ntesting get()");
         WeightedBinaryTree<String> instance = new WeightedBinaryTree<>("ijkl");
         assertEquals(instance, instance.get("ijkl"));
-        WeightedBinaryTree<String> abcd = instance.insert("abcd").get(1);
+        WeightedBinaryTree<String> abcd = instance.insert("abcd").getInsertedNode();
         assertEquals(abcd, abcd.get("abcd"));
         assertEquals(abcd, instance.get("abcd"));
-        WeightedBinaryTree<String> efgh = instance.insert("efgh").get(2);
-        WeightedBinaryTree<String> mnop = instance.insert("mnop").get(1);
+        WeightedBinaryTree<String> efgh = instance.insert("efgh").getInsertedNode();
+        WeightedBinaryTree<String> mnop = instance.insert("mnop").getInsertedNode();
         assertEquals("efgh", instance.get("efgh").value);
         assertEquals(efgh, instance.get("efgh"));
         assertEquals(mnop, instance.get("mnop"));
@@ -148,14 +148,14 @@ public class WeightedBinaryTreeTest {
         assertEquals(true, instance.right.right.valueEquals("mmnn"));*/
         
         WeightedBinaryTree<String> m = new WeightedBinaryTree<>("m", 5);
-        LinkedList<WeightedBinaryTree<String>> list = m.insert("n", 4);
+        LinkedList<WeightedBinaryTree<String>> list = m.insert("n", 4).getPathFromRoot();
         logger.info(list);
         assertEquals(2, list.size());
         assertEquals(m, list.get(0));
         assert(m == list.get(0));
         
         //Adding a new node with greater weight, but no child node to switch with
-        list = m.insert("k", 6);
+        list = m.insert("k", 6).getPathFromRoot();
         logger.info(list);
         logger.info(m.getAsList(WeightedBinaryTree.SortType.WEIGHT));
         assertEquals(1, list.size());
@@ -163,8 +163,8 @@ public class WeightedBinaryTreeTest {
         assertEquals("m", list.get(0).right.value);
         
         m = new WeightedBinaryTree<>("m", 5);
-        list = m.insert("n", 4);
-        list = m.insert("o", 7);
+        list = m.insert("n", 4).getPathFromRoot();
+        list = m.insert("o", 7).getPathFromRoot();
         logger.info(list);
         assertEquals(1, list.size());
         assertEquals("o", list.get(0).value);
@@ -187,7 +187,7 @@ public class WeightedBinaryTreeTest {
         logger.info("\ntesting insertWeighted()");
         
         WeightedBinaryTree<String> m = new WeightedBinaryTree<>("m", 5);
-        LinkedList<WeightedBinaryTree<String>> list = m.insertWeighted("n", 4);
+        LinkedList<WeightedBinaryTree<String>> list = m.insertWeighted("n", 4).getPathFromRoot();
         logger.info(list);
         assertEquals(2, list.size());
         assertEquals(m, list.get(0));
@@ -195,33 +195,33 @@ public class WeightedBinaryTreeTest {
         assertEquals("m", list.get(0).value);
         assertEquals("n", list.get(1).value);
         
-        list = m.insertWeighted("k", 3);
+        list = m.insertWeighted("k", 3).getPathFromRoot();
         logger.info(list);
         assertEquals(2, list.size());
         assertEquals("m", list.get(0).value);
         assertEquals("k", list.get(1).value);
         
-        list = m.insertWeighted("l", 4);
+        list = m.insertWeighted("l", 4).getPathFromRoot();
         logger.info(list);
         assertEquals(2, list.size());
         assertEquals("m", list.get(0).value);
         assertEquals("l", list.get(1).value);
         
         m = new WeightedBinaryTree<>("m", 5);
-        list = m.insertWeighted("n", 4);
+        list = m.insertWeighted("n", 4).getPathFromRoot();
         logger.info(list);
         assertEquals(2, list.size());
         assertEquals(m, list.get(0));
         assertEquals("m", list.get(0).value);
         assertEquals("n", list.get(1).value);
         
-        list = m.insertWeighted("l", 3);
+        list = m.insertWeighted("l", 3).getPathFromRoot();
         logger.info(list);
         assertEquals(2, list.size());
         assertEquals("m", list.get(0).value);
         assertEquals("l", list.get(1).value);
         
-        list = m.insertWeighted("k", 4);
+        list = m.insertWeighted("k", 4).getPathFromRoot();
         logger.info(list);
         assertEquals(2, list.size());
         assertEquals("m", list.get(0).value);
@@ -231,7 +231,7 @@ public class WeightedBinaryTreeTest {
         logger.info(list.get(1).right.getPathFromRoot());
         
         //attempting to insert the same thing again should have no affect
-        list = m.insertWeighted("k", 4);
+        list = m.insertWeighted("k", 4).getPathFromRoot();
         logger.info(list);
         assertEquals(2, list.size());
         assertEquals("m", list.get(0).value);
@@ -246,14 +246,14 @@ public class WeightedBinaryTreeTest {
         WeightedBinaryTree<String> m = new WeightedBinaryTree<>("m", 5);
         
         //First, M5 and O3, then insert N4
-        LinkedList<WeightedBinaryTree<String>> list = m.insertWeighted("o", 3);
+        LinkedList<WeightedBinaryTree<String>> list = m.insertWeighted("o", 3).getPathFromRoot();
         //logger.info(list);
         assertEquals(2, list.size());
         assertEquals("m", list.get(0).value);
         assertEquals("o", list.get(1).value);
         assertEquals(list.get(1), m.right);
         
-        list = m.insertWeighted("n", 4);
+        list = m.insertWeighted("n", 4).getPathFromRoot();
         //logger.info(list);
         assertEquals("n", list.get(1).value);
         //logger.info(m.get("o").getPathFromRoot());
@@ -263,7 +263,7 @@ public class WeightedBinaryTreeTest {
         //M5 and O3, then insert N2
         m = new WeightedBinaryTree<>("m", 5);
         m.insertWeighted("o", 3);
-        list = m.insertWeighted("n", 2);
+        list = m.insertWeighted("n", 2).getPathFromRoot();
         //logger.info(list);
         assertEquals("n", list.get(2).value);
         assertEquals("o", list.get(1).value);
@@ -275,7 +275,7 @@ public class WeightedBinaryTreeTest {
         //now, M5 and N4, insert O3
         m = new WeightedBinaryTree<>("m", 5);
         m.insertWeighted("n", 4);
-        list = m.insertWeighted("o", 3);
+        list = m.insertWeighted("o", 3).getPathFromRoot();
         //logger.info(list);
         assertEquals("o", list.get(2).value);
         assertEquals("n", list.get(1).value);
@@ -287,7 +287,7 @@ public class WeightedBinaryTreeTest {
         
         m = new WeightedBinaryTree<>("m", 5);
         m.insertWeighted("n", 2);
-        list = m.insertWeighted("o", 3);
+        list = m.insertWeighted("o", 3).getPathFromRoot();
         //logger.info(list);
         assertEquals("o", list.get(1).value);
         assertEquals("m", list.get(0).value);
@@ -302,7 +302,7 @@ public class WeightedBinaryTreeTest {
     public void testInsertOrAddWeight() {
         logger.info("\ntesting insertOrAddWeight()");
         WeightedBinaryTree<String> m = new WeightedBinaryTree<>("m", 5);
-        LinkedList<WeightedBinaryTree<String>> list = m.insertOrAddWeight("n", 4);
+        LinkedList<WeightedBinaryTree<String>> list = m.insertOrAddWeight("n", 4).getPathFromRoot();
         logger.info(list);
         assertEquals(2, list.size());
         assertEquals(m, list.get(0));
@@ -310,13 +310,13 @@ public class WeightedBinaryTreeTest {
         assertEquals("m", list.get(0).value);
         assertEquals("n", list.get(1).value);
         
-        list = m.insertOrAddWeight("k", 3);
+        list = m.insertOrAddWeight("k", 3).getPathFromRoot();
         logger.info(list);
         assertEquals(2, list.size());
         assertEquals("m", list.get(0).value);
         assertEquals("k", list.get(1).value);
         
-        list = m.insertOrAddWeight("l", 4);
+        list = m.insertOrAddWeight("l", 4).getPathFromRoot();
         logger.info(list);
         assertEquals(2, list.size());
         assertEquals("m", list.get(0).value);
@@ -327,14 +327,14 @@ public class WeightedBinaryTreeTest {
         m = new WeightedBinaryTree<>("m", 5);
         
         //First, M5 and O3, then insert N4
-        list = m.insertOrAddWeight("o", 3);
+        list = m.insertOrAddWeight("o", 3).getPathFromRoot();
         //logger.info(list);
         assertEquals(2, list.size());
         assertEquals("m", list.get(0).value);
         assertEquals("o", list.get(1).value);
         assertEquals(list.get(1), m.right);
         
-        list = m.insertOrAddWeight("n", 4);
+        list = m.insertOrAddWeight("n", 4).getPathFromRoot();
         //logger.info(list);
         assertEquals("n", list.get(1).value);
         //logger.info(m.get("o").getPathFromRoot());
@@ -344,7 +344,7 @@ public class WeightedBinaryTreeTest {
         //M5 and O3, then insert N2
         m = new WeightedBinaryTree<>("m", 5);
         m.insertOrAddWeight("o", 3);
-        list = m.insertOrAddWeight("n", 2);
+        list = m.insertOrAddWeight("n", 2).getPathFromRoot();
         //logger.info(list);
         assertEquals("n", list.get(2).value);
         assertEquals("o", list.get(1).value);
@@ -356,7 +356,7 @@ public class WeightedBinaryTreeTest {
         //now, M5 and N4, insert O3
         m = new WeightedBinaryTree<>("m", 5);
         m.insertOrAddWeight("n", 4);
-        list = m.insertOrAddWeight("o", 3);
+        list = m.insertOrAddWeight("o", 3).getPathFromRoot();
         //logger.info(list);
         assertEquals("o", list.get(2).value);
         assertEquals("n", list.get(1).value);
@@ -368,7 +368,7 @@ public class WeightedBinaryTreeTest {
         
         m = new WeightedBinaryTree<>("m", 5);
         m.insertOrAddWeight("n", 2);
-        list = m.insertOrAddWeight("o", 3);
+        list = m.insertOrAddWeight("o", 3).getPathFromRoot();
         //logger.info(list);
         assertEquals("o", list.get(1).value);
         assertEquals("m", list.get(0).value);
@@ -379,7 +379,7 @@ public class WeightedBinaryTreeTest {
         assertEquals(null, list.get(1).right);
         
         //now, some updates
-        list = m.insertOrAddWeight("o", 1);
+        list = m.insertOrAddWeight("o", 1).getPathFromRoot();
         logger.info(list);
         assertEquals("o", list.get(1).value);
         assertEquals(4.0, list.get(1).weight, 0.0);
@@ -395,12 +395,12 @@ public class WeightedBinaryTreeTest {
             fail("result was null");
         }
         assertEquals(1, result.size());
-        WeightedBinaryTree<String> c = f.insert("C").get(1);
+        WeightedBinaryTree<String> c = f.insert("C").getPathFromRoot().get(1);
         result = c.getPathToRoot();
         assertEquals(2, result.size());
         result.forEach(tree -> logger.info(tree));
         
-        WeightedBinaryTree b = f.insert("B").get(2);
+        WeightedBinaryTree b = f.insert("B").getPathFromRoot().get(2);
         result = b.getPathToRoot();
         assertEquals(3, result.size());
         result.forEach(tree -> logger.info(tree));
@@ -420,7 +420,7 @@ public class WeightedBinaryTreeTest {
         assertEquals(1, result.size());
         //BalancedBinaryTree<String> c = f.insert("C").get(0);
         //c.getPathFromRoot();
-        result = f.insert("C");
+        result = f.insert("C").getPathFromRoot();
         assertEquals(2, result.size());
         for(WeightedBinaryTree tree : result) {
             logger.info(tree);
@@ -428,7 +428,7 @@ public class WeightedBinaryTreeTest {
         
         //BalancedBinaryTree b = f.insert("B").get(0);
         //result = b.getPathFromRoot();
-        result = f.insert("B");
+        result = f.insert("B").getPathFromRoot();
         assertEquals(3, result.size());
         for(WeightedBinaryTree tree : result) {
             logger.info(tree);
@@ -441,7 +441,7 @@ public class WeightedBinaryTreeTest {
     public void testGetRoot() {
         logger.info("\ntesting getRoot()");
         WeightedBinaryTree<String> m = new WeightedBinaryTree<>("m", 5);
-        LinkedList<WeightedBinaryTree<String>> list = m.insert("n", 4);
+        LinkedList<WeightedBinaryTree<String>> list = m.insert("n", 4).getPathFromRoot();
         assertEquals("m", list.get(1).getRoot().value);
     }
     
@@ -459,10 +459,10 @@ public class WeightedBinaryTreeTest {
     
     private WeightedBinaryTree<String> getBasicTree() {
         WeightedBinaryTree<String> treebeard = new WeightedBinaryTree<>("n", 2);
-        treebeard = treebeard.insert("m", 5).get(0);
+        treebeard = treebeard.insert("m", 5).getPathFromRoot().get(0);
         logger.info(treebeard);
         treebeard.insert("o", 3);
-        treebeard = treebeard.insert("l", 6).get(0);
+        treebeard = treebeard.insert("l", 6).getPathFromRoot().get(0);
         treebeard.insert("k", 3);
         
         /**treebeard = new WeightedBinaryTree<>("a", 1.0);
