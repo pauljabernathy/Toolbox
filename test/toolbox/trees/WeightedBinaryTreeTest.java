@@ -15,6 +15,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import toolbox.util.ListArrayUtil;
 import java.util.LinkedList;
+import java.util.ArrayList;
 
 /**
  *
@@ -449,21 +450,34 @@ public class WeightedBinaryTreeTest {
     public void testGetAsList() {
         logger.info("\ntesting getAsList()");
         WeightedBinaryTree<String> tree = this.getBasicTree();
+        System.out.println("\ntree is " + tree);
         LinkedList<WeightedBinaryTree<String>> list = tree.getAsList(WeightedBinaryTree.SortType.NATURAL_ORDER);
-        logger.info(list);
+        logger.info("depth first list = " + list);
+        ArrayList<String> words = new ArrayList<String>();
+        words.add("word");
+        words.add("want");
+        words.add("make");
+        words.add("histogram");
+        words.add("and");
+        words.add("I");
+        words.add("to");
+        words.add("aardvark");
+        logger.info("words = " + words);
+        java.util.Collections.sort(words);
+        logger.info("sorted word = " + words);
         
         tree.display();
         list = tree.getAsList(WeightedBinaryTree.SortType.WEIGHT);
-        logger.info(list);
+        logger.info("breadth first list = " + list);
     }
     
     private WeightedBinaryTree<String> getBasicTree() {
-        WeightedBinaryTree<String> treebeard = new WeightedBinaryTree<>("n", 2);
-        treebeard = treebeard.insert("m", 5).getPathFromRoot().get(0);
+        /*WeightedBinaryTree<String> treebeard = new WeightedBinaryTree<>("n", 2);
+        treebeard = treebeard.insert("m", 5).getRoot();
         logger.info(treebeard);
         treebeard.insert("o", 3);
-        treebeard = treebeard.insert("l", 6).getPathFromRoot().get(0);
-        treebeard.insert("k", 3);
+        treebeard = treebeard.insert("l", 6).getRoot();
+        treebeard.insert("k", 3);*/
         
         /**treebeard = new WeightedBinaryTree<>("a", 1.0);
         treebeard.insert("and", 1.0, DuplicateEntryOption.UPDATE);
@@ -479,19 +493,30 @@ public class WeightedBinaryTreeTest {
         treebeard.insert("I", 1.0, DuplicateEntryOption.UPDATE);
         treebeard.insert("and", 1.0, DuplicateEntryOption.UPDATE);
         treebeard.insert("histogram", 1.0, DuplicateEntryOption.UPDATE);
-        treebeard.insert("I", 1.0, DuplicateEntryOption.UPDATE);
+        treebeard.insert("I", 1.0, DuplicateEntryOption.UPDATE);/**/
         
-        treebeard = new WeightedBinaryTree<>("make", 2.0);
-        treebeard.insert("and", 4.0, DuplicateEntryOption.UPDATE);
-        treebeard.insert("I", 3.0, DuplicateEntryOption.UPDATE);
-        treebeard.insert("want", 1.0, DuplicateEntryOption.UPDATE);
-        treebeard.insert("to", 1.0, DuplicateEntryOption.UPDATE);
-        treebeard.insert("word", 1.0, DuplicateEntryOption.UPDATE);
-        treebeard.insert("make", 1.0, DuplicateEntryOption.UPDATE);
-        treebeard.insert("histogram", 2.0, DuplicateEntryOption.UPDATE);
-        treebeard.insert("aardvark", 5.0, DuplicateEntryOption.UPDATE);/**/
+        WeightedBinaryTree<String> treebeard = new WeightedBinaryTree<>("make", 2.0);
+        treebeard.getRoot().insert("aardvark", 5.0, DuplicateEntryOption.UPDATE);
+        treebeard.getRoot().display();
+        treebeard.getRoot().insert("and", 4.0, DuplicateEntryOption.UPDATE);
+        treebeard.getRoot().display();
+        treebeard.getRoot().insert("I", 3.0, DuplicateEntryOption.UPDATE);
+        treebeard.getRoot().display();
+        treebeard.getRoot().insert("want", 1.0, DuplicateEntryOption.UPDATE);
+        treebeard.getRoot().display();
+        treebeard.getRoot().insert("to", 1.0, DuplicateEntryOption.UPDATE);
+        treebeard.getRoot().display();
+        treebeard.getRoot().insert("word", 1.0, DuplicateEntryOption.UPDATE);
+        treebeard.getRoot().display();
+        treebeard.getRoot().insert("make", 1.0, DuplicateEntryOption.UPDATE);
+        treebeard.getRoot().display();
+        treebeard.getRoot().insert("histogram", 2.0, DuplicateEntryOption.UPDATE);
+        treebeard.getRoot().display();
+        //treebeard.getRoot().insert("aardvark", 5.0, DuplicateEntryOption.UPDATE);
+        treebeard.getRoot().insert("bbb", 4.9, DuplicateEntryOption.UPDATE);
+        treebeard.getRoot().display();/**/
         
-        return treebeard;
+        return treebeard.getRoot();
     }
     
     @Test
