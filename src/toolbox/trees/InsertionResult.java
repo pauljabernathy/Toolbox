@@ -13,7 +13,7 @@ import java.util.LinkedList;
  */
 public class InsertionResult<T extends Comparable> {
     
-    public enum Status { CREATED, REPLACED, UPDATED, FAILED, UNKNOWN };
+    public enum Status { CREATED, IGNORED, REPLACED, UPDATED, FAILED, UNKNOWN };
     
     public WeightedBinaryTree<T> insertedNode;
     public LinkedList<WeightedBinaryTree<T>> pathFromRoot;
@@ -53,5 +53,7 @@ public class InsertionResult<T extends Comparable> {
         return this;
     }
     
-    
+    public WeightedBinaryTree<T> getRoot() {
+        return insertedNode.getRoot();
+    }
 }
