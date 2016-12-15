@@ -17,6 +17,7 @@ import org.apache.logging.log4j.*;
 import toolbox.util.ListArrayUtil;
 import java.util.PriorityQueue;
 import toolbox.trees.WeightedBinaryTree;
+import java.util.List;
 
 /**
  *
@@ -77,4 +78,29 @@ public class TreeHistogramTest {
         logger.info(result);
     }
 
+    @Test
+    public void testGetAsListByNaturalOrder() {
+        logger.info("\ntesting getAsList() by natural order");
+        TreeHistogram<String> hist = this.createSimpleWordHistogram();
+        List<HistogramEntry> list = hist.getAsList(TreeHistogram.Sort.ITEM);
+        logger.info(list);
+    }
+    
+    @Test
+    public void testGetAsListByCount() {
+        TreeHistogram<String> hist = this.createSimpleWordHistogram();
+        List<HistogramEntry> list = hist.getAsList(TreeHistogram.Sort.COUNT);
+        logger.info(list);
+    }
+    
+    private TreeHistogram<String> createSimpleWordHistogram() {
+        TreeHistogram<String> hist = new TreeHistogram<>();
+        hist.addToData("the", 1);
+        hist.addToData("holiday", 5);
+        hist.addToData("and", 8);
+        hist.addToData("the", 10);
+        hist.addToData("relevance", 1);
+        hist.addToData("injure", 2);
+        return hist;
+    }
 }

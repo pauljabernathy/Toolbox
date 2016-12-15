@@ -187,8 +187,10 @@ public class WeightedBinaryTree<T extends Comparable> {
                 this.parent = newNode;
                 newNode.right = this;
                 //now switch the left connection
-                newNode.left = this.left;
-                this.left = null;
+                if(this.left != null && value.compareTo(this.left.value) > 0) {
+                    newNode.left = this.left;
+                    this.left = null;
+                }
                 return result.setInsertedNode(newNode).setStatus(InsertionResult.Status.CREATED);
             }
             if(this.left != null && weight > this.left.weight && !value.equals(this.left.value)) {
@@ -220,12 +222,16 @@ public class WeightedBinaryTree<T extends Comparable> {
             }
         } else if(compare > 0) {
             if(this.parent == null && weight > this.weight) {
+                //This is the root but the new node will become the root.
                 WeightedBinaryTree newNode = new WeightedBinaryTree<>(value, weight, null);
                 this.parent = newNode;
                 newNode.left = this;
-                //now switch the rightt connection
-                newNode.right = this.right;
-                this.right = null;
+                //now switch the right connection
+                if(this.right != null && value.compareTo(this.right.value) < 0) {
+                    //Make this's right child the right child of the new
+                    newNode.right = this.right;
+                    this.right = null;
+                }
                 return result.setInsertedNode(newNode).setStatus(InsertionResult.Status.CREATED);
             }
             if(this.right != null && weight > this.right.weight && !value.equals(this.right.value)) {
@@ -338,6 +344,7 @@ public class WeightedBinaryTree<T extends Comparable> {
     }
     
     public void display() {
+        System.out.println(this + ".display()");
         this.display("");
     }
     
@@ -356,7 +363,7 @@ public class WeightedBinaryTree<T extends Comparable> {
     }
     
     public void display(String prefix) {
-        //System.out.println(prefix + this);
+        System.out.println(prefix + this);
         if(this.left != null) {
             this.left.display(prefix + "l");
         }

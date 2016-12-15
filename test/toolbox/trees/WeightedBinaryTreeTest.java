@@ -16,6 +16,7 @@ import static org.junit.Assert.*;
 import toolbox.util.ListArrayUtil;
 import java.util.LinkedList;
 import java.util.ArrayList;
+import toolbox.stats.Histogram;
 
 /**
  *
@@ -149,10 +150,12 @@ public class WeightedBinaryTreeTest {
         assertEquals(true, instance.right.right.valueEquals("mmnn"));*/
         
         WeightedBinaryTree<String> m = new WeightedBinaryTree<>("m", 5);
-        LinkedList<WeightedBinaryTree<String>> list = m.insert("n", 4).getPathFromRoot();
+        InsertionResult result = m.insert("n", 4);
+        LinkedList<WeightedBinaryTree<String>> list = result.getPathFromRoot();
         logger.info(list);
         assertEquals(2, list.size());
         assertEquals(m, list.get(0));
+        assertEquals(InsertionResult.Status.CREATED, result.status);
         assert(m == list.get(0));
         
         //Adding a new node with greater weight, but no child node to switch with
@@ -450,10 +453,12 @@ public class WeightedBinaryTreeTest {
     public void testGetAsList() {
         logger.info("\ntesting getAsList()");
         WeightedBinaryTree<String> tree = this.getBasicTree();
-        System.out.println("\ntree is " + tree);
+        //System.out.println("\ntree is " + tree);
+        
         LinkedList<WeightedBinaryTree<String>> list = tree.getAsList(WeightedBinaryTree.SortType.NATURAL_ORDER);
         logger.info("depth first list = " + list);
-        ArrayList<String> words = new ArrayList<String>();
+        
+        /*ArrayList<String> words = new ArrayList<String>();
         words.add("word");
         words.add("want");
         words.add("make");
@@ -464,7 +469,7 @@ public class WeightedBinaryTreeTest {
         words.add("aardvark");
         logger.info("words = " + words);
         java.util.Collections.sort(words);
-        logger.info("sorted word = " + words);
+        logger.info("sorted word = " + words);*/
         
         tree.display();
         list = tree.getAsList(WeightedBinaryTree.SortType.WEIGHT);
@@ -472,6 +477,7 @@ public class WeightedBinaryTreeTest {
     }
     
     private WeightedBinaryTree<String> getBasicTree() {
+        WeightedBinaryTree<String> treebeard = null;
         /*WeightedBinaryTree<String> treebeard = new WeightedBinaryTree<>("n", 2);
         treebeard = treebeard.insert("m", 5).getRoot();
         logger.info(treebeard);
@@ -495,7 +501,7 @@ public class WeightedBinaryTreeTest {
         treebeard.insert("histogram", 1.0, DuplicateEntryOption.UPDATE);
         treebeard.insert("I", 1.0, DuplicateEntryOption.UPDATE);/**/
         
-        WeightedBinaryTree<String> treebeard = new WeightedBinaryTree<>("make", 2.0);
+        /**WeightedBinaryTree<String> treebeard = new WeightedBinaryTree<>("make", 2.0);
         treebeard.getRoot().insert("aardvark", 5.0, DuplicateEntryOption.UPDATE);
         treebeard.getRoot().display();
         treebeard.getRoot().insert("and", 4.0, DuplicateEntryOption.UPDATE);
@@ -516,6 +522,19 @@ public class WeightedBinaryTreeTest {
         treebeard.getRoot().insert("bbb", 4.9, DuplicateEntryOption.UPDATE);
         treebeard.getRoot().display();/**/
         
+        /*treebeard = new WeightedBinaryTree("holiday", 5);
+        treebeard = treebeard.insert("and", 8).getRoot();
+        treebeard = treebeard.insert("the", 10).getRoot();
+        treebeard = treebeard.insert("relevance", 1).getRoot();
+        treebeard = treebeard.insert("injure", 2).getRoot();*/
+        treebeard = new WeightedBinaryTree("and", 1);
+        treebeard = treebeard.insert("relevance", 8).getRoot();
+        treebeard.display();
+        treebeard = treebeard.insert("aa", 10).getRoot();
+        treebeard.display();
+        treebeard = treebeard.insert("holiday", 5).getRoot();
+        treebeard = treebeard.insert("injure", 2).getRoot();
+        
         return treebeard.getRoot();
     }
     
@@ -525,13 +544,60 @@ public class WeightedBinaryTreeTest {
         String text = "and I want to make a word histogram and and I and histogram I";
         WeightedBinaryTree<String> hist = new WeightedBinaryTree<>("a");
         String[] words = text.split(" ");
-        for(String word : words) {
+        /*for(String word : words) {
             hist.insert(word, 1.0, DuplicateEntryOption.UPDATE);
         }
         for(String word : words) {
             logger.info(hist.get(word));
         }
         logger.info(hist.getAsList(WeightedBinaryTree.SortType.NATURAL_ORDER));
-        logger.info(hist.getAsList(WeightedBinaryTree.SortType.WEIGHT));
+        logger.info(hist.getAsList(WeightedBinaryTree.SortType.WEIGHT));*/
+        
+        text = "The sun was shining on the sea,\n" +
+"Shining with all his might:\n" +
+"He did his very best to make\n" +
+"The billows smooth and bright--\n" +
+"And this was odd, because it was\n" +
+"The middle of the night.";
+        text = text.toLowerCase().replaceAll("\\.", "").replaceAll(":", "").replaceAll("\\-", "");
+        
+        text = "a b c d e f g a b c d e f a b c d e a b c d a b c a b";
+        hist = new WeightedBinaryTree<>("a");
+        words = text.split(" ");
+        for(String word : words) {
+            hist.insert(word, 1.0, DuplicateEntryOption.UPDATE);
+        }
+        for(String word : words) {
+            //logger.info(hist.get(word));
+        }
+        //logger.info(hist.getAsList(WeightedBinaryTree.SortType.NATURAL_ORDER));
+        //logger.info(hist.getAsList(WeightedBinaryTree.SortType.WEIGHT));
+        LinkedList<WeightedBinaryTree<String>> byWeight = hist.getAsList(WeightedBinaryTree.SortType.WEIGHT);
+        //byWeight.forEach(logger::info);
+        
+        //Histogram histogram = new Histogram(words);
+        //logger.info(histogram.toString());
+       
+        //hist.insert("holiday", 5);
+        /*hist = new WeightedBinaryTree("holiday", 5);
+        hist.display();
+        hist = hist.insert("and", 8, DuplicateEntryOption.REPLACE).getRoot();
+        hist.display();
+        hist = hist.insert("the", 10).getRoot();
+        hist.display();
+        hist = hist.insert("relevance", 1).getRoot();
+        hist.display();
+        hist = hist.insert("injure", 2).getRoot();
+        hist.display();*/
+        hist = new WeightedBinaryTree<>("the", 1);
+        hist = hist.insert("holiday", 5).getRoot();
+        hist.display();
+        hist = hist.insert("and", 8).getRoot();
+        hist.display();
+        //hist = hist.insert("the", 10).getRoot();
+        //hist.display();
+        hist = hist.insert("relevance", 1).getRoot();
+        hist = hist.insert("injure", 2).getRoot();
+        logger.info("\n" + hist.getAsList(WeightedBinaryTree.SortType.NATURAL_ORDER));
     }
 }

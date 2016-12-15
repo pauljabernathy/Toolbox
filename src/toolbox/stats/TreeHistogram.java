@@ -55,6 +55,11 @@ public class TreeHistogram<T extends Comparable> {
         this.totalCount = 0;
     }
     
+    public WeightedBinaryTree<T> insert(T item, int count) {
+        this.addToData(item, count);
+        return this.data;
+    }
+    
     protected WeightedBinaryTree<T> addToData(T item, int count) {
         //TODO:  If WeightedBinaryTree is upgraded to be able to handle creation without initializing the root node, put the creation in the constuctor!
         if(data == null) {
