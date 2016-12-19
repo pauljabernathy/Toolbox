@@ -480,7 +480,13 @@ public class WeightedBinaryTreeTest {
         instance.display();
         logger.info(instance.simpleBinaryInsert("j", 1, DuplicateEntryOption.UPDATE));
         instance.display();
-        /*instance.simpleBinaryInsert("j", 1, DuplicateEntryOption.UPDATE).insertedNode.display();
+        logger.info("result is " + instance.simpleBinaryInsert("j", 3, DuplicateEntryOption.UPDATE));
+        instance.display();
+        assertEquals(4.0, instance.get("j").weight, 0.0);
+        assertEquals(6, instance.getTreeWeight(), 0.0);
+        assertEquals(0.0, instance.get("j").getSubTreeWeight(), 0.0);
+        assertEquals(4.0, instance.get("j").getTreeWeight(), 0.0);
+        instance.simpleBinaryInsert("j", 1, DuplicateEntryOption.UPDATE).insertedNode.display();
         instance = instance.simpleBinaryInsert("j", 1, DuplicateEntryOption.UPDATE).getRoot();
         instance = instance.simpleBinaryInsert("n", 1, DuplicateEntryOption.UPDATE).getRoot();
         instance = instance.simpleBinaryInsert("s", 0, DuplicateEntryOption.UPDATE).getRoot();
@@ -497,7 +503,7 @@ public class WeightedBinaryTreeTest {
         assertEquals(3, result.getPathFromRoot().size());
         assertEquals(2, result.getInsertedNode().weight, 0.0);
         instance.display();
-        */
+        /**/
     }
     @Test
     public void testGetPathToRoot() {

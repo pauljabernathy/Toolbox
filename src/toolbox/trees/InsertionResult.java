@@ -18,12 +18,14 @@ public class InsertionResult<T extends Comparable> {
     public WeightedBinaryTree<T> insertedNode;
     public LinkedList<WeightedBinaryTree<T>> pathFromRoot;
     public Status status;
+    public double previousWeight;
     
     //TODO: make these variables Optional
     public InsertionResult() {
         this.insertedNode = null;
         this.pathFromRoot = new LinkedList<WeightedBinaryTree<T>>();
-        status = Status.UNKNOWN;
+        this.status = Status.UNKNOWN;
+        this.previousWeight = 0.0;
     }
 
     public WeightedBinaryTree<T> getInsertedNode() {
@@ -56,8 +58,21 @@ public class InsertionResult<T extends Comparable> {
     public WeightedBinaryTree<T> getRoot() {
         return insertedNode.getRoot();
     }
+
+    public double getPreviousWeight() {
+        return previousWeight;
+    }
+
+    public InsertionResult<T> setPreviousWeight(double previousWeight) {
+        this.previousWeight = previousWeight;
+        return this;
+    }
     
     public String toString() {
         return this.status + " " + this.insertedNode + "; " + this.pathFromRoot;
+    }
+    
+    public boolean wasChanged() {
+        return this.status == Status.CREATED || this.status == Status.UPDATED || this.status == Status.REPLACED;
     }
 }

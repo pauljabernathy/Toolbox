@@ -7,6 +7,7 @@ package toolbox.trees;
 
 import java.util.LinkedList;
 import java.util.PriorityQueue;
+import toolbox.trees.InsertionResult.Status;
 
 /**
  *
@@ -27,7 +28,7 @@ public class WeightedBinaryTree<T extends Comparable> {
     public WeightedBinaryTree right;
     
     //caching variables - these are redundant but stored here so we don't have to do a search of the whole tree to find them whenever they are needed
-    private double treeWeight;
+    private double subTreeWeight;
     private double treeTorque;
     //TODO: a depth variable; need to update every time parent is changed
     //TODO: keep track of relative sub tree torque; I think that will be easier than keeping track of total torque relative to the root
@@ -68,7 +69,7 @@ public class WeightedBinaryTree<T extends Comparable> {
         this.parent = parent;
         this.left = left;
         this.right = right;
-        this.treeWeight = this.weight;
+        this.subTreeWeight = 0.0;
         this.treeTorque = this.getIndividualTorque();
     }
     
@@ -142,6 +143,14 @@ public class WeightedBinaryTree<T extends Comparable> {
         return this.getPathFromRoot().size();
     }
     
+    public double getSubTreeWeight() {
+        return this.subTreeWeight;
+    }
+    
+    public double getTreeWeight() {
+        return this.subTreeWeight + this.weight;
+    }
+    
     //TODO:  return something other than this?
     //TODO:  should we even use setParent?  might should so all parent setting through setXChild
     public WeightedBinaryTree<T> setParent(WeightedBinaryTree<T> newParent) {
@@ -159,13 +168,13 @@ public class WeightedBinaryTree<T extends Comparable> {
         System.out.println(newLeft + " " + newLeft.getPathFromRoot().contains(this) + " " + this.getPathFromRoot().contains(newLeft));
         if(newLeft != null && !newLeft.getPathFromRoot().contains(this) && !this.getPathFromRoot().contains(newLeft)) {
             if(this.left != null) {
-                this.treeWeight -= left.treeWeight;
+                this.subTreeWeight -= left.subTreeWeight;
                 this.treeTorque -= left.treeTorque;
                 //TODO:  remove parent from left
             }
             this.left = newLeft;
             newLeft.setParent(this);
-            this.treeWeight += left.treeWeight;
+            this.subTreeWeight += left.subTreeWeight;
             this.treeTorque += left.treeTorque;
         }
         return this;
@@ -174,13 +183,13 @@ public class WeightedBinaryTree<T extends Comparable> {
     public WeightedBinaryTree<T> setRightChild(WeightedBinaryTree<T> newRight) {
         if(newRight != null && !newRight.getPathFromRoot().contains(this) && !this.getPathFromRoot().contains(newRight)) {
             if(this.right != null) {
-                this.treeWeight -= right.treeWeight;
+                this.subTreeWeight -= right.subTreeWeight;
                 this.treeTorque -= right.treeTorque;
                 //TODO: remove parent from current right
             }
             this.right = newRight;
             newRight.setParent(this);
-            this.treeWeight += right.treeWeight;
+            this.subTreeWeight += right.subTreeWeight;
             this.treeTorque += right.treeTorque;
         }
         return this;
@@ -196,7 +205,7 @@ public class WeightedBinaryTree<T extends Comparable> {
         if(this.left == null && this.right == null) {
             //a bogus request if newTorque is not 0
             this.treeTorque = this.getIndividualTorque();
-            this.treeWeight = this.weight;
+            this.subTreeWeight = this.weight;
             return this;
         }
         this.treeTorque = this.getIndividualTorque() + newTorque;
@@ -370,40 +379,65 @@ public class WeightedBinaryTree<T extends Comparable> {
             //result.pathFromRoot = new LinkedList<WeightedBinaryTree<T>>();
         }
         int compare = value.compareTo(this.value);
-        System.out.println("insert(" + value + ", " + weight + ") into " + this + ";  compare == " + compare);
+        System.out.println("insert(" + value + ", " + weight + ", " + option + ") into " + this + ";  compare == " + compare);
         if(compare == 0) {
             //System.out.println("compare is 0");
+            double previousWeight = this.weight;
+            result.setInsertedNode(this);
             switch(option) {
                 case IGNORE:
-                    return result.setInsertedNode(this).setStatus(InsertionResult.Status.IGNORED);
+                    result.setStatus(InsertionResult.Status.IGNORED).setPreviousWeight(this.weight);
+                    break;
                 case REPLACE:
+                    this.weight = weight;
                     result.status = InsertionResult.Status.REPLACED;
-                    return result.setInsertedNode(this).setStatus(InsertionResult.Status.REPLACED);
+                    result.setStatus(InsertionResult.Status.REPLACED).setPreviousWeight(previousWeight);
+                    break;
                 case UPDATE:
-                    this.treeTorque -= this.getIndividualTorque();
+                    //this.treeTorque -= this.getIndividualTorque();
                     this.weight += weight;
-                    //this.treeTorque = this.
-                    return result.setInsertedNode(this).setStatus(InsertionResult.Status.UPDATED);
+                    result.setStatus(InsertionResult.Status.UPDATED).setPreviousWeight(previousWeight);
+                    break;
+                default:
+                    result.setStatus(InsertionResult.Status.IGNORED).setPreviousWeight(this.weight);
             }
-            //TODO:  it shouldn't get here should it?  remove after more testing
-            this.weight += weight;
-            return result.setInsertedNode(this);
         } else if(compare < 0) {
             if(this.left != null) {
-                return this.left.simpleBinaryInsert(value, weight, option);
+                result = this.left.simpleBinaryInsert(value, weight, option);
+                //this.updateTreeWeight(result, weight);
+                //return result;
             } else {
                 this.setLeftChild(new WeightedBinaryTree(value, weight));
                 System.out.println("this.left = " + this.left);
-                return result.setInsertedNode(this.left).setStatus(InsertionResult.Status.CREATED);
+                result.setInsertedNode(this.left).setStatus(InsertionResult.Status.CREATED);
             }
         } else {
             if(this.right != null) {
-                return this.right.simpleBinaryInsert(value, weight, option);
+                result = this.right.simpleBinaryInsert(value, weight, option);
+                //this.updateTreeWeight(result, weight);
+                //return result;
             } else {
                 this.setRightChild(new WeightedBinaryTree(value, weight));
                 System.out.println("this.right = " + this.right);
-                return result.setInsertedNode(this.right).setStatus(InsertionResult.Status.CREATED);
+                result.setInsertedNode(this.right).setStatus(InsertionResult.Status.CREATED);
             }
+        }
+        this.updateSubTreeWeight(result, weight);
+        return result;
+    }
+    
+    protected void updateSubTreeWeight(InsertionResult result, double newWeight) {
+        if(this == result.getInsertedNode()) {// || !this.getPathFromRoot().contains(result.getInsertedNode())) {
+            //simply updated this node, so no need to update the sub tree weight
+            //or updated a node that is not a descendant
+            //TODO:  test for descendant, not simply in path from root!
+            return;
+        }
+        if(result.status == Status.CREATED || result.status == Status.UPDATED) {
+            this.subTreeWeight += newWeight;
+        } else if(result.status == Status.REPLACED) {
+            this.subTreeWeight -= result.previousWeight;
+            this.subTreeWeight += newWeight;
         }
     }
     
@@ -442,7 +476,7 @@ public class WeightedBinaryTree<T extends Comparable> {
     }
     
     public String toString() {
-        return new StringBuilder("[").append(this.value.toString()).append(" ").append(this.weight).append("]").toString();
+        return new StringBuilder("[").append(this.value.toString()).append(" ").append(this.weight).append(" ").append(this.subTreeWeight).append(" ").append(this.getTreeWeight()).append(" ").append("]").toString();
     }
     
     public LinkedList<WeightedBinaryTree<T>> getAsList(SortType sortType) {
