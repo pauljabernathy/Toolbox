@@ -125,6 +125,87 @@ public class WeightedBinaryTreeTest {
         assertEquals(null, instance.get("mnoo"));
     }
     
+    @Test
+    public void testSetParent() {
+        logger.info("\ntesting setParent()");
+        WeightedBinaryTree<Integer> seven = new WeightedBinaryTree<>(7);
+        assertEquals(null, seven.parent);
+        assertEquals(null, seven.left);
+        assertEquals(null, seven.right);
+        
+        WeightedBinaryTree<Integer> five = new WeightedBinaryTree<>(5);
+        seven.setParent(five);
+        assertEquals(five, seven.parent);
+    }
+    
+    @Test
+    public void testSetLeftChild() {
+        logger.info("\ntesting setLeftChild()");
+        WeightedBinaryTree<Integer> seven = new WeightedBinaryTree<>(7);
+        assertEquals(null, seven.parent);
+        assertEquals(null, seven.left);
+        assertEquals(null, seven.right);
+        assertEquals(1, seven.getDepth());
+        
+        WeightedBinaryTree<Integer> five = new WeightedBinaryTree<>(5);
+        logger.info(five.getDepth());
+        seven.setLeftChild(five);
+        assertEquals(five, seven.left);
+        assertEquals(null, five.left);
+        logger.info(five.getPathToRoot());
+        logger.info(five.getPathFromRoot());
+        assertEquals(1, seven.weight, 0.0);
+        assertEquals(1, seven.getIndividualTorque(), 0.0);
+        assertEquals(2, five.getIndividualTorque(), 0.0);
+        assertEquals(3.0, seven.getTreeTorque(), 0.0);
+        
+        five.setLeftChild(seven);
+        assertEquals(null, five.left);
+        
+        seven.setLeftChild(seven);
+        assertEquals(five, seven.left);
+        
+        WeightedBinaryTree<String> instance = new WeightedBinaryTree<>("m", 1);
+        InsertionResult<String> result = null;
+        instance = instance.setRightChild(new WeightedBinaryTree("o", 1));//.getRoot();
+        //instance.display();
+        instance.setLeftChild(new WeightedBinaryTree("j", 1));
+        instance.display();
+    }
+    
+    @Test
+    public void testSetRightChild() {
+        logger.info("\ntesting setRightChild()");
+        WeightedBinaryTree<String> instance = new WeightedBinaryTree<>("m");
+        instance.setRightChild(new WeightedBinaryTree<>("o", 4));
+        assertEquals(null, instance.left);
+        assertEquals("o", instance.right.value);
+        assertEquals(8, instance.right.getIndividualTorque(), 0.0);
+        assertEquals(9, instance.getTreeTorque(), 0.0);
+    }
+    
+    /*@Test
+    public void testSetSubTreeWeight() {
+        logger.info("\ntesting setSubTreeWeight()");
+        WeightedBinaryTree<Double> instance = new WeightedBinaryTree<>(5.0, 1);
+        
+    }*/
+    
+    @Test
+    public void testSetSubTreeTorque() {
+        logger.info("\ntesting setSubTreeTorque()");
+        WeightedBinaryTree<Double> instance = new WeightedBinaryTree<>(5.0, 1);
+        assertEquals(1.0, instance.getIndividualTorque(), 0.0);
+        assertEquals(1.0, instance.getTreeTorque(), 0.0);
+        instance.setSubTreeTorque(55);
+        assertEquals(1.0, instance.getIndividualTorque(), 0.0);
+        assertEquals(1.0, instance.getTreeTorque(), 0.0);
+        instance.setLeftChild(new WeightedBinaryTree<>(4.0, 2));
+        assertEquals(5.0, instance.getTreeTorque(), 0.0);
+        instance.setSubTreeTorque(55);
+        assertEquals(56.0, instance.getTreeTorque(), 0.0);
+    }
+    
     /**
      * Test of insert method, of class BalancedBinaryTree.
      */
@@ -389,6 +470,35 @@ public class WeightedBinaryTreeTest {
         assertEquals(4.0, list.get(1).weight, 0.0);
     }
     
+    @Test
+    public void testSimpleBinaryInsert() {
+        logger.info("\ntesting simpleBinaryInsert()");
+        WeightedBinaryTree<String> instance = new WeightedBinaryTree<>("m", 1);
+        InsertionResult<String> result = null;
+        //instance = instance.simpleBinaryInsert("o", 1, DuplicateEntryOption.UPDATE).getRoot();
+        logger.info(instance.simpleBinaryInsert("o", 1, DuplicateEntryOption.UPDATE));
+        instance.display();
+        logger.info(instance.simpleBinaryInsert("j", 1, DuplicateEntryOption.UPDATE));
+        instance.display();
+        /*instance.simpleBinaryInsert("j", 1, DuplicateEntryOption.UPDATE).insertedNode.display();
+        instance = instance.simpleBinaryInsert("j", 1, DuplicateEntryOption.UPDATE).getRoot();
+        instance = instance.simpleBinaryInsert("n", 1, DuplicateEntryOption.UPDATE).getRoot();
+        instance = instance.simpleBinaryInsert("s", 0, DuplicateEntryOption.UPDATE).getRoot();
+        instance.simpleBinaryInsert("t", 1, DuplicateEntryOption.UPDATE);
+        instance.simpleBinaryInsert("r", 1, DuplicateEntryOption.UPDATE);
+        instance.simpleBinaryInsert("ss", 1, DuplicateEntryOption.UPDATE);
+        result = instance.simpleBinaryInsert("ts", 1, DuplicateEntryOption.UPDATE);
+        assertEquals("m", result.getRoot().value);
+        assertEquals(5, result.getPathFromRoot().size());
+        assertEquals(1, result.getInsertedNode().weight, 0.0);
+        
+        result = instance.simpleBinaryInsert("n", 1, DuplicateEntryOption.UPDATE);
+        assertEquals("m", result.getRoot().value);
+        assertEquals(3, result.getPathFromRoot().size());
+        assertEquals(2, result.getInsertedNode().weight, 0.0);
+        instance.display();
+        */
+    }
     @Test
     public void testGetPathToRoot() {
         logger.info("\ntesting getPathToRoot()");

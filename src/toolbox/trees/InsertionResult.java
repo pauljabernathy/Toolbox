@@ -56,4 +56,8 @@ public class InsertionResult<T extends Comparable> {
     public WeightedBinaryTree<T> getRoot() {
         return insertedNode.getRoot();
     }
+    
+    public String toString() {
+        return this.status + " " + this.insertedNode + "; " + this.pathFromRoot;
+    }
 }

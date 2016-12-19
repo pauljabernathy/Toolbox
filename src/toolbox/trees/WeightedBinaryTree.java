@@ -26,6 +26,15 @@ public class WeightedBinaryTree<T extends Comparable> {
     public WeightedBinaryTree left;
     public WeightedBinaryTree right;
     
+    //caching variables - these are redundant but stored here so we don't have to do a search of the whole tree to find them whenever they are needed
+    private double treeWeight;
+    private double treeTorque;
+    //TODO: a depth variable; need to update every time parent is changed
+    //TODO: keep track of relative sub tree torque; I think that will be easier than keeping track of total torque relative to the root
+    //and decicions about rotating trees only needs to know about torque relative to the node we are rotating beneath
+    //Actually, keep track of tree weight and don't track torque directly.  If you keep track of tree weight and let the heavier items
+    //filter toward the root, the trees with greater torque should end up near the root.
+    
     public WeightedBinaryTree(T value) {
         this(value, DEFAULT_WEIGHT, null, null, null);
     }
@@ -38,6 +47,8 @@ public class WeightedBinaryTree<T extends Comparable> {
         this(value, parent, null, null);
     }*/
     
+    
+    //TODO:  looks like we need to not specify the parent in the constructor and only specify it with setLeftChild() and setRightChild()!
     public WeightedBinaryTree(T value, double weight, WeightedBinaryTree parent) {
         this(value, weight, parent, null, null);
     }
@@ -57,6 +68,8 @@ public class WeightedBinaryTree<T extends Comparable> {
         this.parent = parent;
         this.left = left;
         this.right = right;
+        this.treeWeight = this.weight;
+        this.treeTorque = this.getIndividualTorque();
     }
     
     /**
@@ -125,6 +138,71 @@ public class WeightedBinaryTree<T extends Comparable> {
         }
     }
     
+    protected int getDepth() {
+        return this.getPathFromRoot().size();
+    }
+    
+    //TODO:  return something other than this?
+    //TODO:  should we even use setParent?  might should so all parent setting through setXChild
+    public WeightedBinaryTree<T> setParent(WeightedBinaryTree<T> newParent) {
+        if(newParent != null && !newParent.getPathToRoot().contains(this) && !this.getPathToRoot().contains(newParent)) {
+            int previousDepth = this.getDepth();
+            double previousTorque = this.getTreeTorque();
+            this.parent = newParent;
+            this.treeTorque = previousTorque * this.getDepth() / (double)previousDepth;
+        }
+        return this;
+    }
+    
+    public WeightedBinaryTree<T> setLeftChild(WeightedBinaryTree<T> newLeft) {
+        System.out.println(this + ".setLeftChild(" + newLeft + ")");
+        System.out.println(newLeft + " " + newLeft.getPathFromRoot().contains(this) + " " + this.getPathFromRoot().contains(newLeft));
+        if(newLeft != null && !newLeft.getPathFromRoot().contains(this) && !this.getPathFromRoot().contains(newLeft)) {
+            if(this.left != null) {
+                this.treeWeight -= left.treeWeight;
+                this.treeTorque -= left.treeTorque;
+                //TODO:  remove parent from left
+            }
+            this.left = newLeft;
+            newLeft.setParent(this);
+            this.treeWeight += left.treeWeight;
+            this.treeTorque += left.treeTorque;
+        }
+        return this;
+    }
+    
+    public WeightedBinaryTree<T> setRightChild(WeightedBinaryTree<T> newRight) {
+        if(newRight != null && !newRight.getPathFromRoot().contains(this) && !this.getPathFromRoot().contains(newRight)) {
+            if(this.right != null) {
+                this.treeWeight -= right.treeWeight;
+                this.treeTorque -= right.treeTorque;
+                //TODO: remove parent from current right
+            }
+            this.right = newRight;
+            newRight.setParent(this);
+            this.treeWeight += right.treeWeight;
+            this.treeTorque += right.treeTorque;
+        }
+        return this;
+    }
+    
+    /*public WeightedBinaryTree<T> setSubTreeWeight(double newWeight) {
+        
+        return this;
+    }*/
+    
+    //TODO:  would like to find a way of making sure this is only called from this or a child node
+    public WeightedBinaryTree<T> setSubTreeTorque(double newTorque) {
+        if(this.left == null && this.right == null) {
+            //a bogus request if newTorque is not 0
+            this.treeTorque = this.getIndividualTorque();
+            this.treeWeight = this.weight;
+            return this;
+        }
+        this.treeTorque = this.getIndividualTorque() + newTorque;
+        return this;
+    }
+    
     //TODO: get with a functional interface, more of a query;
     //converting to a list to do stream().filter would be nlogn, right?  A simple query to go get a list of nodes that match
     //not a high priority
@@ -153,6 +231,20 @@ public class WeightedBinaryTree<T extends Comparable> {
      * @param value
      * @return 
      */
+    public InsertionResult insert2(T value, double weight, DuplicateEntryOption option) {
+        InsertionResult result = new InsertionResult();
+        
+        //First, insert like a regular binary tree.
+        //Find where it should go (either the exiting entry, or where a new one will go).
+        //Add the new entry or update the existing one, as needed.
+        
+        //Next, look at the path to the root, starting with the node just entered or updated and going to the root,
+        //check and see if it should be bumped up a level.
+        //If so, move it up and set the previous parent to be that one's right or left child, as appropriate, and set that one's
+        //old right or left child to be the old parent's child, as appropriate.
+        //Continue the process.  
+        return result;
+    }
     public InsertionResult insert(T value, double weight, DuplicateEntryOption option) {
         InsertionResult result = new InsertionResult();
         //System.out.println("insert(" + value + ", " + weight + ") into " + this);
@@ -272,6 +364,53 @@ public class WeightedBinaryTree<T extends Comparable> {
         return this.insert(value, weight, DuplicateEntryOption.UPDATE);
     }
     
+    protected InsertionResult<T> simpleBinaryInsert(T value, double weight, DuplicateEntryOption option) {
+        InsertionResult<T> result = new InsertionResult<>();
+        if(value == null) {
+            //result.pathFromRoot = new LinkedList<WeightedBinaryTree<T>>();
+        }
+        int compare = value.compareTo(this.value);
+        System.out.println("insert(" + value + ", " + weight + ") into " + this + ";  compare == " + compare);
+        if(compare == 0) {
+            //System.out.println("compare is 0");
+            switch(option) {
+                case IGNORE:
+                    return result.setInsertedNode(this).setStatus(InsertionResult.Status.IGNORED);
+                case REPLACE:
+                    result.status = InsertionResult.Status.REPLACED;
+                    return result.setInsertedNode(this).setStatus(InsertionResult.Status.REPLACED);
+                case UPDATE:
+                    this.treeTorque -= this.getIndividualTorque();
+                    this.weight += weight;
+                    //this.treeTorque = this.
+                    return result.setInsertedNode(this).setStatus(InsertionResult.Status.UPDATED);
+            }
+            //TODO:  it shouldn't get here should it?  remove after more testing
+            this.weight += weight;
+            return result.setInsertedNode(this);
+        } else if(compare < 0) {
+            if(this.left != null) {
+                return this.left.simpleBinaryInsert(value, weight, option);
+            } else {
+                this.setLeftChild(new WeightedBinaryTree(value, weight));
+                System.out.println("this.left = " + this.left);
+                return result.setInsertedNode(this.left).setStatus(InsertionResult.Status.CREATED);
+            }
+        } else {
+            if(this.right != null) {
+                return this.right.simpleBinaryInsert(value, weight, option);
+            } else {
+                this.setRightChild(new WeightedBinaryTree(value, weight));
+                System.out.println("this.right = " + this.right);
+                return result.setInsertedNode(this.right).setStatus(InsertionResult.Status.CREATED);
+            }
+        }
+    }
+    
+    public RebalanceResult<T> rebalance() {
+        return null;
+    }
+    
     public LinkedList<WeightedBinaryTree<T>> getPathToRoot() {
         LinkedList<WeightedBinaryTree<T>> result = new LinkedList<>();
         if(this.parent != null) {
@@ -292,6 +431,14 @@ public class WeightedBinaryTree<T extends Comparable> {
     
     public WeightedBinaryTree<T> getRoot() {
         return this.getPathFromRoot().get(0);
+    }
+    
+    public double getIndividualTorque() {
+        return (double)this.getPathFromRoot().size() * this.weight;
+    }
+    
+    public double getTreeTorque() {
+        return this.treeTorque;
     }
     
     public String toString() {

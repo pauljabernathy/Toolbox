@@ -11,10 +11,10 @@ import java.util.LinkedList;
  *
  * @author pabernathy
  */
-public class RebalanceResult {
+public class RebalanceResult<T extends Comparable> {
     
-    public LinkedList<BalancedBinaryTree> beforePathFromRoot;
-    public LinkedList<BalancedBinaryTree> afterPathFromRoot;
+    public LinkedList<WeightedBinaryTree<T>> beforePathFromRoot;
+    public LinkedList<WeightedBinaryTree<T>> afterPathFromRoot;
     public boolean success;
     
     public RebalanceResult() {
