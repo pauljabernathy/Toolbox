@@ -159,18 +159,31 @@ public class WeightedBinaryTreeTest {
         assertEquals(2, five.getIndividualTorque(), 0.0);
         assertEquals(3.0, seven.getTreeTorque(), 0.0);
         
-        five.setLeftChild(seven);
+        five.setLeftChild(seven, DuplicateEntryOption.UPDATE);
         assertEquals(null, five.left);
         
         seven.setLeftChild(seven);
         assertEquals(five, seven.left);
         
-        WeightedBinaryTree<String> instance = new WeightedBinaryTree<>("m", 1);
+        WeightedBinaryTree<String> m = new WeightedBinaryTree<>("m", 1);
         InsertionResult<String> result = null;
-        instance = instance.setRightChild(new WeightedBinaryTree("o", 1));//.getRoot();
-        //instance.display();
-        instance.setLeftChild(new WeightedBinaryTree("j", 1));
-        instance.display();
+        WeightedBinaryTree<String> l = m.setLeftChild(new WeightedBinaryTree<>("l")).getLeftChild();
+        WeightedBinaryTree<String> o = m.setRightChild(new WeightedBinaryTree<>("o", 1)).getRightChild();
+        WeightedBinaryTree<String> n = o.setLeftChild(new WeightedBinaryTree<>("n")).getLeftChild();
+        WeightedBinaryTree<String> p = o.setRightChild(new WeightedBinaryTree<>("p")).getRightChild();
+        assertEquals(l, m.getLeftChild());
+        assertEquals(o, m.getRightChild());
+        assertEquals(p, m.getRightChild().getRightChild());
+        assertEquals(n, m.getRightChild().getLeftChild());
+        m.display();
+        o.setLeftChild(m);
+        m.setRightChild(n);
+        logger.debug("\n");
+        o.display();
+        assertEquals(m, o.getLeftChild());
+        assertEquals(l, m.getLeftChild());
+        assertEquals(n, m.getRightChild());
+        assertEquals(p, o.getRightChild());
     }
     
     @Test
@@ -182,6 +195,25 @@ public class WeightedBinaryTreeTest {
         assertEquals("o", instance.right.value);
         assertEquals(8, instance.right.getIndividualTorque(), 0.0);
         assertEquals(9, instance.getTreeTorque(), 0.0);
+        
+        WeightedBinaryTree<String> m = new WeightedBinaryTree<>("m", 1);
+        WeightedBinaryTree<String> n = m.setRightChild(new WeightedBinaryTree("n", 1)).getRightChild();//.getRoot();
+        //instance.display();
+        WeightedBinaryTree<String> j = m.setLeftChild(new WeightedBinaryTree("j", 1)).getLeftChild();
+        WeightedBinaryTree<String> l = j.setRightChild(new WeightedBinaryTree<>("l", 1)).getRightChild();
+        m.display();
+        assertEquals(j, m.getLeftChild());
+        assertEquals(n, m.getRightChild());
+        assertEquals(l, j.getRightChild());
+        
+        //m.setLeftChild(l);
+        m.left = l;
+        j.setRightChild(m, DuplicateEntryOption.REPLACE);
+        //j.right = m;
+        logger.info("\n");
+        j.display();
+        assertEquals(m, j.getRightChild());
+        assertEquals(l, m.getLeftChild());
     }
     
     /*@Test
@@ -191,7 +223,7 @@ public class WeightedBinaryTreeTest {
         
     }*/
     
-    @Test
+    /*@Test
     public void testSetSubTreeTorque() {
         logger.info("\ntesting setSubTreeTorque()");
         WeightedBinaryTree<Double> instance = new WeightedBinaryTree<>(5.0, 1);
@@ -204,6 +236,144 @@ public class WeightedBinaryTreeTest {
         assertEquals(5.0, instance.getTreeTorque(), 0.0);
         instance.setSubTreeTorque(55);
         assertEquals(56.0, instance.getTreeTorque(), 0.0);
+    }*/
+    
+    @Test
+    public void testGetSiblingAndIsLeftOrRight() {
+        logger.info("\ntesting getSibbling");
+        WeightedBinaryTree<String> instance = this.getBasicTree();
+        assertEquals(null, instance.getSibling());
+        instance.display();
+        WeightedBinaryTree<String> relevance = instance.get("relevance");
+        WeightedBinaryTree<String> aa = instance.get("aa");
+        assertEquals(aa, relevance.getSibling());
+        assertEquals(relevance, aa.getSibling());
+        
+        WeightedBinaryTree<String> holiday = instance.get("holiday");
+        WeightedBinaryTree<String> injure = instance.get("injure");
+        assertEquals(null, holiday.getSibling());
+        assertEquals(null, injure.getSibling());
+        
+        assertEquals(false, instance.isLeftChild());
+        assertEquals(false, instance.isRightChild());
+        assertEquals(true, aa.isLeftChild());
+        assertEquals(false, aa.isRightChild());
+        assertEquals(false, relevance.isLeftChild());
+        assertEquals(true, relevance.isRightChild());
+        assertEquals(true, holiday.isLeftChild());
+        assertEquals(false, holiday.isRightChild());
+        assertEquals(false, injure.isLeftChild());
+        assertEquals(true, injure.isRightChild());
+    }
+    
+    @Test
+    public void testChildAndAncestorTesters() {
+        logger.info("\ntesting isChildOf()");
+        WeightedBinaryTree<Double> one = new WeightedBinaryTree<>(1.0);
+        WeightedBinaryTree<Double> pointFive = new WeightedBinaryTree<>(0.5);
+        WeightedBinaryTree<Double> pointSevenFive = new WeightedBinaryTree<>(0.75);
+        WeightedBinaryTree<Double> two = new WeightedBinaryTree<>(2.0);
+        two.setLeftChild(pointFive).getLeftChild().setRightChild(one).getRightChild().setLeftChild(pointSevenFive);
+        WeightedBinaryTree<Double> three = new WeightedBinaryTree<>(3.0);
+        two.setRightChild(three);
+        
+        assertEquals(false, pointSevenFive.isChildOf(two));
+        assertEquals(false, pointSevenFive.isChildOf(pointFive));
+        assertEquals(true, pointSevenFive.isChildOf(one));
+        assertEquals(false, pointSevenFive.isChildOf(pointSevenFive));
+        assertEquals(false, pointSevenFive.isChildOf(three));
+        
+        assertEquals(true, pointFive.isChildOf(two));
+        assertEquals(false, pointFive.isChildOf(pointFive));
+        assertEquals(false, pointFive.isChildOf(one));
+        assertEquals(false, pointFive.isChildOf(pointSevenFive));
+        assertEquals(false, pointFive.isChildOf(three));
+        
+        assertEquals(false, two.isAncestorOf(two));
+        assertEquals(true, two.isAncestorOf(one));
+        assertEquals(true, two.isAncestorOf(pointSevenFive));
+        assertEquals(true, two.isAncestorOf(pointFive));
+        assertEquals(true, two.isAncestorOf(three));
+        
+        assertEquals(false, pointFive.isAncestorOf(two));
+        assertEquals(false, pointFive.isAncestorOf(pointFive));
+        assertEquals(true, pointFive.isAncestorOf(one));
+        assertEquals(true, pointFive.isAncestorOf(pointSevenFive));
+        assertEquals(false, pointFive.isAncestorOf(three));
+        
+        assertEquals(false, one.isAncestorOf(two));
+        assertEquals(false, one.isAncestorOf(pointFive));
+        assertEquals(false, one.isAncestorOf(one));
+        assertEquals(true, one.isAncestorOf(pointSevenFive));
+        assertEquals(false, one.isAncestorOf(three));
+        
+        assertEquals(false, pointSevenFive.isAncestorOf(two));
+        assertEquals(false, pointSevenFive.isAncestorOf(one));
+        assertEquals(false, pointSevenFive.isAncestorOf(pointFive));
+        assertEquals(false, pointSevenFive.isAncestorOf(pointSevenFive));
+        assertEquals(false, pointSevenFive.isAncestorOf(three));
+        
+        assertEquals(false, three.isAncestorOf(two));
+        assertEquals(false, three.isAncestorOf(pointFive));
+        assertEquals(false, three.isAncestorOf(one));
+        assertEquals(false, three.isAncestorOf(pointSevenFive));
+        assertEquals(false, three.isAncestorOf(three));
+        
+        
+        assertEquals(false, two.isDescendentOf(two));
+        assertEquals(false, two.isDescendentOf(pointFive));
+        assertEquals(false, two.isDescendentOf(one));
+        assertEquals(false, two.isDescendentOf(pointSevenFive));
+        assertEquals(false, two.isDescendentOf(three));
+        
+        assertEquals(true, pointFive.isDescendentOf(two));
+        assertEquals(false, pointFive.isDescendentOf(pointFive));
+        assertEquals(false, pointFive.isDescendentOf(one));
+        assertEquals(false, pointFive.isDescendentOf(pointSevenFive));
+        assertEquals(false, pointFive.isDescendentOf(three));
+        
+        assertEquals(true, pointSevenFive.isDescendentOf(two));
+        assertEquals(true, pointSevenFive.isDescendentOf(pointFive));
+        assertEquals(true, pointSevenFive.isDescendentOf(one));
+        assertEquals(false, pointSevenFive.isDescendentOf(pointSevenFive));
+        assertEquals(false, pointSevenFive.isDescendentOf(three));
+        
+        assertEquals(true, three.isDescendentOf(two));
+        assertEquals(false, three.isDescendentOf(pointFive));
+        assertEquals(false, three.isDescendentOf(one));
+        assertEquals(false, three.isDescendentOf(pointSevenFive));
+        assertEquals(false, three.isDescendentOf(three));
+        
+        
+        assertEquals(false, two.isDistantAncestorOf(two));
+        assertEquals(false, two.isDistantAncestorOf(pointFive));
+        assertEquals(true, two.isDistantAncestorOf(one));
+        assertEquals(true, two.isDistantAncestorOf(pointSevenFive));
+        assertEquals(false, two.isDistantAncestorOf(three));
+        
+        assertEquals(false, pointFive.isDistantAncestorOf(two));
+        assertEquals(false, pointFive.isDistantAncestorOf(pointFive));
+        assertEquals(false, pointFive.isDistantAncestorOf(one));
+        assertEquals(true, pointFive.isDistantAncestorOf(pointSevenFive));
+        assertEquals(false, pointFive.isDistantAncestorOf(three));
+        
+        assertEquals(false, one.isDistantAncestorOf(two));
+        assertEquals(false, one.isDistantAncestorOf(pointFive));
+        assertEquals(false, one.isDistantAncestorOf(one));
+        assertEquals(false, one.isDistantAncestorOf(pointSevenFive));
+        assertEquals(false, one.isDistantAncestorOf(three));
+        
+        assertEquals(false, pointSevenFive.isDistantAncestorOf(two));
+        assertEquals(false, pointSevenFive.isDistantAncestorOf(pointFive));
+        assertEquals(false, pointSevenFive.isDistantAncestorOf(one));
+        assertEquals(false, pointSevenFive.isDistantAncestorOf(pointSevenFive));
+        assertEquals(false, pointSevenFive.isDistantAncestorOf(three));
+        
+        assertEquals(false, three.isDistantAncestorOf(two));
+        assertEquals(false, three.isDistantAncestorOf(pointFive));
+        assertEquals(false, three.isDistantAncestorOf(one));
+        assertEquals(false, three.isDistantAncestorOf(pointSevenFive));
+        assertEquals(false, three.isDistantAncestorOf(three));
     }
     
     /**
@@ -505,6 +675,26 @@ public class WeightedBinaryTreeTest {
         instance.display();
         /**/
     }
+    
+    @Test
+    public void testRebalance() {
+        logger.info("\ntesting rebalance()");
+        WeightedBinaryTree<String> instance = null;
+        
+        instance = new WeightedBinaryTree<>("m", 1);
+        WeightedBinaryTree<String> j = instance.insert("j", 10).getInsertedNode();      
+        WeightedBinaryTree<String> i = instance.insert("i", 1).getInsertedNode();
+        instance.insert("l");
+        WeightedBinaryTree<String> n = instance.insert("n").getInsertedNode();
+        assertEquals(n, j.getSibling());
+        System.out.println("\ninstance:");System.out.flush();
+        instance.display();
+        
+        instance.get("j").rebalance();
+        System.out.println("\ninstance:");System.out.flush();
+        j.display();
+    }
+    
     @Test
     public void testGetPathToRoot() {
         logger.info("\ntesting getPathToRoot()");
@@ -681,7 +871,7 @@ public class WeightedBinaryTreeTest {
         hist = new WeightedBinaryTree<>("a");
         words = text.split(" ");
         for(String word : words) {
-            hist.insert(word, 1.0, DuplicateEntryOption.UPDATE);
+            hist.insert_old(word, 1.0, DuplicateEntryOption.UPDATE);
         }
         for(String word : words) {
             //logger.info(hist.get(word));
@@ -707,13 +897,15 @@ public class WeightedBinaryTreeTest {
         hist.display();*/
         hist = new WeightedBinaryTree<>("the", 1);
         hist = hist.insert("holiday", 5).getRoot();
-        hist.display();
+        //hist.display();
         hist = hist.insert("and", 8).getRoot();
-        hist.display();
-        //hist = hist.insert("the", 10).getRoot();
+        //hist.display();
+        hist = hist.insert("the", 10).getRoot();
         //hist.display();
         hist = hist.insert("relevance", 1).getRoot();
         hist = hist.insert("injure", 2).getRoot();
+        logger.info("\nfinal:");
+        hist.display();
         logger.info("\n" + hist.getAsList(WeightedBinaryTree.SortType.NATURAL_ORDER));
     }
 }

@@ -20,6 +20,7 @@ public class WeightedBinaryTree<T extends Comparable> {
     public static enum SortType {
         NATURAL_ORDER, WEIGHT;
     }
+    private double rebalanceCoefficient = 1.0;
     
     public T value;
     public double weight;
@@ -71,6 +72,14 @@ public class WeightedBinaryTree<T extends Comparable> {
         this.right = right;
         this.subTreeWeight = 0.0;
         this.treeTorque = this.getIndividualTorque();
+    }
+    
+    public WeightedBinaryTree<T> getRightChild() {
+        return this.right;
+    }
+    
+    public WeightedBinaryTree<T> getLeftChild() {
+        return this.left;
     }
     
     /**
@@ -163,31 +172,69 @@ public class WeightedBinaryTree<T extends Comparable> {
         return this;
     }
     
+    //TODO:  consider returning an InsertionResult from these
+    //For setting child nodes, we need to be careful about nodes that are this tree's ancestor or decendant.  Cycles should not be allowed.
+    //We'll have an option to either ignore such entries or to replace the old child with the new one.
+    //For now, we'll limit such replacements to parent child relationships for the purpose of rebalancing.
     public WeightedBinaryTree<T> setLeftChild(WeightedBinaryTree<T> newLeft) {
-        System.out.println(this + ".setLeftChild(" + newLeft + ")");
-        System.out.println(newLeft + " " + newLeft.getPathFromRoot().contains(this) + " " + this.getPathFromRoot().contains(newLeft));
-        if(newLeft != null && !newLeft.getPathFromRoot().contains(this) && !this.getPathFromRoot().contains(newLeft)) {
-            if(this.left != null) {
-                this.subTreeWeight -= left.subTreeWeight;
-                this.treeTorque -= left.treeTorque;
-                //TODO:  remove parent from left
-            }
-            this.left = newLeft;
+        return this.setLeftChild(newLeft, DuplicateEntryOption.REPLACE);
+    }
+    
+    public WeightedBinaryTree<T> setLeftChild(WeightedBinaryTree<T> newLeft, DuplicateEntryOption option) {
+        //System.out.println(this + ".setLeftChild(" + newLeft + ")");
+        //System.out.println(newLeft + " " + newLeft.getPathFromRoot().contains(this) + " " + this.getPathFromRoot().contains(newLeft));
+        if(newLeft == null) {
+            //this.left = null;
+        } else if((newLeft.getPathFromRoot().contains(this) || this.getPathFromRoot().contains(newLeft)) && !(this.parent == newLeft && option == DuplicateEntryOption.REPLACE)) {
+            //This would create a circular ancestry tree; ignore except when changing direct parent/child and the option is REPLACE.
+            return this;
+        } else { //if(option == DuplicateEntryOption.REPLACE && (this.parent == newLeft)) {
+            doSetLeftChild(newLeft);
+        }
+        return this;
+    }
+    
+    private WeightedBinaryTree<T> doSetLeftChild(WeightedBinaryTree<T> newLeft) {
+        if(this.left != null) {
+            this.subTreeWeight -= this.left.subTreeWeight;
+            this.treeTorque -= this.left.treeTorque;
+            //TODO:  remove parent from left
+        }
+        this.left = newLeft;
+        if(newLeft != null) {
             newLeft.setParent(this);
-            this.subTreeWeight += left.subTreeWeight;
-            this.treeTorque += left.treeTorque;
+            this.subTreeWeight += this.left.subTreeWeight;
+            this.treeTorque += this.left.treeTorque;
         }
         return this;
     }
     
     public WeightedBinaryTree<T> setRightChild(WeightedBinaryTree<T> newRight) {
-        if(newRight != null && !newRight.getPathFromRoot().contains(this) && !this.getPathFromRoot().contains(newRight)) {
-            if(this.right != null) {
-                this.subTreeWeight -= right.subTreeWeight;
-                this.treeTorque -= right.treeTorque;
-                //TODO: remove parent from current right
-            }
-            this.right = newRight;
+        return this.setRightChild(newRight, DuplicateEntryOption.REPLACE);
+    }
+    
+    public WeightedBinaryTree<T> setRightChild(WeightedBinaryTree<T> newRight, DuplicateEntryOption option) {
+        /*if(newRight != null && !((newRight.getPathFromRoot().contains(this) || this.getPathFromRoot().contains(newRight)) && !(this.parent == newRight && option == DuplicateEntryOption.REPLACE))) {
+            doSetRightChild(newRight);
+        }*/
+        if(newRight == null) {
+            this.doSetRightChild(newRight);
+        } else if(!newRight.isAncestorOf(this) || (this.parent == newRight && option == DuplicateEntryOption.REPLACE)) {
+            this.doSetRightChild(newRight);
+        } else {
+            //do nothing
+        }
+        return this;
+    }
+    
+    private WeightedBinaryTree<T> doSetRightChild(WeightedBinaryTree<T> newRight) {
+        if(this.right != null) {
+            this.subTreeWeight -= right.subTreeWeight;
+            this.treeTorque -= right.treeTorque;
+            //TODO: remove parent from current right
+        }
+        this.right = newRight;
+        if(this.right != null) {
             newRight.setParent(this);
             this.subTreeWeight += right.subTreeWeight;
             this.treeTorque += right.treeTorque;
@@ -201,7 +248,7 @@ public class WeightedBinaryTree<T extends Comparable> {
     }*/
     
     //TODO:  would like to find a way of making sure this is only called from this or a child node
-    public WeightedBinaryTree<T> setSubTreeTorque(double newTorque) {
+    /*public WeightedBinaryTree<T> setSubTreeTorque(double newTorque) {
         if(this.left == null && this.right == null) {
             //a bogus request if newTorque is not 0
             this.treeTorque = this.getIndividualTorque();
@@ -210,6 +257,54 @@ public class WeightedBinaryTree<T extends Comparable> {
         }
         this.treeTorque = this.getIndividualTorque() + newTorque;
         return this;
+    }*/
+    
+    public WeightedBinaryTree<T> getSibling() {
+        if(parent == null) {
+            return null;
+        } else if(this == parent.left) {
+            return parent.right;
+        } else {
+            return parent.left;
+        }
+    }
+    
+    public boolean isRoot() {
+        return this.parent == null;
+    }
+    
+    public boolean isLeftChild() {
+        if(this.parent == null) {
+            return false;
+        } else if(this == this.parent.right) {
+            return false;
+        }
+        return true;
+    }
+    
+    public boolean isRightChild() {
+        if(this.parent == null) {
+            return false;
+        } else if(this == this.parent.left) {
+            return false;
+        }
+        return true;
+    }
+    
+    public boolean isChildOf(WeightedBinaryTree<T> other) {
+        return other != null && this.parent == other;
+    }
+    
+    public boolean isDescendentOf(WeightedBinaryTree<T> other) {
+        return other != null && other != this && this.getPathFromRoot().contains(other);
+    }
+    
+    public boolean isAncestorOf(WeightedBinaryTree<T> other) {
+        return other != null && other != this && other.getPathFromRoot().contains(this);
+    }
+    
+    public boolean isDistantAncestorOf(WeightedBinaryTree<T> other) {
+        return this.isAncestorOf(other) && other != null && !other.isChildOf(this);
     }
     
     //TODO: get with a functional interface, more of a query;
@@ -221,7 +316,7 @@ public class WeightedBinaryTree<T extends Comparable> {
     //If insert(BalancedBinaryTree<T> node) is implemented, will need to check its decendents to see if those values are in the existing tree, or ensure that it has no decendents.
     //TODO: this is copied from the basic binary tree; adapt to this class
     public InsertionResult<T> insert(T value) {
-        return insert(value, DEFAULT_WEIGHT, DEFAULT_DUPLICATE_ENTRY_OPTION);
+        return insert_old(value, DEFAULT_WEIGHT, DEFAULT_DUPLICATE_ENTRY_OPTION);
     }
     
     public InsertionResult<T> insert(T value, double weight) {
@@ -230,7 +325,7 @@ public class WeightedBinaryTree<T extends Comparable> {
     
     //TODO:  at some point, maybe an insert(BalancedBinaryTree<T> node); would have to deal with inserting nodes that could have children and reshuffling some connections; low priority at the moment
     public InsertionResult<T> insertWeighted(T value, double weight) {
-        return insert(value, weight, DEFAULT_DUPLICATE_ENTRY_OPTION);
+        return insert_old(value, weight, DEFAULT_DUPLICATE_ENTRY_OPTION);
     }
     
     
@@ -240,12 +335,11 @@ public class WeightedBinaryTree<T extends Comparable> {
      * @param value
      * @return 
      */
-    public InsertionResult insert2(T value, double weight, DuplicateEntryOption option) {
-        InsertionResult result = new InsertionResult();
-        
+    public InsertionResult insert(T value, double weight, DuplicateEntryOption option) {       
         //First, insert like a regular binary tree.
         //Find where it should go (either the exiting entry, or where a new one will go).
         //Add the new entry or update the existing one, as needed.
+        InsertionResult result = this.simpleBinaryInsert(value, weight, option);
         
         //Next, look at the path to the root, starting with the node just entered or updated and going to the root,
         //check and see if it should be bumped up a level.
@@ -254,7 +348,7 @@ public class WeightedBinaryTree<T extends Comparable> {
         //Continue the process.  
         return result;
     }
-    public InsertionResult insert(T value, double weight, DuplicateEntryOption option) {
+    public InsertionResult insert_old(T value, double weight, DuplicateEntryOption option) {
         InsertionResult result = new InsertionResult();
         //System.out.println("insert(" + value + ", " + weight + ") into " + this);
         if(value == null) {
@@ -370,7 +464,7 @@ public class WeightedBinaryTree<T extends Comparable> {
     }
     
     public InsertionResult<T> insertOrAddWeight(T value, double weight) {
-        return this.insert(value, weight, DuplicateEntryOption.UPDATE);
+        return this.insert_old(value, weight, DuplicateEntryOption.UPDATE);
     }
     
     protected InsertionResult<T> simpleBinaryInsert(T value, double weight, DuplicateEntryOption option) {
@@ -379,7 +473,7 @@ public class WeightedBinaryTree<T extends Comparable> {
             //result.pathFromRoot = new LinkedList<WeightedBinaryTree<T>>();
         }
         int compare = value.compareTo(this.value);
-        System.out.println("insert(" + value + ", " + weight + ", " + option + ") into " + this + ";  compare == " + compare);
+        //System.out.println("insert(" + value + ", " + weight + ", " + option + ") into " + this + ";  compare == " + compare);
         if(compare == 0) {
             //System.out.println("compare is 0");
             double previousWeight = this.weight;
@@ -394,7 +488,6 @@ public class WeightedBinaryTree<T extends Comparable> {
                     result.setStatus(InsertionResult.Status.REPLACED).setPreviousWeight(previousWeight);
                     break;
                 case UPDATE:
-                    //this.treeTorque -= this.getIndividualTorque();
                     this.weight += weight;
                     result.setStatus(InsertionResult.Status.UPDATED).setPreviousWeight(previousWeight);
                     break;
@@ -404,21 +497,15 @@ public class WeightedBinaryTree<T extends Comparable> {
         } else if(compare < 0) {
             if(this.left != null) {
                 result = this.left.simpleBinaryInsert(value, weight, option);
-                //this.updateTreeWeight(result, weight);
-                //return result;
             } else {
                 this.setLeftChild(new WeightedBinaryTree(value, weight));
-                System.out.println("this.left = " + this.left);
                 result.setInsertedNode(this.left).setStatus(InsertionResult.Status.CREATED);
             }
         } else {
             if(this.right != null) {
                 result = this.right.simpleBinaryInsert(value, weight, option);
-                //this.updateTreeWeight(result, weight);
-                //return result;
             } else {
                 this.setRightChild(new WeightedBinaryTree(value, weight));
-                System.out.println("this.right = " + this.right);
                 result.setInsertedNode(this.right).setStatus(InsertionResult.Status.CREATED);
             }
         }
@@ -442,6 +529,48 @@ public class WeightedBinaryTree<T extends Comparable> {
     }
     
     public RebalanceResult<T> rebalance() {
+        RebalanceResult<T> result = new RebalanceResult<>();
+        result.beforePathFromRoot = this.getPathFromRoot();
+        if(this.parent == null) {
+            result.afterPathFromRoot = null;
+            //result.beforePathFromRoot = null;
+            result.success = false;
+            return result;
+        }
+        double otherWeight = parent.getTreeWeight() - this.getTreeWeight();
+        WeightedBinaryTree<T> sibling = this.getSibling();
+        System.out.println("sibling of " + this + " is " + sibling);
+        double siblingWeight = sibling.getTreeWeight();
+        WeightedBinaryTree<T> oldParent = this.parent;
+        System.out.println("this is " + this);
+        System.out.println("oldParent is " + oldParent);
+        if(this.getTreeWeight() > siblingWeight * this.rebalanceCoefficient) {
+            //six cases
+            //parent is root and this is left child
+            if(parent.isRoot() && this.isLeftChild()) {
+                System.out.println("parent is root and this is left");
+                oldParent.setLeftChild(this.right);
+                this.setRightChild(oldParent);
+                System.out.println("\noldParent tree is:");
+                oldParent.display();
+            }
+            //parent is root and this is right child
+            
+            //parent is left child and this is left child
+            
+            //parent is left child and this is right child
+            
+            //parent is right child and this is left child
+            
+            //parent is right child and this is right child
+            else if(parent.isRightChild()) {
+                
+                WeightedBinaryTree<T> oldLeftChild = this.left;
+                oldParent.parent.setRightChild(this);
+                oldParent.setRightChild(oldLeftChild);
+                this.setLeftChild(oldParent);
+            }
+        }
         return null;
     }
     
