@@ -155,27 +155,36 @@ public class WeightedBinaryTreeTest {
         logger.info(five.getPathToRoot());
         logger.info(five.getPathFromRoot());
         assertEquals(1, seven.weight, 0.0);
-        assertEquals(1, seven.getIndividualTorque(), 0.0);
-        assertEquals(2, five.getIndividualTorque(), 0.0);
-        assertEquals(3.0, seven.getTreeTorque(), 0.0);
         
         five.setLeftChild(seven, DuplicateEntryOption.UPDATE);
         assertEquals(null, five.left);
         
-        seven.setLeftChild(seven);
+        seven.setLeftChild(seven); 
+        logger.info(seven.getLeftChild());
         assertEquals(five, seven.left);
         
         WeightedBinaryTree<String> m = new WeightedBinaryTree<>("m", 1);
+        assertEquals(1.0, m.getTreeWeight(), 0.0);
         InsertionResult<String> result = null;
         WeightedBinaryTree<String> l = m.setLeftChild(new WeightedBinaryTree<>("l")).getLeftChild();
+        logger.info(m.getTreeWeight());
+        assertEquals(1.0, l.getTreeWeight(), 0.0);
+        assertEquals(2.0, m.getTreeWeight(), 0.0);
         WeightedBinaryTree<String> o = m.setRightChild(new WeightedBinaryTree<>("o", 1)).getRightChild();
+        logger.info(m.getTreeWeight());
         WeightedBinaryTree<String> n = o.setLeftChild(new WeightedBinaryTree<>("n")).getLeftChild();
+        logger.info(m.getTreeWeight());
         WeightedBinaryTree<String> p = o.setRightChild(new WeightedBinaryTree<>("p")).getRightChild();
+        logger.info(m.getTreeWeight());
         assertEquals(l, m.getLeftChild());
         assertEquals(o, m.getRightChild());
         assertEquals(p, m.getRightChild().getRightChild());
         assertEquals(n, m.getRightChild().getLeftChild());
         m.display();
+        o.display();
+        assertEquals(3, o.getTreeWeight(), 0.0);
+        m.display();
+        
         o.setLeftChild(m);
         m.setRightChild(n);
         logger.debug("\n");
@@ -187,20 +196,93 @@ public class WeightedBinaryTreeTest {
     }
     
     @Test
+    public void testThatSetLeftChildSetsParentOfOldLeft() {
+        logger.info("\ntestThatSetLeftChildSetsParentOfOldLeft()");
+        WeightedBinaryTree<String> m = new WeightedBinaryTree<>("m", 1);
+        assertEquals(1.0, m.getTreeWeight(), 0.0);
+        InsertionResult<String> result = null;
+        WeightedBinaryTree<String> l = m.setLeftChild(new WeightedBinaryTree<>("l")).getLeftChild();
+        m.setLeftChild(l);
+        assertEquals(l, m.getLeftChild());
+        assertEquals(null, m.getRightChild());
+        assertEquals(m, l.getParent());
+        assertEquals(null, l.getRightChild());
+        assertEquals(null, l.getLeftChild());
+        
+        m.setLeftChild(null);
+        assertEquals(null, m.getLeftChild());
+        assertEquals(null, l.getParent());
+        
+        m.setLeftChild(l);
+        WeightedBinaryTree<String> n = new WeightedBinaryTree<>("n");
+        n.setLeftChild(l);
+        assertEquals(l, n.getLeftChild());
+        assertEquals(null, m.getLeftChild());
+    }
+    
+    @Test
+    public void testThatSetRightChildSetsParentOfOldLeft() {
+        logger.info("\ntestThatSetRightChildSetsParentOfOldLeft");
+        
+        WeightedBinaryTree<String> m = new WeightedBinaryTree<>("m", 1);
+        assertEquals(0.0, m.getSubTreeWeight(), 0.0);
+        assertEquals(1.0, m.getTreeWeight(), 0.0);
+        
+        //Now give m a child and make sure that it's getRightChild() and weights etc. are correct
+        WeightedBinaryTree<String> l = m.setRightChild(new WeightedBinaryTree<>("l")).getRightChild();
+        assertEquals(l, m.getRightChild());
+        assertEquals(null, m.getLeftChild());
+        assertEquals(1.0, m.getSubTreeWeight(), 0.0);
+        assertEquals(2.0, m.getTreeWeight(), 0.0);
+        assertEquals(m, l.getParent());
+        assertEquals(null, l.getLeftChild());
+        assertEquals(null, l.getRightChild());
+        
+        //Remove the child and make sure getRightChild and weights are updated.
+        m.setRightChild(null);
+        assertEquals(null, m.getRightChild());
+        assertEquals(null, l.getParent());
+        assertEquals(0.0, m.getSubTreeWeight(), 0.0);
+        assertEquals(1.0, m.getTreeWeight(), 0.0);
+        
+        //Put the child back and make sure everything is updated again.
+        m.setRightChild(l);
+        assertEquals(1.0, m.getSubTreeWeight(), 0.0);
+        assertEquals(2.0, m.getTreeWeight(), 0.0);
+        
+        WeightedBinaryTree<String> n = new WeightedBinaryTree<>("n");
+        assertEquals(0.0, n.getSubTreeWeight(), 0.0);
+        assertEquals(1.0, n.getTreeWeight(), 1.0);
+        //Now if you set l to be n's right child, m should know l is not it's right child anymore.
+        n.setRightChild(l);
+        assertEquals(1.0, n.getSubTreeWeight(), 0.0);
+        assertEquals(l, n.getRightChild());
+        assertEquals(null, m.getRightChild());
+        assertEquals(0.0, m.getSubTreeWeight(), 0.0);
+        assertEquals(1.0, m.getTreeWeight(), 0.0);
+    }
+    
+    @Test
     public void testSetRightChild() {
         logger.info("\ntesting setRightChild()");
         WeightedBinaryTree<String> instance = new WeightedBinaryTree<>("m");
         instance.setRightChild(new WeightedBinaryTree<>("o", 4));
         assertEquals(null, instance.left);
         assertEquals("o", instance.right.value);
-        assertEquals(8, instance.right.getIndividualTorque(), 0.0);
-        assertEquals(9, instance.getTreeTorque(), 0.0);
+        //assertEquals(8, instance.right.getIndividualTorque(), 0.0);
+        //assertEquals(9, instance.getTreeTorque(), 0.0);
         
         WeightedBinaryTree<String> m = new WeightedBinaryTree<>("m", 1);
-        WeightedBinaryTree<String> n = m.setRightChild(new WeightedBinaryTree("n", 1)).getRightChild();//.getRoot();
+        WeightedBinaryTree<String> n = m.setRightChild(new WeightedBinaryTree("n", 4)).getRightChild();//.getRoot();
         //instance.display();
+        assertEquals(4.0, n.getWeight(), 0.0);
+        assertEquals(4.0, n.getWeight(), 0.0);
+        assertEquals(4.0, m.getSubTreeWeight(), 0.0);
+        assertEquals(5.0, m.getTreeWeight(), 0.0);
         WeightedBinaryTree<String> j = m.setLeftChild(new WeightedBinaryTree("j", 1)).getLeftChild();
+        assertEquals(6.0, m.getTreeWeight(), 0.0);
         WeightedBinaryTree<String> l = j.setRightChild(new WeightedBinaryTree<>("l", 1)).getRightChild();
+        assertEquals(7, m.getTreeWeight(), 0.0);
         m.display();
         assertEquals(j, m.getLeftChild());
         assertEquals(n, m.getRightChild());
@@ -208,12 +290,15 @@ public class WeightedBinaryTreeTest {
         
         //m.setLeftChild(l);
         m.left = l;
-        j.setRightChild(m, DuplicateEntryOption.REPLACE);
+        j.setRightChild(m);//, DuplicateEntryOption.REPLACE);
         //j.right = m;
         logger.info("\n");
         j.display();
         assertEquals(m, j.getRightChild());
         assertEquals(l, m.getLeftChild());
+        
+        logger.info("\nm");
+        m.display();
     }
     
     /*@Test
@@ -677,22 +762,167 @@ public class WeightedBinaryTreeTest {
     }
     
     @Test
-    public void testRebalance() {
+    public void testUpdateSubTreeWeight() {
+        logger.info("\ntesting updateSubTreeWeight(), no params");
+        WeightedBinaryTree<String> m = new WeightedBinaryTree<>("m");
+        WeightedBinaryTree<String> l = new WeightedBinaryTree<>("l");
+        WeightedBinaryTree<String> n = new WeightedBinaryTree<>("n");
+        assertEquals(0.0, m.getSubTreeWeight(), 0.0);
+        m.left = l;
+        assertEquals(0.0, m.getSubTreeWeight(), 0.0);
+        m.updateSubTreeWeight();
+        assertEquals(1.0, m.getSubTreeWeight(), 0.0);
+        m.right = n;
+        assertEquals(1.0, m.getSubTreeWeight(), 0.0);
+        m.updateSubTreeWeight();
+        assertEquals(2.0, m.getSubTreeWeight(), 0.0);
+        m.right = null;
+        m.updateSubTreeWeight();
+        assertEquals(1.0, m.getSubTreeWeight(), 0.0);
+        
+        m.right = null;
+        m.left = null;
+        m.updateSubTreeWeight();
+        assertEquals(0.0, m.getSubTreeWeight(), 0.0);
+        m.right = n;
+        m.updateSubTreeWeight();
+        assertEquals(1.0, m.getSubTreeWeight(), 0.0);
+    }
+    
+    @Test
+    public void testRebalanceWhenParentIsRootAndThisIsLeft() {
         logger.info("\ntesting rebalance()");
-        WeightedBinaryTree<String> instance = null;
+        //parent is root and this is left child
+        WeightedBinaryTree<String> m = null;
         
-        instance = new WeightedBinaryTree<>("m", 1);
-        WeightedBinaryTree<String> j = instance.insert("j", 10).getInsertedNode();      
-        WeightedBinaryTree<String> i = instance.insert("i", 1).getInsertedNode();
-        instance.insert("l");
-        WeightedBinaryTree<String> n = instance.insert("n").getInsertedNode();
+        m = new WeightedBinaryTree<>("m", 1);
+        WeightedBinaryTree<String> j = m.insert("j", 10).getInsertedNode();
+        WeightedBinaryTree<String> l = m.insert("l", 1).getInsertedNode();
+        WeightedBinaryTree<String> i = m.insert("i", 1).getInsertedNode();
+        //m.insert("l");
+        WeightedBinaryTree<String> n = m.insert("n").getInsertedNode();
         assertEquals(n, j.getSibling());
-        System.out.println("\ninstance:");System.out.flush();
-        instance.display();
+        m.display();
         
-        instance.get("j").rebalance();
-        System.out.println("\ninstance:");System.out.flush();
+        j.rebalance();
+        //logger.info("\nj:");
         j.display();
+        
+        //logger.info("\nm");
+        //m.display();
+        assertEquals(null, j.getParent());
+        assertEquals(i, j.getLeftChild());
+        assertEquals(m, j.getRightChild());
+        assertEquals(l, m.getLeftChild());
+        assertEquals(n, m.getRightChild());
+    }
+    
+    @Test
+    public void testRebalanceWhenParentIsRootAndThisIsRightChild() {    
+        //parent is root and this is right child
+        logger.info("\nparent is root and this is right child");
+        WeightedBinaryTree<String> m = new WeightedBinaryTree<>("m");
+        WeightedBinaryTree<String> n = new WeightedBinaryTree<>("n");
+        WeightedBinaryTree<String> o = new WeightedBinaryTree<>("o", 10);
+        WeightedBinaryTree<String> p = new WeightedBinaryTree<>("p", 1);
+        WeightedBinaryTree<String> l = new WeightedBinaryTree<>("l");
+        m.setWeight(1);
+        m.setRightChild(o);
+        m.setLeftChild(l);
+        o.setLeftChild(n);
+        o.setRightChild(p);
+        m.display();
+        o.rebalance();
+        logger.info("");
+        o.display();
+        
+        assertEquals(null, o.getParent());
+        assertEquals(m, o.getLeftChild());
+        assertEquals(l, m.getLeftChild());
+        assertEquals(n, m.getRightChild());
+        assertEquals(p, o.getRightChild());
+    }
+    
+    @Test
+    public void testRebalanceWhenParentIsLeftAndThisIsLeft() {   
+        //parent is left child and this is left child
+        logger.info("\nparent is left child and this is left child");
+        WeightedBinaryTree<String> m = new WeightedBinaryTree<>("m", 1);
+        WeightedBinaryTree<String> n = m.insert("n").getInsertedNode();
+        m.setRightChild(n);
+        WeightedBinaryTree<String> k = new WeightedBinaryTree<>("k");
+        WeightedBinaryTree<String> i = new WeightedBinaryTree<>("i", 10);
+        WeightedBinaryTree<String> h = new WeightedBinaryTree<>("h");
+        WeightedBinaryTree<String> j = new WeightedBinaryTree<>("j");
+        WeightedBinaryTree<String> l = new WeightedBinaryTree<>("l");
+        m.setLeftChild(k);
+        k.setLeftChild(i);
+        k.setRightChild(l);
+        //l.setLeftChild(null);
+        //l.setRightChild(null);
+        i.setLeftChild(h);
+        i.setRightChild(j);
+        //j.setLeftChild(null);
+        //j.setRightChild(null);
+        m.display();
+        assertEquals(null, m.getParent());
+        assertEquals(k, m.getLeftChild());
+        assertEquals(n, m.getRightChild());
+        
+        i.rebalance();
+        m.display();
+        
+        assertEquals(null, m.getParent());
+        assertEquals(i, m.getLeftChild());
+        assertEquals(n, m.getRightChild());
+        assertEquals(h, i.getLeftChild());
+        assertEquals(k, i.getRightChild());
+        assertEquals(j, k.getLeftChild());
+        assertEquals(l, k.getRightChild());
+    }
+    
+    @Test
+    public void testRebalanceWhenParentIsLeftAndThisIsRight() {     
+        //parent is left child and this is right child
+        logger.info("\nparent is left child and this is right child");
+        WeightedBinaryTree<String> m = new WeightedBinaryTree<>("m");
+        WeightedBinaryTree<String> n = new WeightedBinaryTree<>("n");
+        WeightedBinaryTree<String> i = new WeightedBinaryTree<>("i");
+        WeightedBinaryTree<String> j = new WeightedBinaryTree<>("j");
+        WeightedBinaryTree<String> l = new WeightedBinaryTree<>("l", 10);
+        WeightedBinaryTree<String> k = new WeightedBinaryTree<>("k");
+        m.setLeftChild(j);
+        m.setRightChild(n);
+        j.setLeftChild(i);
+        //i.setLeftChild(null).setRightChild(null);
+        j.setRightChild(l);
+        k.setLeftChild(null).setRightChild(null).setParent(null);
+        l.setLeftChild(k).setRightChild(null);
+        m.display();
+        assertEquals(null, m.getParent());
+        assertEquals(j, m.getLeftChild());
+        assertEquals(n, m.getRightChild());
+        assertEquals(i, j.getLeftChild());
+        assertEquals(l, j.getRightChild());
+        assertEquals(k, l.getLeftChild());
+        
+        l.rebalance();
+        assertEquals(null, m.getParent());
+        assertEquals(l, m.getLeftChild());
+        assertEquals(n, m.getRightChild());
+        assertEquals(j, l.getLeftChild());
+        assertEquals(i, j.getLeftChild());
+        assertEquals(k, j.getRightChild());
+    }
+    
+    @Test
+    public void testRebalanceWhenParentIsRightAndThisIsLeft() {
+        //parent is right child and this is left child
+    }
+    
+    @Test
+    public void testRebalanceWhenParentIsRightAndThisIsRight() {
+        //parent is right child and this is right child
     }
     
     @Test
