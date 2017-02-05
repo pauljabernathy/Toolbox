@@ -383,17 +383,38 @@ public class WeightedBinaryTree<T extends Comparable> {
         //Find where it should go (either the exiting entry, or where a new one will go).
         //Add the new entry or update the existing one, as needed.
         InsertionResult result = this.simpleBinaryInsert(value, weight, option);
+        //this.display();
         
         //Next, look at the path to the root, starting with the node just entered or updated and going to the root,
         //check and see if it should be bumped up a level.
         //If so, move it up and set the previous parent to be that one's right or left child, as appropriate, and set that one's
         //old right or left child to be the old parent's child, as appropriate.
         //Continue the process.  
+        LinkedList<WeightedBinaryTree<T>> pathFromRoot = result.getPathFromRoot();
+        /*while(pathFromRoot.size() > 0) {
+            WeightedBinaryTree<T> next = pathFromRoot.pop();
+            next.rebalance();
+        }*/
+        /**/WeightedBinaryTree<T> current = result.getInsertedNode();
+        //current.display();
+        current.rebalance();
+        //System.out.println("result.insertedNode = " + result.insertedNode);
+        //this.display();
+        //current.display();
+        /*while(current != null && current.getParent() != null) {
+            //current.rebalance();
+            current = current.getParent();
+        }/**/
+        //System.out.println("result.insertedNode = " + result.insertedNode);
         return result;
     }
     
     public InsertionResult<T> insertOrAddWeight(T value, double weight) {
         return this.insert(value, weight, DuplicateEntryOption.UPDATE);
+    }
+    
+    protected InsertionResult<T> simpleBinaryInsert(T value, double weight) {
+        return simpleBinaryInsert(value, weight, DuplicateEntryOption.UPDATE);
     }
     
     protected InsertionResult<T> simpleBinaryInsert(T value, double weight, DuplicateEntryOption option) {
@@ -482,38 +503,38 @@ public class WeightedBinaryTree<T extends Comparable> {
         double otherWeight = parent.getTreeWeight() - this.getTreeWeight();
         WeightedBinaryTree<T> sibling = this.getSibling();
         //System.out.println("sibling of " + this + " is " + sibling);
-        double siblingWeight = sibling.getTreeWeight();
+        double siblingWeight = sibling != null ? sibling.getTreeWeight() : 0.0;
         WeightedBinaryTree<T> oldParent = this.parent;
         //System.out.println("this is " + this);
         //System.out.println("oldParent is " + oldParent);
-        if(this.getTreeWeight() > siblingWeight * this.rebalanceCoefficient) {
+        if(this.getTreeWeight() > otherWeight * this.rebalanceCoefficient) {
             //six cases
             //parent is root and this is left child
             if(parent.isRoot() && this.isLeftChild()) {
-                //System.out.println("parent is root and this is left");
-                //oldParent.setLeftChild(this.right);
                 WeightedBinaryTree<T> oldRight = this.right;
                 this.setRightChild(oldParent);
                 this.setParent(null);
-                oldParent.setLeftChild(oldRight);
-                //oldParent.left = oldRight;
-                //System.out.println("\noldParent tree is:");
-                //oldParent.display();
-                /*System.out.println("new right is " + this.right);
-                System.out.println("this.right.right is " + this.right.right);
-                System.out.println("this.right.left is " + this.right.left);
-                System.out.println("oldRight is " + oldRight);
-                System.out.println("this.left is " + this.left);*/
-                oldRight.updateSubTreeWeight();
-                //this.updateSubTreeWeight();
+                if(oldRight != null) {
+                    oldParent.setLeftChild(oldRight);
+                    oldRight.updateSubTreeWeight();
+                }
             }
             //parent is root and this is right child
             else if(parent.isRoot() && this.isRightChild()) {
+                //System.out.println("parent.isRoot() && this.isRightChild()");
                 WeightedBinaryTree<T> oldLeft = this.left;
+                //oldParent.setParent(this);
                 this.setLeftChild(oldParent);
+                //oldParent.setParent(this);
+                oldParent.parent = this;
                 this.setParent(null);
-                oldParent.setRightChild(oldLeft);
-                oldParent.updateSubTreeWeight();
+                if(oldLeft != null) {
+                    oldParent.setRightChild(oldLeft);
+                    oldLeft.updateSubTreeWeight();
+                }
+                //System.out.println("this is:");
+                this.display();
+                //System.out.println("oldParent.getParent() == " + oldParent.getParent());
             }
             
             //parent is left child and this is left child
@@ -523,6 +544,7 @@ public class WeightedBinaryTree<T extends Comparable> {
                 this.setRightChild(oldParent);
                 oldGrandParent.setLeftChild(this);
                 oldParent.setLeftChild(oldRight);
+                oldParent.updateSubTreeWeight();
             }
             //parent is left child and this is right child
             else if(parent.isLeftChild() && this.isRightChild()) {
@@ -551,11 +573,20 @@ public class WeightedBinaryTree<T extends Comparable> {
                 oldGrandParent.setRightChild(this);
                 oldParent.setRightChild(oldLeftChild);
                 oldParent.updateSubTreeWeight();
+                if(oldLeftChild != null) {
+                    //oldLeftChild.updateSubTreeWeight();
+                }
+                oldParent.updateSubTreeWeight();
             }
             this.updateSubTreeWeight();
             //oldParent.updateSubTreeWeight();
+            if(this.parent != null) {
+                this.parent.updateSubTreeWeight();
+            }
         }
-        return null;
+        result.afterPathFromRoot = this.getPathFromRoot();
+        result.success = true;
+        return result;
     }
     
     public LinkedList<WeightedBinaryTree<T>> getPathToRoot() {

@@ -114,7 +114,13 @@ public class WeightedBinaryTreeTest {
         logger.info("\ntesting get()");
         WeightedBinaryTree<String> instance = new WeightedBinaryTree<>("ijkl");
         assertEquals(instance, instance.get("ijkl"));
-        WeightedBinaryTree<String> abcd = instance.insert("abcd").getInsertedNode();
+        //WeightedBinaryTree<String> abcd = instance.insert("abcd").getInsertedNode();//instance.simpleBinaryInsert("abcd", 1.0, DuplicateEntryOption.REPLACE).getInsertedNode();
+        InsertionResult result = instance.insert("abcd");
+        logger.info("result.insertedNode = " + result.insertedNode);
+        WeightedBinaryTree<String> abcd = result.getInsertedNode();
+        System.out.println("result.getInsertedNode() = " + result.getInsertedNode());
+        instance.display();
+        System.out.println("result.insertedNode = " + result.insertedNode);
         assertEquals(abcd, abcd.get("abcd"));
         assertEquals(abcd, instance.get("abcd"));
         WeightedBinaryTree<String> efgh = instance.insert("efgh").getInsertedNode();
@@ -499,16 +505,18 @@ public class WeightedBinaryTreeTest {
         logger.info(list);
         logger.info(m.getAsList(WeightedBinaryTree.SortType.WEIGHT));
         assertEquals(2, list.size());
-        assertEquals("k", list.get(0).value);
-        assertEquals("m", list.get(0).right.value);
+        assertEquals("k", list.get(1).value);
+        assertEquals("m", list.get(0).value);
+        m.display();
         
         m = new WeightedBinaryTree<>("m", 5);
         list = m.insert("n", 4).getPathFromRoot();
         list = m.insert("o", 7).getPathFromRoot();
         logger.info(list);
-        assertEquals(1, list.size());
-        assertEquals("o", list.get(0).value);
-        assertEquals("m", list.get(0).left.value);
+        m.display();
+        assertEquals(2, list.size());
+        assertEquals("m", list.get(0).value);
+        assertEquals("o", list.get(0).getRightChild().value);
         
         m = new WeightedBinaryTree<>("and", 5);
         m.insert("aardvark", 6);
@@ -799,11 +807,11 @@ public class WeightedBinaryTreeTest {
         WeightedBinaryTree<String> m = null;
         
         m = new WeightedBinaryTree<>("m", 1);
-        WeightedBinaryTree<String> j = m.insert("j", 10).getInsertedNode();
-        WeightedBinaryTree<String> l = m.insert("l", 1).getInsertedNode();
-        WeightedBinaryTree<String> i = m.insert("i", 1).getInsertedNode();
+        WeightedBinaryTree<String> j = m.simpleBinaryInsert("j", 10).getInsertedNode();
+        WeightedBinaryTree<String> l = m.simpleBinaryInsert("l", 1).getInsertedNode();
+        WeightedBinaryTree<String> i = m.simpleBinaryInsert("i", 1).getInsertedNode();
         //m.insert("l");
-        WeightedBinaryTree<String> n = m.insert("n").getInsertedNode();
+        WeightedBinaryTree<String> n = m.simpleBinaryInsert("n", 1).getInsertedNode();
         assertEquals(n, j.getSibling());
         m.display();
         
@@ -844,6 +852,19 @@ public class WeightedBinaryTreeTest {
         assertEquals(l, m.getLeftChild());
         assertEquals(n, m.getRightChild());
         assertEquals(p, o.getRightChild());
+        
+        WeightedBinaryTree<String> treebeard = new WeightedBinaryTree("and", 1);
+        treebeard = treebeard.simpleBinaryInsert("relevance", 8, DuplicateEntryOption.REPLACE).getRoot();
+        treebeard.display();
+        logger.info(treebeard.getRightChild());
+        //logger.info(treebeard.getRightChild().rebalance().afterPathFromRoot.get(0));
+        //treebeard = treebeard.getRightChild().rebalance().afterPathFromRoot.get(0);
+        treebeard.getRightChild().rebalance();
+        treebeard.display();
+        //treebeard.getRightChild().display();
+        logger.info(treebeard.getParent());
+        logger.info(treebeard.getRightChild());
+        logger.info(treebeard.getLeftChild());
     }
     
     @Test
@@ -851,7 +872,7 @@ public class WeightedBinaryTreeTest {
         //parent is left child and this is left child
         logger.info("\nparent is left child and this is left child");
         WeightedBinaryTree<String> m = new WeightedBinaryTree<>("m", 1);
-        WeightedBinaryTree<String> n = m.insert("n").getInsertedNode();
+        WeightedBinaryTree<String> n = new WeightedBinaryTree<>("n"); //m.insert("n").getInsertedNode();
         m.setRightChild(n);
         WeightedBinaryTree<String> k = new WeightedBinaryTree<>("k");
         WeightedBinaryTree<String> i = new WeightedBinaryTree<>("i", 10);
@@ -1128,13 +1149,22 @@ public class WeightedBinaryTreeTest {
         treebeard = treebeard.insert("the", 10).getRoot();
         treebeard = treebeard.insert("relevance", 1).getRoot();
         treebeard = treebeard.insert("injure", 2).getRoot();*/
-        treebeard = new WeightedBinaryTree("and", 1);
+        /*treebeard = new WeightedBinaryTree("and", 1);
         treebeard = treebeard.insert("relevance", 8).getRoot();
         treebeard.display();
         treebeard = treebeard.insert("aa", 10).getRoot();
         treebeard.display();
         treebeard = treebeard.insert("holiday", 5).getRoot();
-        treebeard = treebeard.insert("injure", 2).getRoot();
+        treebeard = treebeard.insert("injure", 2).getRoot();*/
+        
+        treebeard = new WeightedBinaryTree("and", 1);
+        treebeard = treebeard.simpleBinaryInsert("relevance", 8).getRoot();
+        treebeard.display();
+        treebeard = treebeard.simpleBinaryInsert("aa", 10).getRoot();
+        treebeard.display();
+        treebeard = treebeard.simpleBinaryInsert("holiday", 5).getRoot();
+        treebeard = treebeard.simpleBinaryInsert("injure", 2).getRoot();
+        treebeard.display();
         
         return treebeard.getRoot();
     }
