@@ -18,11 +18,15 @@ public class BinaryTree<T extends Comparable> {
     }
     
     public boolean insert(BinaryTreeNode node) {
+        if(node == null) {
+            return false;
+        }
+        
         if(root == null) {
             root = node;
             return true;
         }
-        
+            
         return false;
     }
     

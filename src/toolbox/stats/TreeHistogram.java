@@ -68,7 +68,7 @@ public class TreeHistogram<T extends Comparable> {
             this.totalCount = count;
         } else {
             InsertionResult result = data.insert(item, count, DuplicateEntryOption.UPDATE);
-            System.out.println(result.status);
+            //System.out.println(result.status);
             if(result.status == InsertionResult.Status.CREATED) {
                 this.uniqueEntries++;
             }
@@ -112,5 +112,9 @@ public class TreeHistogram<T extends Comparable> {
     
     public List<T> getDataAsList() {
         return null;
+    }
+    
+    protected WeightedBinaryTree<T> getData() {
+        return this.data;
     }
 }
