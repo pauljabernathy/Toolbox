@@ -7,7 +7,8 @@
 package toolbox.information;
 
 import toolbox.util.ListArrayUtil;
-import toolbox.stats.Histogram;
+import toolbox.stats.*;
+import java.util.List;
 
 /**
  *
@@ -17,12 +18,22 @@ public class Compression {
     
     public static CompressionResult compress(String text) {
         CompressionResult result = null;
-        Histogram histogram = new Histogram(convertToChar(text));
+        Histogram histogram = getCharFrequencies(text);
+        System.out.println(histogram.toString());
+        try {
+            List<ProbDist> halves = histogram.getProbDist().split(.5, true);
+            System.out.println(halves.get(0));
+            System.out.println(halves.get(1));
+        } catch(ProbabilityException e) {
+            System.err.println("Probability Exception trying to split the histogram:  " + e.getMessage());
+        }
         
         return result;
     }
     
-    
+    public static Histogram getCharFrequencies(String text) {
+        return new Histogram(convertToChar(text));
+    }
     
     public static Character[] convertToChar(String text) {
         if(text == null || text.equals("")) {
@@ -30,7 +41,7 @@ public class Compression {
         }
         Character[] result = new Character[text.length()];
         for(int i = 0; i < result.length; i++) {
-            result[i] = text.charAt(i);
+            result[i] = Character.toLowerCase(text.charAt(i));
         }
         return result;
     }

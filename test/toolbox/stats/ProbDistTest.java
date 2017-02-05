@@ -636,53 +636,54 @@ public class ProbDistTest {
             logger.error(e.getClass() + " testing split():  " + e.getMessage());
         }
         
+        //TODO:  get a better handle one what it should return for 0 and 1!
         //boundary conditions
         logger.info("1, true");
         try {
             ProbDist<String> input = new ProbDist<String>().setValuesAndProbabilities(values, probs);
             List<ProbDist<String>> result = input.split(1.0, true);
-            assertEquals(2, result.size());
+            assertEquals(1, result.size());
             assertEquals(4, result.get(0).getValues().size());
-            assertEquals(0, result.get(1).getValues().size());
+            //assertEquals(0, result.get(1).getValues().size());
             logger.info("first:  " + result.get(0));
-            logger.info("second:  " + result.get(1));/**/
+            //logger.info("second:  " + result.get(1));/**/
         } catch(ProbabilityException e) {
-            logger.error(e.getClass() + " testing split():  " + e.getMessage());
+            fail(e.getClass() + " testing split():  " + e.getMessage());
+            e.printStackTrace();
         }
-        /**logger.info("1, false");
-         * try {
+        /**/logger.info("1, false");
+        try {
             ProbDist<String> input = new ProbDist<String>().setValuesAndProbabilities(values, probs);
             List<ProbDist<String>> result = input.split(1.0, false);    //fails
-            assertEquals(2, result.size());
+            assertEquals(1, result.size());
             assertEquals(4, result.get(0).getValues().size());
-            assertEquals(0, result.get(1).getValues().size());
+            //assertEquals(0, result.get(1).getValues().size());
             logger.info("first:  " + result.get(0));
-            logger.info("second:  " + result.get(1));
+            //logger.info("second:  " + result.get(1));
         } catch(ProbabilityException e) {
             logger.error(e.getClass() + " testing split():  " + e.getMessage());
         }/**/
         
-        /**logger.info("0, true");
-         * try {
+        /**/logger.info("0, true");
+        try {
             ProbDist<String> input = new ProbDist<String>().setValuesAndProbabilities(values, probs);
             List<ProbDist<String>> result = input.split(0.0, true); //fails
-            assertEquals(2, result.size());
-            assertEquals(1, result.get(0).getValues().size());
-            assertEquals(3, result.get(1).getValues().size());
-            logger.info("first:  " + result.get(0));
-            logger.info("second:  " + result.get(1));
+            assertEquals(0, result.size());
+            //assertEquals(1, result.get(0).getValues().size());
+            //assertEquals(0, result.get(0).getValues().size());
+            //logger.info("first:  " + result.get(0));
         } catch(ProbabilityException e) {
-            logger.error(e.getClass() + " testing split():  " + e.getMessage());
+            fail(e.getClass() + " testing split():  " + e.getMessage());
         }/**/
-        /**logger.info("0, false");
-         * try {
+        /**/logger.info("0, false");
+        try {
             ProbDist<String> input = new ProbDist<String>().setValuesAndProbabilities(values, probs);
             List<ProbDist<String>> result = input.split(0.0, false);    //fails 
-            assertEquals(2, result.size());
-            assertEquals(0, result.get(0).getValues().size());
-            assertEquals(4, result.get(1).getValues().size());
-            logger.info("first:  " + result.get(0));
-            logger.info("second:  " + result.get(1));
+            assertEquals(0, result.size());
+            //assertEquals(0, result.get(0).getValues().size());
+            //assertEquals(4, result.get(1).getValues().size());
+            //logger.info("first:  " + result.get(0));
+            //logger.info("second:  " + result.get(1));
         } catch(ProbabilityException e) {
             logger.error(e.getClass() + " testing split():  " + e.getMessage());
         }/**/

@@ -17,6 +17,7 @@ import org.apache.logging.log4j.*;
 import toolbox.util.ListArrayUtil;
 import toolbox.stats.Histogram;
 import java.util.List;
+import java.io.*;
 
 /**
  *
@@ -49,6 +50,40 @@ public class CompressionTest {
     @Test
     public void testCompress() {
         logger.info("\ntesting compress");
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("time_machine.rtf"));
+            String text = "";
+            String line = "";
+            while(reader.ready()) {
+                line = reader.readLine();
+                text += line;
+            }
+            Compression.compress(text);
+        } catch(FileNotFoundException e) {
+            fail(e.getClass() + " " + e.getMessage());
+        } catch(IOException e) {
+            fail(e.getClass() + " " + e.getMessage());
+        }
+    }
+    
+    @Test
+    public void testGetCharFrequencies() {
+        logger.info("\ntesting getCharFrequencies()");
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("time_machine.rtf"));
+            String text = "";
+            String line = "";
+            while(reader.ready()) {
+                line = reader.readLine();
+                text += line;
+            }
+            Histogram h = Compression.getCharFrequencies(text);
+            logger.info(h.toString());
+        } catch(FileNotFoundException e) {
+            fail(e.getClass() + " " + e.getMessage());
+        } catch(IOException e) {
+            fail(e.getClass() + " " + e.getMessage());
+        }
     }
     
     @Test

@@ -260,22 +260,26 @@ public class ProbDist<T> {
      * @return a List of ProbDists
      */
     public List<ProbDist<T>> split(double probThreshold, boolean roundDown) throws ProbabilityException {
+        List<ProbDist<T>> result = new ArrayList<>();
+        if(probThreshold == 1.0) {
+            result.add(this);
+            return result;
+        } else if(probThreshold == 0.0) {
+            return result;
+        }
         List<T> sortedValues = this.values.stream().sorted((T a, T b) -> 
                 this.probabilities.get(this.values.indexOf(b)).compareTo(this.probabilities.get(this.values.indexOf(a))))
                 .collect(Collectors.toList());
         List<Double> sortedProbs = this.probabilities.stream().sorted((Double a, Double b) -> b.compareTo(a)).collect(Collectors.toList());
         List<Double> cumProbs = MathUtil.cumsumList(sortedProbs);
+        System.out.println(cumProbs);
         
-        List<ProbDist<T>> result = new ArrayList<>();
         //find the place where the top x places ends
         int index = 0;
         int i = -1;
         boolean foundExactMatch = false;
         while(i + 1 < cumProbs.size() && MathUtil.lessThanOrApprox(cumProbs.get(i + 1), probThreshold, precision)) {
         //while(i + 1 < cumProbs.size() && cumProbs.get(i + 1) < probThreshold - precision) {
-            //if(cumProbs.get(i) == probThreshold) {
-            //    foundExactMatch = true;
-            //}
             i++;
         }
         System.out.println(cumProbs);
@@ -284,10 +288,11 @@ public class ProbDist<T> {
         //System.out.println(cumProbs.get(i + 1) - precision);
         if(i < cumProbs.size() -1 && MathUtil.approx(cumProbs.get(i), probThreshold, precision)) {
             //found the "exact" threshold
+            System.out.println("found exact match, not at the end");
             index = i;
         } else if(i < cumProbs.size() -1 && MathUtil.approx(cumProbs.get(i + 1), probThreshold, precision)) {
             //next value is the threshold; this check is being done due to CPU approximation where the while statement above could be false when it should be true
-            //System.out.println("was approx");
+            System.out.println("next value was approx");
             index = i + 1;
         } else if(roundDown) {
             //no exact match, and using the lower number
@@ -333,8 +338,12 @@ public class ProbDist<T> {
             bottomProbs.add(sortedProbs.get(k));
             bottomValues.add(sortedValues.get(k));
         }
-        result.add(new ProbDist<T>().setValuesAndProbabilities(topValues, topProbs));
-        result.add(new ProbDist<T>().setValuesAndProbabilities(bottomValues, bottomProbs));
+        if(!topValues.isEmpty()) {
+            result.add(new ProbDist<T>().setValuesAndProbabilities(topValues, topProbs));
+        }
+        if(!bottomValues.isEmpty()) {
+            result.add(new ProbDist<T>().setValuesAndProbabilities(bottomValues, bottomProbs));
+        }
         return result;
     }
     

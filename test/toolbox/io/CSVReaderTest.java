@@ -501,6 +501,24 @@ public class CSVReaderTest {
         } catch(IOException e) {
             fail(e.getClass() + " in testGetColumns():  " + e.getMessage());
         }
+         
+    }
+    
+    @Test
+    public void testGetColumnsBSV() {
+        logger.info("\ntesting getColumns()");
+        List<List<String>> result = null;
+        int[] columns = null;
+        columns = new int[] { 2, 5 };
+        try {
+            result = CSVReader.getColumns("bsvtest.bsv", new int[] { 0, 1, 2 }, "|");
+            logger.debug(ListArrayUtil.listToString(result.get(0)));
+            logger.debug(ListArrayUtil.listToString(result.get(1)));
+            logger.debug(ListArrayUtil.listToString(result.get(2)));
+            assertEquals(3, result.size());
+        } catch(IOException e) {
+            fail(e.getClass() + " in testGetColumns():  " + e.getMessage());
+        }
     }
     
     @Test
