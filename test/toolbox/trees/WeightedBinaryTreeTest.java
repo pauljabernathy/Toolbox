@@ -492,7 +492,7 @@ public class WeightedBinaryTreeTest {
         assertEquals(true, instance.right.right.valueEquals("mmnn"));*/
         
         WeightedBinaryTree<String> m = new WeightedBinaryTree<>("m", 5);
-        InsertionResult result = m.insert("n", 4);
+        /*InsertionResult result = m.insert("n", 4);
         LinkedList<WeightedBinaryTree<String>> list = result.getPathFromRoot();
         logger.info(list);
         assertEquals(2, list.size());
@@ -516,15 +516,25 @@ public class WeightedBinaryTreeTest {
         m.display();
         assertEquals(2, list.size());
         assertEquals("m", list.get(0).value);
-        assertEquals("o", list.get(0).getRightChild().value);
+        assertEquals("o", list.get(0).getRightChild().value);*/
         
+        logger.info("");
         m = new WeightedBinaryTree<>("and", 5);
-        m.insert("aardvark", 6);
-        m.insert("make", 2);
-        logger.info(m.getPathFromRoot());
-        logger.info(m.parent);
-        logger.info(m.getAsList(WeightedBinaryTree.SortType.WEIGHT));
-        logger.info(m.parent.getAsList(WeightedBinaryTree.SortType.WEIGHT));
+        InsertionResult result = m.insert("aardvark", 6);
+        //logger.info(m.getPathFromRoot());
+        m.insert("make", 12);
+        result.insertedNode.display();
+        //logger.info(m.getPathFromRoot());
+        //logger.info(m.getPathFromRoot());
+        //logger.info(m.parent);
+        //logger.info(m.getAsList(WeightedBinaryTree.SortType.WEIGHT));
+        //logger.info(m.getAsList(WeightedBinaryTree.SortType.NATURAL_ORDER));
+        //logger.info(m.parent.getAsList(WeightedBinaryTree.SortType.WEIGHT));
+        //logger.info(m.parent.getAsList(WeightedBinaryTree.SortType.NATURAL_ORDER));
+        logger.info("m is " + m + ";  root is " + m.getRoot());
+        result.getInsertedNode().display();
+        m.getParent().display();
+        m.getRoot().display();
     }
     
     /**
