@@ -16,7 +16,10 @@ import static org.junit.Assert.*;
 import toolbox.util.ListArrayUtil;
 import java.util.LinkedList;
 import java.util.ArrayList;
+import java.util.List;
+import toolbox.io.TextReader;
 import toolbox.stats.Histogram;
+import java.io.IOException;
 
 /**
  *
@@ -1063,5 +1066,43 @@ public class WeightedBinaryTreeTest {
         logger.info("\n" + hist.getAsList(WeightedBinaryTree.SortType.NATURAL_ORDER));
         logger.info("\n" + hist.getAsList(WeightedBinaryTree.SortType.WEIGHT));
         /**/
+    }
+    
+    @Test
+    public void readWordHistogramFromFile() {
+        logger.info("\nreadWordHistogramFromFile()");
+        String filename = "jabberwocky.txt";
+        try {
+            List<String> words = TextReader.getWordsAsList(filename);
+            words = words.stream().map(word -> word.toLowerCase().replaceAll("\\.", "").replaceAll(":", "").replaceAll("\\-", "").replaceAll("\n", " ").replaceAll(",", "").replaceAll("\"", "")).collect(java.util.stream.Collectors.toList());
+        
+            Histogram h = new Histogram(words);
+            WeightedBinaryTree<String> hist = new WeightedBinaryTree<String>("mmmm");
+            for(String word : words) {
+                hist.getRoot().insert(word);
+            }
+            hist = hist.getRoot();
+            hist.display();
+            logger.info("\n---weight");
+            logger.info(hist.getAsList(WeightedBinaryTree.SortType.WEIGHT));
+            logger.info("\n---natural order");
+            logger.info(hist.getAsList(WeightedBinaryTree.SortType.NATURAL_ORDER));
+            String currentValue = null;
+            WeightedBinaryTree<String> currentNode = null;
+            for(int i = 0; i < h.getCounts().size(); i++) {
+                currentValue = (String)h.getValues().get(i);
+                System.out.println(currentValue + " " + h.getCounts().get(i));
+                currentNode = hist.get(currentValue);
+                if(currentNode == null) {
+                    fail("did not find " + currentValue + " in tree histogram");
+                }
+                if(currentNode.getWeight() != h.getCounts().get(i)) {
+                    fail("counts for " + currentValue + " did not match:  " + h.getCounts().get(i) + " vs " + currentNode.getWeight());
+                }
+            }
+        } catch(IOException e) {
+            fail("could not read file " + filename + " in readWordHistogramFromFile():  " + e.getMessage());
+        }
+        
     }
 }
