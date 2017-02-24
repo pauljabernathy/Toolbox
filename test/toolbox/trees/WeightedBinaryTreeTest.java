@@ -1072,6 +1072,9 @@ public class WeightedBinaryTreeTest {
     public void readWordHistogramFromFile() {
         logger.info("\nreadWordHistogramFromFile()");
         String filename = "jabberwocky.txt";
+        filename = "beowulf.txt";
+        filename = "through_the_looking_glass.txt";
+        filename = "les_miserables.txt";
         try {
             List<String> words = TextReader.getWordsAsList(filename);
             words = words.stream().map(word -> word.toLowerCase().replaceAll("\\.", "").replaceAll(":", "").replaceAll("\\-", "").replaceAll("\n", " ").replaceAll(",", "").replaceAll("\"", "")).collect(java.util.stream.Collectors.toList());
@@ -1091,7 +1094,7 @@ public class WeightedBinaryTreeTest {
             WeightedBinaryTree<String> currentNode = null;
             for(int i = 0; i < h.getCounts().size(); i++) {
                 currentValue = (String)h.getValues().get(i);
-                System.out.println(currentValue + " " + h.getCounts().get(i));
+                //System.out.println(currentValue + " " + h.getCounts().get(i));
                 currentNode = hist.get(currentValue);
                 if(currentNode == null) {
                     fail("did not find " + currentValue + " in tree histogram");
@@ -1100,9 +1103,59 @@ public class WeightedBinaryTreeTest {
                     fail("counts for " + currentValue + " did not match:  " + h.getCounts().get(i) + " vs " + currentNode.getWeight());
                 }
             }
+            //assertEquals(true, verifyNaturalOrder(removeGeneric(hist.getAsList(WeightedBinaryTree.SortType.NATURAL_ORDER))));
+            //assertEquals(true, verifySortOrder(removeGeneric(hist.getAsList(WeightedBinaryTree.SortType.WEIGHT))));
+            
         } catch(IOException e) {
             fail("could not read file " + filename + " in readWordHistogramFromFile():  " + e.getMessage());
         }
         
+    }
+    
+    @Test
+    public void testVerifyOrderFunctions() {
+        logger.info("\ntestVerifyFunctions()");
+        List<WeightedBinaryTree> ints = new ArrayList<>();
+        ints.add(new WeightedBinaryTree<Integer>(5));
+        ints.add(new WeightedBinaryTree<Integer>(4));
+        ints.add(new WeightedBinaryTree<Integer>(3));
+        ints.add(new WeightedBinaryTree<Integer>(2));
+        assertEquals(true, verifyNaturalOrder(ints));
+        ints.add(new WeightedBinaryTree<Integer>(6));
+        assertEquals(false, verifyNaturalOrder(ints));
+        
+        List<WeightedBinaryTree> words = new ArrayList<>();
+        words.add(new WeightedBinaryTree<String>("the", 14));
+        words.add(new WeightedBinaryTree<String>("and", 10));
+        words.add(new WeightedBinaryTree<String>("a", 8));
+        words.add(new WeightedBinaryTree<String>("other", 3));
+        assertEquals(true, verifySortOrder(words));
+        words.add(new WeightedBinaryTree<String>("herculean", 147));
+        assertEquals(false, verifySortOrder(words));
+    }
+    
+    private boolean verifyNaturalOrder(List<WeightedBinaryTree> list) {
+        //TODO: some Java 8 way?
+        for(int i = 1; i < list.size(); i++) {
+            if(list.get(i - 1).compareTo(list.get(i)) < 1) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private boolean verifySortOrder(List<WeightedBinaryTree> list) {
+        for(int i = 1; i < list.size(); i++) {
+            if(list.get(i - 1).getWeight() < list.get(i).getWeight()) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private List<WeightedBinaryTree> removeGeneric(List<WeightedBinaryTree<String>> list) {
+        List<WeightedBinaryTree> result = new ArrayList<WeightedBinaryTree>();
+        result.stream().forEach(item -> result.add(item));
+        return result;
     }
 }

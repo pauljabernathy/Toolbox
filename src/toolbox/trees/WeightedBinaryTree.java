@@ -81,6 +81,10 @@ public class WeightedBinaryTree<T extends Comparable> {
         return this.left;
     }
     
+    public T getValue() {
+        return this.value;
+    }
+    
     /**
      * tests if the values inside the nodes are equal but does not test the child nodes because that could take a long time for a large tree
      * @param node
@@ -127,6 +131,11 @@ public class WeightedBinaryTree<T extends Comparable> {
         }
     }
     
+    public int compareTo(WeightedBinaryTree<T> other) {
+        return this.value.compareTo(other.getValue());
+    }
+    
+    //TODO:  complete
     public boolean contains(T value) {
         return false;
     }
@@ -481,15 +490,29 @@ public class WeightedBinaryTree<T extends Comparable> {
             return result;
         }
         
-        while(this.parent != null && this.getTreeWeight() > this.getRebalanceThresholdWeight()) {
+        while(shouldRebalance()) {
             rebalanceOneLevel();
         }
         result.afterPathFromRoot = this.getPathFromRoot();
         result.success = true;
         return result;
     }
+    
+    //TODO:  IMPORTANT!  It was using this.parent != null && this.getTreeWeight() > this.getRebalanceThresholdWeight() for the test
+    //and parent.getTreeWeight() - this.getTreeWeight()) * this.rebalanceCoefficient for the threshold weight.  That it, it was moving stuff up
+    //based on a node's entire tree weight, not the individual weight.  This was for performance reasons, on the idea that that will lead to the 
+    //fewest number or node traversals.  But I found that when the tree was sorted by weight, it didn't always sort things correctly.  The nodes with
+    //the highest weight were not guaranteed to be at the time.
+    //=>Investigate 
+    //1.  performance difference between the two (and possibly others) ways of determine when to rebalance
+    //2.  If there is a way to rebalance based of the tree weight and not the individual weight and still sort correctly (but only if there is a major performance gain by using the tree weight).
+    public boolean shouldRebalance() {
+        return this.parent != null && this.getWeight() > this.getRebalanceThresholdWeight();
+    }
+    
     public double getRebalanceThresholdWeight() {
-        return (parent.getTreeWeight() - this.getTreeWeight()) * this.rebalanceCoefficient;
+        //assume parent is never null for now, for performance
+        return parent.getWeight();
     }
     
     public void rebalanceOneLevel() {
@@ -644,8 +667,19 @@ public class WeightedBinaryTree<T extends Comparable> {
         if(this.right != null) {
             pq.add(this.right);
         }
-        if(pq.peek() != null) {
+        /*if(pq.peek() != null) {
             result.addAll(pq.poll().getAsListBreadthFirst(pq));
+        }*/
+        WeightedBinaryTree<T> next = null;
+        while(pq.peek() != null) {
+            next = pq.poll();
+            result.add(next);
+            if(next.getLeftChild() != null) {
+                pq.add(next.getLeftChild());
+            }
+            if(next.getRightChild() != null) {
+                pq.add(next.getRightChild());
+            }
         }
         return result;
     }
