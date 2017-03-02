@@ -1075,6 +1075,7 @@ public class WeightedBinaryTreeTest {
         filename = "beowulf.txt";
         filename = "through_the_looking_glass.txt";
         filename = "les_miserables.txt";
+        filename = "beowulf i to xxii.txt";
         try {
             List<String> words = TextReader.getWordsAsList(filename);
             words = words.stream().map(word -> word.toLowerCase().replaceAll("\\.", "").replaceAll(":", "").replaceAll("\\-", "").replaceAll("\n", " ").replaceAll(",", "").replaceAll("\"", "")).collect(java.util.stream.Collectors.toList());

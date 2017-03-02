@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.io.*;
 import toolbox.util.MathUtil;
+import java.util.Date;
+import java.util.Calendar;
 
 /**
  *
@@ -120,7 +122,7 @@ public class TreeHistogramTest {
         TreeHistogram<String> th = new TreeHistogram();
         Histogram h = new Histogram();
         
-        String filename = "beowulf_i_to_xxii.txt";
+        String filename = "beowulf i to xxii.txt";
         try(BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String line = null;
             String[] lineWords = null;
@@ -130,6 +132,10 @@ public class TreeHistogramTest {
                 lineWords = line.split(" ");
                 for(String word : lineWords) {
                     word = word.toLowerCase().trim();
+                    word = word.toLowerCase().replaceAll("\\.", "").replaceAll(":", "").replaceAll("\\-", "").replaceAll("\n", " ").replaceAll(",", "").replaceAll("\"", "");
+                    if("".equals(word)) {
+                        continue;
+                    }
                     th.addToData(word, 1);
                     wordList.add(word);
                 }
@@ -149,8 +155,93 @@ public class TreeHistogramTest {
             logger.info(thList.size());
             logger.info(thList);
             logger.info(th.getAsList(TreeHistogram.Sort.UNSORTED));
+            logger.info(h.toString());
         } catch(Exception e) {
             logger.error(e.getClass() + " trying to read the file:  " + e.getMessage());
+        }
+    }
+    
+    @Test
+    public void testCountWordsOfLargeFile() {
+        logger.info("\ntestCountWordsOfLargeFile()");
+        TreeHistogram<String> th = new TreeHistogram();
+        Histogram h = new Histogram();
+        
+        String filename = "beowulf i to xxii.txt";
+        filename = "les_miserables.txt";
+        compareHistograms(filename);
+    }
+    
+    @Test
+    public void testVariousSizeFiles() {
+        logger.info("\ntestVariousSizeFiles");
+        compareHistograms("jabberwocky.txt");
+        //compareHistograms("beowulf i to xxii.txt");
+        compareHistograms("through_the_looking_glass.txt");
+        compareHistograms("beowulf.txt");
+        compareHistograms("les_miserables.txt");
+    }
+    
+    private void compareHistograms(String filename) {
+        logger.info("\ncomparing the Histograms for " + filename);
+        TreeHistogram<String> th = new TreeHistogram();
+        Histogram h = new Histogram();
+        try(BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+            //First, gather all words into a list.
+            String line = null;
+            String[] lineWords = null;
+            List<String> wordList = new ArrayList<>();
+            while(reader.ready()) {
+                line = reader.readLine();
+                lineWords = line.split(" ");
+                for(String word : lineWords) {
+                    word = word.toLowerCase().trim();
+                    word = word.toLowerCase().replaceAll("\\.", "").replaceAll(":", "").replaceAll("\\-", "").replaceAll("\n", " ").replaceAll(",", "").replaceAll("\"", "");
+                    if("".equals(word)) {
+                        continue;
+                    }
+                    wordList.add(word);
+                }
+            }
+            
+            //TreeHistogram
+            Calendar calendar =  Calendar.getInstance();
+            long treeStart = Calendar.getInstance().getTimeInMillis();
+            for(String word : wordList) {
+                th.insert(word, 1);
+            }
+            List<HistogramEntry> thList = th.getAsList(TreeHistogram.Sort.COUNT);
+            long treeStop = Calendar.getInstance().getTimeInMillis();
+            
+            //regular Histogram
+            long regularStart = Calendar.getInstance().getTimeInMillis();
+            h.setDataList(wordList);
+            long regularStop = Calendar.getInstance().getTimeInMillis();
+            
+            //logger.info("wordList length = " + wordList.size());
+            //logger.info("regular histogram size = " + h.size());
+            int sum = 0;
+            for(Integer i : h.getCounts()) {
+                sum += i;
+            }
+            //logger.info("regular histogram sum = " + sum);
+            
+            //logger.info("tree histogram weight = " + th.getData().getTreeWeight());
+            //logger.info("thList length = " + thList.size());
+            //logger.info("treeStart = " + treeStart + "  treeStop = " + treeStop + "   difference = " + (treeStop - treeStart));
+            //logger.info("regularStart = " + regularStart + "  regularStop = " + regularStop + "   difference = " + (regularStop - regularStart));
+            long treeTime = treeStop - treeStart;
+            long regularTime = regularStop - regularStart;
+            logger.info("total words = " + wordList.size() + ";  unique words = " + thList.size());
+            logger.info("regular time = " + regularTime + " millis");
+            logger.info("tree time = " + treeTime + " millis");
+            logger.info("difference = " + (regularTime - treeTime) + " millis");
+            assertEquals(wordList.size(), th.getTotalCount());
+            assertEquals(wordList.size(), th.getData().getTreeWeight(), 0.0);
+            assertEquals(wordList.size(), sum);
+            assertEquals(h.size(), thList.size());
+        } catch(Exception e) {
+            fail(e.getClass() + " trying to read the file:  " + e.getMessage());
         }
     }
 }
