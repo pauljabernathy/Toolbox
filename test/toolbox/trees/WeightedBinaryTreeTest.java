@@ -53,58 +53,60 @@ public class WeightedBinaryTreeTest {
      * Test of equalsValue method, of class BalancedBinaryTree.
      */
     @Test
-    public void testValueEquals_BalancedBinaryTree() {
-        System.out.println("equalsValue");
+    public void testKeyEquals_BalancedBinaryTree() {
+        logger.info("\ntesting keyEquals(WeightedBinaryTree<T>)");
         WeightedBinaryTree<String> instance1 = new WeightedBinaryTree<>(null);
         WeightedBinaryTree<String> instance2 = null;
-        assertEquals(false, instance1.valueEquals(instance2));
+        assertEquals(false, instance1.keyEquals(instance2));
         
         instance2 = new WeightedBinaryTree<>(null);
-        assertEquals(true, instance1.valueEquals(instance2));
+        assertEquals(true, instance1.keyEquals(instance2));
         
         instance2 = new WeightedBinaryTree<>("abc123");
-        assertEquals(false, instance1.valueEquals(instance2));
+        assertEquals(false, instance1.keyEquals(instance2));
         
         
         instance1 = new WeightedBinaryTree<>("abc123");
         instance2 = null;
-        assertEquals(false, instance1.valueEquals(instance2));
+        assertEquals(false, instance1.keyEquals(instance2));
         
         instance2 = new WeightedBinaryTree<>(null);
-        assertEquals(false, instance1.valueEquals(instance2));
+        assertEquals(false, instance1.keyEquals(instance2));
         
         instance2 = new WeightedBinaryTree<>("abc123");
-        assertEquals(true, instance1.valueEquals(instance2));
+        assertEquals(true, instance1.keyEquals(instance2));
         
         
         WeightedBinaryTree<Integer> instance3 = new WeightedBinaryTree<>(1);
         WeightedBinaryTree<Integer> instance4 = new WeightedBinaryTree<>(1);
         assertEquals(false, instance3.equals(instance4));
-        assertEquals(true, instance3.valueEquals(instance4));
+        assertEquals(true, instance3.keyEquals(instance4));
         
         assertEquals(false, instance1.equals(instance3));
-        //assertEquals(true, instance1.equalsValue(instance3));
         
         instance1 = new WeightedBinaryTree<>(null);
         assertEquals(false, instance1.equals(instance2));
-        assertEquals(false, instance1.valueEquals(instance2));
+        assertEquals(false, instance1.keyEquals(instance2));
         instance1 = new WeightedBinaryTree<>("abc123");
+        assertEquals(true, instance1.keyEquals(instance2));
+        assertEquals(true, instance2.keyEquals(instance1));
         instance1 = new WeightedBinaryTree<>(null);
         assertEquals(false, instance1.equals(instance2));
-        assertEquals(false, instance1.valueEquals(instance2));
+        assertEquals(false, instance1.keyEquals(instance2));
     }
     
     @Test
     public void testValueEquals_Generic() {
-        logger.info("\ntesting valueEquals(T value)");
+        logger.info("\ntesting keyEquals(T value)");
         WeightedBinaryTree<String> instance = new WeightedBinaryTree<>(null);
         String s = null;
-        assertEquals(true, instance.valueEquals(s));
-        assertEquals(false, instance.valueEquals("abc123"));
+        assertEquals(true, instance.keyEquals(s));
+        assertEquals(false, instance.keyEquals("abc123"));
         
         instance = new WeightedBinaryTree<>("abc123");
-        assertEquals(false, instance.valueEquals(s));
-        assertEquals(true, instance.valueEquals("abc123"));
+        assertEquals(false, instance.keyEquals(s));
+        assertEquals(true, instance.keyEquals("abc123"));
+        assertEquals(false, instance.keyEquals("abc1234"));
     }
 
     @Test
@@ -128,7 +130,7 @@ public class WeightedBinaryTreeTest {
         assertEquals(abcd, instance.get("abcd"));
         WeightedBinaryTree<String> efgh = instance.simpleBinaryInsert("efgh").getInsertedNode();
         WeightedBinaryTree<String> mnop = instance.simpleBinaryInsert("mnop").getInsertedNode();
-        assertEquals("efgh", instance.get("efgh").value);
+        assertEquals("efgh", instance.get("efgh").getKey());
         assertEquals(efgh, instance.get("efgh"));
         assertEquals(mnop, instance.get("mnop"));
         assertEquals(null, instance.get("mnoo"));
@@ -277,7 +279,7 @@ public class WeightedBinaryTreeTest {
         WeightedBinaryTree<String> instance = new WeightedBinaryTree<>("m");
         instance.setRightChild(new WeightedBinaryTree<>("o", 4));
         assertEquals(null, instance.left);
-        assertEquals("o", instance.right.value);
+        assertEquals("o", instance.right.getKey());
         //assertEquals(8, instance.right.getIndividualTorque(), 0.0);
         //assertEquals(9, instance.getTreeTorque(), 0.0);
         
@@ -479,20 +481,20 @@ public class WeightedBinaryTreeTest {
         Object value = null;
         /*BalancedBinaryTree<String> instance = new BalancedBinaryTree<String> ("lmno");
         BalancedBinaryTree<String> hijk = instance.insert("hijk").get(0);
-        assertEquals("hijk", hijk.value);
+        assertEquals("hijk", hijk.getKey());
         assertEquals(null, hijk.left);
         assertEquals(null, hijk.right);
         assertEquals(instance, hijk.parent);
         
         BalancedBinaryTree<String> mmmm = instance.insert("mmmm").get(0);
-        assertEquals("mmmm", mmmm.value);
+        assertEquals("mmmm", mmmm.getKey());
         assertEquals(null, mmmm.left);
         assertEquals(null, mmmm.right);
-        assertEquals("hijk", instance.left.value);
-        assertEquals("mmmm", instance.right.value);
+        assertEquals("hijk", instance.left.getKey());
+        assertEquals("mmmm", instance.right.getkey());
         
         BalancedBinaryTree<String> mmnn = instance.insert("mmnn").get(0);
-        assertEquals(true, instance.right.right.valueEquals("mmnn"));*/
+        assertEquals(true, instance.right.right.getKey()Equals("mmnn"));*/
         
         WeightedBinaryTree<String> m = new WeightedBinaryTree<>("m", 5);
         /*InsertionResult result = m.insert("n", 4);
@@ -508,8 +510,8 @@ public class WeightedBinaryTreeTest {
         logger.info(list);
         logger.info(m.getAsList(WeightedBinaryTree.SortType.WEIGHT));
         assertEquals(2, list.size());
-        assertEquals("k", list.get(1).value);
-        assertEquals("m", list.get(0).value);
+        assertEquals("k", list.get(1).getKey());
+        assertEquals("m", list.get(0).getKey());
         m.display();
         
         m = new WeightedBinaryTree<>("m", 5);
@@ -518,8 +520,8 @@ public class WeightedBinaryTreeTest {
         logger.info(list);
         m.display();
         assertEquals(2, list.size());
-        assertEquals("m", list.get(0).value);
-        assertEquals("o", list.get(0).getRightChild().value);*/
+        assertEquals("m", list.get(0).getKey());
+        assertEquals("o", list.get(0).getRightChild().getKey());*/
         
         logger.info("");
         m = new WeightedBinaryTree<>("and", 5);
@@ -571,12 +573,12 @@ public class WeightedBinaryTreeTest {
         instance.simpleBinaryInsert("r", 1, DuplicateEntryOption.UPDATE);
         instance.simpleBinaryInsert("ss", 1, DuplicateEntryOption.UPDATE);
         result = instance.simpleBinaryInsert("ts", 1, DuplicateEntryOption.UPDATE);
-        assertEquals("m", result.getRoot().value);
+        assertEquals("m", result.getRoot().getKey());
         assertEquals(5, result.getPathFromRoot().size());
         assertEquals(1, result.getInsertedNode().weight, 0.0);
         
         result = instance.simpleBinaryInsert("n", 1, DuplicateEntryOption.UPDATE);
-        assertEquals("m", result.getRoot().value);
+        assertEquals("m", result.getRoot().getKey());
         assertEquals(3, result.getPathFromRoot().size());
         assertEquals(2, result.getInsertedNode().weight, 0.0);
         instance.display();
@@ -876,16 +878,16 @@ public class WeightedBinaryTreeTest {
         for(WeightedBinaryTree tree : result) {
             logger.info(tree);
         }
-        assertEquals("B", result.get(2).value);
-        assertEquals("C", result.get(1).value);
-        assertEquals("F", result.get(0).value);
+        assertEquals("B", result.get(2).getKey());
+        assertEquals("C", result.get(1).getKey());
+        assertEquals("F", result.get(0).getKey());
     }
     @Test
     public void testGetRoot() {
         logger.info("\ntesting getRoot()");
         WeightedBinaryTree<String> m = new WeightedBinaryTree<>("m", 5);
         LinkedList<WeightedBinaryTree<String>> list = m.simpleBinaryInsert("n", 4).getPathFromRoot();
-        assertEquals("m", list.get(1).getRoot().value);
+        assertEquals("m", list.get(1).getRoot().getKey());
     }
     
     @Test

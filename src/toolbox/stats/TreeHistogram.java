@@ -98,7 +98,7 @@ public class TreeHistogram<T extends Comparable> {
             list = data.getAsList(WeightedBinaryTree.SortType.NATURAL_ORDER);
         }
         List<HistogramEntry> result = new ArrayList<>();
-        list.forEach(tree -> result.add(new HistogramEntry(tree.value, (int)tree.weight)));
+        list.forEach(tree -> result.add(new HistogramEntry(tree.getKey(), (int)tree.weight)));
         return result;
     }
     

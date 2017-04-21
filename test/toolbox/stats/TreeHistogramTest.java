@@ -61,25 +61,25 @@ public class TreeHistogramTest {
         TreeHistogram<String> instance = new TreeHistogram<>();
         TreeMap expResult = null;
         WeightedBinaryTree<String> result = instance.addToData("a", 1);
-        assertEquals("a", result.value);
+        assertEquals("a", result.getKey());
         assertEquals(1, result.weight, 0.0);
         assertEquals(1, instance.getNumEntries());
         assertEquals(1, instance.getTotalCount());
         assertEquals(null, result.left);
         assertEquals(null, result.right);
         result = instance.addToData("b", 1);
-        assertEquals("a", result.value);
-        assertEquals("b", result.right.value);
+        assertEquals("a", result.getKey());
+        assertEquals("b", result.right.getKey());
         assertEquals(1, result.right.weight, 0.0);
         assertEquals(2, instance.getNumEntries());
         assertEquals(2, instance.getTotalCount());
         result = instance.addToData("a", 27);
-        assertEquals("a", result.value);
+        assertEquals("a", result.getKey());
         assertEquals(28, result.weight, 0.0);
         assertEquals(2, instance.getNumEntries());
         assertEquals(29, instance.getTotalCount());
         assertEquals(null, result.left);
-        assertEquals("b", result.right.value);
+        assertEquals("b", result.right.getKey());
         logger.info(result);
     }
 
@@ -175,10 +175,10 @@ public class TreeHistogramTest {
     @Test
     public void testVariousSizeFiles() {
         logger.info("\ntestVariousSizeFiles");
-        compareHistograms("jabberwocky.txt");
+        //compareHistograms("jabberwocky.txt");
         //compareHistograms("beowulf i to xxii.txt");
-        compareHistograms("through_the_looking_glass.txt");
-        compareHistograms("beowulf.txt");
+        //compareHistograms("through_the_looking_glass.txt");
+        //compareHistograms("beowulf.txt");
         compareHistograms("les_miserables.txt");
     }
     
@@ -233,13 +233,26 @@ public class TreeHistogramTest {
             long treeTime = treeStop - treeStart;
             long regularTime = regularStop - regularStart;
             logger.info("total words = " + wordList.size() + ";  unique words = " + thList.size());
-            logger.info("regular time = " + regularTime + " millis");
-            logger.info("tree time = " + treeTime + " millis");
+            logger.info("regular time = " + regularTime + " millis   " + (double)regularTime * 1000.0 / (double)wordList.size());
+            logger.info("tree time = " + treeTime + " millis    " + (double)treeTime * 1000.0 / (double)wordList.size());
             logger.info("difference = " + (regularTime - treeTime) + " millis");
             assertEquals(wordList.size(), th.getTotalCount());
             assertEquals(wordList.size(), th.getData().getTreeWeight(), 0.0);
             assertEquals(wordList.size(), sum);
             assertEquals(h.size(), thList.size());
+            int size = h.getValues().size();
+            String currentWord = null;
+            WeightedBinaryTree<String> currentNode = null;
+            for(int i = 0; i < size; i++) {
+                currentWord = (String)h.getValues().get(i);
+                currentNode = th.getData().get(currentWord);
+                if(currentNode == null) {
+                    fail(currentWord + " was in regular histogram but not in the tree histogram.");
+                }
+                if(h.getCounts().get(i) != currentNode.getWeight()) {
+                    fail("count for " + currentWord + " is " + h.getCounts().get(i) + " in the regular histogram but " + currentNode.getWeight() + " in the tree histogram");
+                }
+            }
         } catch(Exception e) {
             fail(e.getClass() + " trying to read the file:  " + e.getMessage());
         }

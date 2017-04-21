@@ -22,7 +22,7 @@ public class WeightedBinaryTree<T extends Comparable> {
     }
     private double rebalanceCoefficient = 1.0;
     
-    public T value;
+    public T key;
     public double weight;
     public WeightedBinaryTree parent;
     public WeightedBinaryTree left;
@@ -37,35 +37,35 @@ public class WeightedBinaryTree<T extends Comparable> {
     //Actually, keep track of tree weight and don't track torque directly.  If you keep track of tree weight and let the heavier items
     //filter toward the root, the trees with greater torque should end up near the root.
     
-    public WeightedBinaryTree(T value) {
-        this(value, DEFAULT_WEIGHT, null, null, null);
+    public WeightedBinaryTree(T key) {
+        this(key, DEFAULT_WEIGHT, null, null, null);
     }
     
-    public WeightedBinaryTree(T value, double weight) {
-        this(value, weight, null, null, null);
+    public WeightedBinaryTree(T key, double weight) {
+        this(key, weight, null, null, null);
     }
     
-    /*public BalancedBinaryTree(T value, BalancedBinaryTree<T> parent) {
-        this(value, parent, null, null);
+    /*public BalancedBinaryTree(T key, BalancedBinaryTree<T> parent) {
+        this(key, parent, null, null);
     }*/
     
     
     //TODO:  looks like we need to not specify the parent in the constructor and only specify it with setLeftChild() and setRightChild()!
-    public WeightedBinaryTree(T value, double weight, WeightedBinaryTree parent) {
-        this(value, weight, parent, null, null);
+    public WeightedBinaryTree(T key, double weight, WeightedBinaryTree parent) {
+        this(key, weight, parent, null, null);
     }
     
     //TODO:  Consider if this should know about the parent or not.
-    /*public BalancedBinaryTree(T value, BalancedBinaryTree<T> left, BalancedBinaryTree<T> right) {
-        this(value, null, left, right);
+    /*public BalancedBinaryTree(T key, BalancedBinaryTree<T> left, BalancedBinaryTree<T> right) {
+        this(key, null, left, right);
     }
     
-    public BalancedBinaryTree(T value, BalancedBinaryTree<T> parent, BalancedBinaryTree<T> left, BalancedBinaryTree<T> right) {
-        this(value, DEFAULT_WEIGHT, parent, left, right);
+    public BalancedBinaryTree(T key, BalancedBinaryTree<T> parent, BalancedBinaryTree<T> left, BalancedBinaryTree<T> right) {
+        this(key, DEFAULT_WEIGHT, parent, left, right);
     }*/
     
-    public WeightedBinaryTree(T value, double weight, WeightedBinaryTree<T> parent, WeightedBinaryTree<T> left, WeightedBinaryTree<T> right) {
-        this.value = value;
+    public WeightedBinaryTree(T key, double weight, WeightedBinaryTree<T> parent, WeightedBinaryTree<T> left, WeightedBinaryTree<T> right) {
+        this.key = key;
         this.weight = weight;
         this.parent = parent;
         this.left = left;
@@ -81,8 +81,8 @@ public class WeightedBinaryTree<T extends Comparable> {
         return this.left;
     }
     
-    public T getValue() {
-        return this.value;
+    public T getKey() {
+        return this.key;
     }
     
     /**
@@ -90,20 +90,20 @@ public class WeightedBinaryTree<T extends Comparable> {
      * @param node
      * @return 
      */
-    public boolean valueEquals(WeightedBinaryTree<T> node) {
-        if(this.value != null) {
+    public boolean keyEquals(WeightedBinaryTree<T> node) {
+        if(this.key != null) {
             if(node != null) {
-                return this.value.equals(node.value);
+                return this.key.equals(node.key);
             } else {
                 return false;
             }
         } else if (node != null) {
-            //this's value is null
-            if(node.value == null) {
-                //other node's value is null so return true
+            //this's key is null
+            if(node.key == null) {
+                //other node's key is null so return true
                 return true;
             } else {
-                //other node's value is not null; null and not null are not equals
+                //other node's key is not null; null and not null are not equals
                 return false;
             }
         } else {
@@ -111,28 +111,28 @@ public class WeightedBinaryTree<T extends Comparable> {
             return false;
         }
         //value null        node null       --not relevant
-        //value null        node not null   node value null
-        //value null        node not null   node value not null
+        //value null        node not null   node key null
+        //value null        node not null   node key not null
         //value not null    node null       --not relevent
-        //value not null    node not null   node value null
-        //value not null    node not null   node value not null
+        //value not null    node not null   node key null
+        //value not null    node not null   node key not null
     }
     
     /**
-     * tests if the value in this node equals the given object, using the .equals() method of class T
+     * tests if the key in this node equals the given object, using the .equals() method of class T
      * @param otherValue
      * @return 
      */
-    public boolean valueEquals(T otherValue) {
-        if(this.value == null) {
+    public boolean keyEquals(T otherValue) {
+        if(this.key == null) {
             return otherValue == null;
         } else {
-            return this.value.equals(otherValue);
+            return this.key.equals(otherValue);
         }
     }
     
     public int compareTo(WeightedBinaryTree<T> other) {
-        return this.value.compareTo(other.getValue());
+        return this.key.compareTo(other.getKey());
     }
     
     //TODO:  complete
@@ -141,18 +141,18 @@ public class WeightedBinaryTree<T extends Comparable> {
     }
     
     public WeightedBinaryTree<T> get(T value) {
-        if(value == null && this.value != null) {
+        if(value == null && this.key != null) {
             return null;
-        } else if(value == null && this.value == null) {
+        } else if(value == null && this.key == null) {
             return this;
         }
-        int compare = value.compareTo(this.value);
+        int compare = value.compareTo(this.key);
         if(compare < 0) {
             return this.left != null ? left.get(value) : null;
         } else if(compare > 0) {
             return this.right != null ? right.get(value) : null;
         } else {
-            return this.valueEquals(value) ? this : null;
+            return this.keyEquals(value) ? this : null;
         }
     }
     
@@ -190,7 +190,7 @@ public class WeightedBinaryTree<T extends Comparable> {
                 this.parent.updateSubTreeWeight();
             }
             this.parent = null;
-        } else if(newParent != null && !newParent.getPathToRoot().contains(this) && !this.getPathToRoot().contains(newParent)) {
+        } else if(newParent != null && !newParent.isDescendentOf(this) && !newParent.isAncestorOf(this)) {
             int previousDepth = this.getDepth();
             if(this.parent != null) {
                 if(this.isLeftChild()) {
@@ -348,11 +348,23 @@ public class WeightedBinaryTree<T extends Comparable> {
     }
     
     public boolean isDescendentOf(WeightedBinaryTree<T> other) {
-        return other != null && other != this && this.getPathFromRoot().contains(other);
+        //return other != null && other != this && this.getPathFromRoot().contains(other);
+        if(other == null || other == this) {
+            return false;
+        }
+        WeightedBinaryTree<T> ancestor = this.getParent();
+        while(ancestor != null) {
+            if(ancestor == other){
+                return true;
+            }
+            ancestor = ancestor.getParent();
+        }
+        return false;
     }
     
     public boolean isAncestorOf(WeightedBinaryTree<T> other) {
-        return other != null && other != this && other.getPathFromRoot().contains(this);
+        //return other != null && other != this && other.getPathFromRoot().contains(this);
+        return other.isDescendentOf(this);
     }
     
     public boolean isDistantAncestorOf(WeightedBinaryTree<T> other) {
@@ -364,7 +376,7 @@ public class WeightedBinaryTree<T extends Comparable> {
     //not a high priority
     
     //TODO:  what sort of checking should there be for repetitions?
-    //could check the parent chain to the root to make sure you aren't trying to insert a parent value
+    //could check the parent chain to the root to make sure you aren't trying to insert a parent key
     //If insert(BalancedBinaryTree<T> node) is implemented, will need to check its decendents to see if those values are in the existing tree, or ensure that it has no decendents.
     //TODO: this is copied from the basic binary tree; adapt to this class
     public InsertionResult<T> insert(T value) {
@@ -376,13 +388,13 @@ public class WeightedBinaryTree<T extends Comparable> {
     }    
     
     /**
-     * inserts the given value, or updates the node in the tree if one is found with the given value
-     * For example, if the class T here is a node that stores key value pairs, if we find the key we could update the value in some way which might be specific to class T.
+     * inserts the given key, or updates the node in the tree if one is found with the given key
+ For example, if the class T here is a node that stores key key pairs, if we find the key we could update the key in some way which might be specific to class T.
      * @param value
      * @return 
      */
     public InsertionResult insert(T value, double weight, DuplicateEntryOption option) {
-        //System.out.println("\n---\ninsert(" + value + ", " + option + ")");
+        //System.out.println("\n---\ninsert(" + key + ", " + option + ")");
         //First, insert like a regular binary tree.
         //Find where it should go (either the exiting entry, or where a new one will go).
         //Add the new entry or update the existing one, as needed.
@@ -393,7 +405,7 @@ public class WeightedBinaryTree<T extends Comparable> {
         //If so, move it up and set the previous parent to be that one's right or left child, as appropriate, and set that one's
         //old right or left child to be the old parent's child, as appropriate.
         //Continue the process.  
-        LinkedList<WeightedBinaryTree<T>> pathFromRoot = result.getPathFromRoot();
+        //LinkedList<WeightedBinaryTree<T>> pathFromRoot = result.getPathFromRoot();
         WeightedBinaryTree<T> current = result.getInsertedNode();
         current.rebalance();
         return result;
@@ -412,8 +424,8 @@ public class WeightedBinaryTree<T extends Comparable> {
         if(value == null) {
             //result.pathFromRoot = new LinkedList<WeightedBinaryTree<T>>();
         }
-        int compare = value.compareTo(this.value);
-        //System.out.println("insert(" + value + ", " + weight + ", " + option + ") into " + this + ";  compare == " + compare);
+        int compare = value.compareTo(this.key);
+        //System.out.println("insert(" + key + ", " + weight + ", " + option + ") into " + this + ";  compare == " + compare);
         if(compare == 0) {
             //System.out.println("compare is 0");
             double previousWeight = this.weight;
@@ -621,11 +633,15 @@ public class WeightedBinaryTree<T extends Comparable> {
     }
     
     public WeightedBinaryTree<T> getRoot() {
-        return this.getPathFromRoot().get(0);
+        WeightedBinaryTree<T> root = this;
+        while(root.getParent() != null) {
+            root = root.getParent();
+        }
+        return root;
     }    
       
     public String toString() {
-        return new StringBuilder("[").append(this.value.toString()).append(" ").append(this.weight).append(" ").append(this.subTreeWeight).append(" ").append(this.getTreeWeight()).append(" ").append("]").toString();
+        return new StringBuilder("[").append(this.key.toString()).append(" ").append(this.weight).append(" ").append(this.subTreeWeight).append(" ").append(this.getTreeWeight()).append(" ").append("]").toString();
     }
     
     public LinkedList<WeightedBinaryTree<T>> getAsList(SortType sortType) {
@@ -656,6 +672,7 @@ public class WeightedBinaryTree<T extends Comparable> {
      * @return 
      */
     private LinkedList<WeightedBinaryTree<T>> getAsListBreadthFirst(PriorityQueue<WeightedBinaryTree> pq) {
+        //TODO:  remove this pq parameter since this is no longer a recursive function
         LinkedList<WeightedBinaryTree<T>> result = new LinkedList<>();
         if(pq == null) {
             pq = new PriorityQueue(new WeightComparator());
@@ -686,7 +703,7 @@ public class WeightedBinaryTree<T extends Comparable> {
     
     public void display() {
         System.out.println("");
-        System.out.println(this.value + ".display()");
+        System.out.println(this.key + ".display()");
         this.display("");
     }
     
