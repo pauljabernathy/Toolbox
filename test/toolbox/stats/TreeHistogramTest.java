@@ -23,6 +23,7 @@ import java.io.*;
 import toolbox.util.MathUtil;
 import java.util.Date;
 import java.util.Calendar;
+import java.util.function.Predicate;
 
 /**
  *
@@ -87,7 +88,7 @@ public class TreeHistogramTest {
     public void testGetAsListByNaturalOrder() {
         logger.info("\ntesting getAsList() by natural order");
         TreeHistogram<String> hist = this.createSimpleWordHistogram();
-        List<HistogramEntry> list = hist.getAsList(TreeHistogram.Sort.ITEM);
+        List<HistogramEntry<String>> list = hist.getAsList(TreeHistogram.Sort.ITEM);
         logger.info(list);
     }
     
@@ -95,7 +96,7 @@ public class TreeHistogramTest {
     public void testGetAsListByCount() {
         logger.info("\ntesting getAsList() by count");
         TreeHistogram<String> hist = this.createSimpleWordHistogram();
-        List<HistogramEntry> list = hist.getAsList(TreeHistogram.Sort.COUNT);
+        List<HistogramEntry<String>> list = hist.getAsList(TreeHistogram.Sort.COUNT);
         logger.info(list);
     }
     
@@ -148,7 +149,7 @@ public class TreeHistogramTest {
                 sum += i;
             }
             logger.info(sum);
-            List<HistogramEntry> thList = th.getAsList(TreeHistogram.Sort.ITEM);
+            List<HistogramEntry<String>> thList = th.getAsList(TreeHistogram.Sort.ITEM);
             logger.info(thList.size());
             logger.info(thList);
             thList = th.getAsList(TreeHistogram.Sort.COUNT);
@@ -210,7 +211,7 @@ public class TreeHistogramTest {
             for(String word : wordList) {
                 th.insert(word, 1);
             }
-            List<HistogramEntry> thList = th.getAsList(TreeHistogram.Sort.COUNT);
+            List<HistogramEntry<String>> thList = th.getAsList(TreeHistogram.Sort.COUNT);
             long treeStop = Calendar.getInstance().getTimeInMillis();
             
             //regular Histogram
@@ -233,8 +234,8 @@ public class TreeHistogramTest {
             long treeTime = treeStop - treeStart;
             long regularTime = regularStop - regularStart;
             logger.info("total words = " + wordList.size() + ";  unique words = " + thList.size());
-            logger.info("regular time = " + regularTime + " millis   " + (double)regularTime * 1000.0 / (double)wordList.size());
-            logger.info("tree time = " + treeTime + " millis    " + (double)treeTime * 1000.0 / (double)wordList.size());
+            logger.info("regular time = " + regularTime + " millis   " + (double)wordList.size() / ((double)regularTime / 1000.0) + "words per second");
+            logger.info("tree time = " + treeTime + " millis    " + ((double)wordList.size()) / ((double)treeTime / 1000.0) + " words per second");
             logger.info("difference = " + (regularTime - treeTime) + " millis");
             assertEquals(wordList.size(), th.getTotalCount());
             assertEquals(wordList.size(), th.getData().getTreeWeight(), 0.0);
@@ -256,5 +257,40 @@ public class TreeHistogramTest {
         } catch(Exception e) {
             fail(e.getClass() + " trying to read the file:  " + e.getMessage());
         }
+    }
+    
+    @Test
+    public void testQueryFromFirst() {
+        logger.info("\ntesting queryFromFirst()");
+        TreeHistogram<String> h = this.createSimpleWordHistogram();
+        h.getData().display();
+        Predicate<String> p = (s) -> s.startsWith("h");
+        List<String> result = h.queryFromFirst(p);
+        logger.debug(result);
+        assertEquals(2, result.size());
+        
+        p = (s) -> s.startsWith("h") && !s.contains("wood");
+        result = h.queryFromFirst(p);
+        logger.debug(result);
+        assertEquals(1, result.size());
+    }
+    
+    @Test
+    public void testQueryAll() {
+        logger.info("\ntesting queryAll()");
+        TreeHistogram<String> h = this.createSimpleWordHistogram();
+        Predicate<String> p = s -> s.contains("wood");
+        List<HistogramEntry<String>> result = h.queryAll(p);
+        assertEquals(1, result.size());
+        
+        p = s -> s.contains("il");
+        result = h.queryAll(p);
+        assertEquals(2, result.size());
+        result.stream().forEach( entry -> {
+            if(!"Philippino".equals(entry.item) && !"philharmonic".equals(entry.item)) { 
+                fail(entry.item + " should not be here");
+            }
+        });
+        logger.debug(result);
     }
 }

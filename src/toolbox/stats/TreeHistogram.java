@@ -5,15 +5,17 @@
  */
 package toolbox.stats;
 
-import java.util.TreeMap;
-import java.util.PriorityQueue;
-import java.util.Comparator;
-import java.util.List;
-import toolbox.trees.DuplicateEntryOption;
-import toolbox.trees.WeightedBinaryTree;
-import toolbox.trees.InsertionResult;
-import java.util.LinkedList;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.TreeMap;
+import java.util.function.Predicate;
+import static java.util.stream.Collectors.*;
+import toolbox.trees.DuplicateEntryOption;
+import toolbox.trees.InsertionResult;
+import toolbox.trees.WeightedBinaryTree;
 
 /**
  *
@@ -86,18 +88,18 @@ public class TreeHistogram<T extends Comparable> {
         return counts;
     }
     
-    public List<HistogramEntry> getAsList() {
+    public List<HistogramEntry<T>> getAsList() {
         return this.getAsList(Sort.ITEM);
     }
     
-    public List<HistogramEntry> getAsList(Sort sortedBy) {
+    public List<HistogramEntry<T>> getAsList(Sort sortedBy) {
         LinkedList<WeightedBinaryTree<T>> list = null;
         if(sortedBy == Sort.COUNT) {
             list = data.getAsList(WeightedBinaryTree.SortType.WEIGHT);
         } else {
             list = data.getAsList(WeightedBinaryTree.SortType.NATURAL_ORDER);
         }
-        List<HistogramEntry> result = new ArrayList<>();
+        List<HistogramEntry<T>> result = new ArrayList<>();
         list.forEach(tree -> result.add(new HistogramEntry(tree.getKey(), (int)tree.weight)));
         return result;
     }
@@ -116,5 +118,19 @@ public class TreeHistogram<T extends Comparable> {
     
     protected WeightedBinaryTree<T> getData() {
         return this.data;
+    }
+    
+    protected List<T> queryFromFirst(Predicate<T> p) {
+        Predicate<WeightedBinaryTree<T>> p2 = (WeightedBinaryTree<T> t) -> p.test(t.getKey());
+        List<WeightedBinaryTree<T>> nodes = this.data.queryFromFirst(p2);
+        List<T> result = new ArrayList<>();
+        nodes.stream().forEach(n -> result.add(n.getKey()));
+        return result;
+    }
+    
+    protected List<HistogramEntry<T>> queryAll(Predicate<T> p) {
+        List<T> result = new ArrayList<>();
+        List<HistogramEntry<T>> asList = this.getAsList(Sort.ITEM);
+        return asList.stream().filter(entry -> p.test(entry.item)).collect(toList());
     }
 }

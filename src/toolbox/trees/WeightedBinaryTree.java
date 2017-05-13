@@ -5,8 +5,12 @@
  */
 package toolbox.trees;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 import java.util.PriorityQueue;
+import java.util.function.Predicate;
 import toolbox.trees.InsertionResult.Status;
 
 /**
@@ -699,6 +703,65 @@ public class WeightedBinaryTree<T extends Comparable> {
             }
         }
         return result;
+    }
+    
+    public Optional<WeightedBinaryTree<T>> findFirst(Predicate p) {
+        //System.out.println(this + ".findFirst");
+        
+        if(p == null) {
+            return Optional.ofNullable(null);
+        }
+        Optional result = p.test(this) ? Optional.of(this) : Optional.ofNullable(null);
+        //System.out.println("this result = " + result);
+        if(result.isPresent()) {
+            return result;
+        }
+        result = this.getLeftChild() != null ? this.getLeftChild().findFirst(p) : Optional.ofNullable(null);
+        //System.out.println("left result = " + result);
+        if(result.isPresent())  {
+            return result;
+        }
+        result = this.getRightChild() != null ? this.getRightChild().findFirst(p) : Optional.ofNullable(null);
+        //System.out.println("right result = " + result);
+        if(result.isPresent()) {
+            return result;
+        }
+        //System.out.println("result empty");
+        return Optional.ofNullable(null);
+    }
+    
+    public List<WeightedBinaryTree<T>> queryFromFirst(Predicate<WeightedBinaryTree<T>> p) {
+        Optional<WeightedBinaryTree<T>> first = this.findFirst(p);
+        LinkedList<WeightedBinaryTree<T>> result = new LinkedList<>();
+        PriorityQueue<WeightedBinaryTree<T>> pq = new PriorityQueue<>();
+        if(!first.isPresent()) {
+            return result;
+        }
+        
+        //result.add(first.get());
+        pq.add(first.get());
+
+        WeightedBinaryTree<T> next = null;
+        while(pq.peek() != null) {
+            next = pq.poll();
+            result.add(next);
+            if(next.getLeftChild() != null && p.test(next.getLeftChild())) {
+                pq.add(next.getLeftChild());
+            }
+            if(next.getRightChild() != null && p.test(next.getRightChild())) {
+                pq.add(next.getRightChild());
+            }
+        }
+        return result;
+    }
+    
+    public Optional<WeightedBinaryTree<T>> getSubTree(Predicate p) {
+        Optional<WeightedBinaryTree<T>> first = this.findFirst(p);
+        if(!first.isPresent()) {
+            return Optional.ofNullable(null);
+        } else {
+            return null;
+        }
     }
     
     public void display() {

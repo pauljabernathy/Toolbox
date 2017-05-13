@@ -5,21 +5,23 @@
  */
 package toolbox.trees;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import toolbox.util.ListArrayUtil;
-import java.util.LinkedList;
-import java.util.ArrayList;
-import java.util.List;
 import toolbox.io.TextReader;
 import toolbox.stats.Histogram;
-import java.io.IOException;
+import toolbox.util.ListArrayUtil;
 
 /**
  *
@@ -978,12 +980,12 @@ public class WeightedBinaryTreeTest {
         
         treebeard = new WeightedBinaryTree("and", 1);
         treebeard = treebeard.simpleBinaryInsert("relevance", 8).getRoot();
-        treebeard.display();
         treebeard = treebeard.simpleBinaryInsert("aa", 10).getRoot();
-        treebeard.display();
         treebeard = treebeard.simpleBinaryInsert("holiday", 5).getRoot();
         treebeard = treebeard.simpleBinaryInsert("injure", 2).getRoot();
-        treebeard.display();
+        treebeard = treebeard.simpleBinaryInsert("instantiate", 1).getRoot();
+        treebeard = treebeard.simpleBinaryInsert("irritating", 2).getRoot();
+        //TODO:  why is this using simpleBinaryInsert and not insert?
         
         return treebeard.getRoot();
     }
@@ -1160,5 +1162,39 @@ public class WeightedBinaryTreeTest {
         List<WeightedBinaryTree> result = new ArrayList<WeightedBinaryTree>();
         result.stream().forEach(item -> result.add(item));
         return result;
+    }
+    
+    @Test
+    public void testFindFirst() {
+        logger.info("\ntesting findFirst()");
+        WeightedBinaryTree<String> tree = this.getBasicTree();
+        tree.display();
+        Optional<WeightedBinaryTree<String>> first = tree.findFirst(null);
+        assertEquals(false, first.isPresent());
+        Predicate<WeightedBinaryTree<String>> p = (WeightedBinaryTree<String> t) -> t.getKey().startsWith("r");
+        first = tree.findFirst(p);
+        logger.debug(p.test(tree));
+        logger.debug(p.test(tree.getLeftChild()));
+        logger.debug(p.test(tree.getRightChild()));
+        assertEquals(tree.getRightChild(), first.get());
+        
+        //assertEquals(tree.getRightChild(), tree.findFirst((WeightedBinaryTree<String> t) -> t.getKey().startsWith("r")));
+    }
+    
+    @Test
+    public void testQueryFromFirst() {
+        logger.info("\ntesting queryFromFirst()");
+        WeightedBinaryTree<String> tree = this.getBasicTree();
+        tree.display();
+        Predicate<WeightedBinaryTree<String>> p = (WeightedBinaryTree<String> t) -> t.getKey().startsWith("in");
+        List<WeightedBinaryTree<String>> result = tree.queryFromFirst(p);
+        assertEquals(2, result.size());
+        logger.debug(result);
+        assertEquals("injure", result.get(0).getKey());
+        assertEquals("instantiate", result.get(1).getKey());
+        
+        p = (WeightedBinaryTree<String> t) -> t.getKey().startsWith("xyz");
+        result = tree.queryFromFirst(p);
+        assertEquals(0, result.size());
     }
 }
