@@ -5,25 +5,22 @@
  */
 package toolbox.stats;
 
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Optional;
 import java.util.TreeMap;
+import java.util.function.Predicate;
+import org.apache.logging.log4j.*;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
-import org.apache.logging.log4j.*;
-import toolbox.util.ListArrayUtil;
-import java.util.PriorityQueue;
 import toolbox.trees.WeightedBinaryTree;
-import java.util.List;
-import java.util.ArrayList;
-import java.io.*;
-import toolbox.util.MathUtil;
-import java.util.Date;
-import java.util.Calendar;
-import java.util.function.Predicate;
+import toolbox.util.ListArrayUtil;
 
 /**
  *
@@ -113,7 +110,6 @@ public class TreeHistogramTest {
         hist.addToData("hardwood", 1);
         hist.addToData("philharmonic", 1);
         hist.addToData("the", 1);
-        hist.getData().display();
         return hist;
     }
     
@@ -260,18 +256,35 @@ public class TreeHistogramTest {
     }
     
     @Test
+    public void testFindFirst() {
+	logger.info("\ntesting findFirst()");
+	TreeHistogram<String> h = this.createSimpleWordHistogram();
+	Optional<HistogramEntry<String>> result = null;
+	result = h.findFirst(w -> w.equals("nothing"));
+	assertFalse(result.isPresent());
+	
+	Predicate<String> p = (String s) -> s.equals("Amaranthus");
+
+	result = h.findFirst(p);//w -> w.equals("Amaranthus"));
+	assertTrue(result.isPresent());
+	logger.debug(result.get());
+	assertEquals("Amaranthus", result.get().item);
+	assertEquals(1, result.get().count);
+    }
+    
+    @Test
     public void testQueryFromFirst() {
         logger.info("\ntesting queryFromFirst()");
         TreeHistogram<String> h = this.createSimpleWordHistogram();
         h.getData().display();
         Predicate<String> p = (s) -> s.startsWith("h");
         List<String> result = h.queryFromFirst(p);
-        logger.debug(result);
+        logger.debug("\n" + result);
         assertEquals(2, result.size());
         
         p = (s) -> s.startsWith("h") && !s.contains("wood");
         result = h.queryFromFirst(p);
-        logger.debug(result);
+        logger.debug("\n" + result);
         assertEquals(1, result.size());
     }
     
@@ -282,7 +295,7 @@ public class TreeHistogramTest {
         Predicate<String> p = s -> s.contains("wood");
         List<HistogramEntry<String>> result = h.queryAll(p);
         assertEquals(1, result.size());
-        
+	
         p = s -> s.contains("il");
         result = h.queryAll(p);
         assertEquals(2, result.size());
@@ -291,6 +304,16 @@ public class TreeHistogramTest {
                 fail(entry.item + " should not be here");
             }
         });
-        logger.debug(result);
+        //logger.debug(result);
+	
+	p = (s) -> s.startsWith("h");
+        result = h.queryAll(p);
+        logger.debug("\n" + result);
+        assertEquals(2, result.size());
+        
+        p = (s) -> s.startsWith("h") && !s.contains("wood");
+        result = h.queryAll(p);
+        logger.debug("\n" + result);
+        assertEquals(1, result.size());
     }
 }

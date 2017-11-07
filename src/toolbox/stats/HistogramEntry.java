@@ -11,7 +11,7 @@ package toolbox.stats;
  */
 public class HistogramEntry<T> {
     public T item;
-    public Integer count;
+    public int count;
     
     public HistogramEntry(T item, Integer count) {
         this.item = item;

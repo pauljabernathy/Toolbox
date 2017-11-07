@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.TreeMap;
 import java.util.function.Predicate;
@@ -31,7 +32,7 @@ public class TreeHistogram<T extends Comparable> {
     many items with the same count.*/
     //TODO:  implement or (preferably) find a balanced tree that will allow adding an arbitrary number of
     //entries for a given count, but still has ~O(logn) time complexity.
-    PriorityQueue<HistogramEntry> counts;
+    //PriorityQueue<HistogramEntry> counts;
     
     //try a BalancedBinaryTree, which was originally made for this purpose
     private WeightedBinaryTree<T> data;
@@ -51,7 +52,6 @@ public class TreeHistogram<T extends Comparable> {
                 return left.count.compareTo(right.count);
             }
         });*/
-        this.counts = new PriorityQueue<>((HistogramEntry left, HistogramEntry right) -> left.count.compareTo(right.count));
         //this.data = new WeightedBinaryTree<T>(null);
         this.uniqueEntries = 0;
         this.totalCount = 0;
@@ -81,11 +81,6 @@ public class TreeHistogram<T extends Comparable> {
             data = result.getRoot();    //in case the root node changed
         }
         return data;
-    }
-    
-    protected PriorityQueue<HistogramEntry> addToCounts(T item, int count) {
-        
-        return counts;
     }
     
     public List<HistogramEntry<T>> getAsList() {
@@ -120,7 +115,17 @@ public class TreeHistogram<T extends Comparable> {
         return this.data;
     }
     
-    protected List<T> queryFromFirst(Predicate<T> p) {
+    public Optional<HistogramEntry<T>> findFirst(Predicate<T> p) {
+	Predicate<WeightedBinaryTree<T>> tp = (WeightedBinaryTree<T> t) -> p.test(t.getKey());
+	Optional<WeightedBinaryTree<T>> subtree = this.data.findFirst(tp);
+	if(subtree.isPresent()) {
+	    return Optional.of(new HistogramEntry<T>(subtree.get().getKey(), (int)(subtree.get().getWeight())));
+	} else {
+	    return Optional.empty();
+	}
+    }
+    
+    public List<T> queryFromFirst(Predicate<T> p) {
         Predicate<WeightedBinaryTree<T>> p2 = (WeightedBinaryTree<T> t) -> p.test(t.getKey());
         List<WeightedBinaryTree<T>> nodes = this.data.queryFromFirst(p2);
         List<T> result = new ArrayList<>();
@@ -128,7 +133,7 @@ public class TreeHistogram<T extends Comparable> {
         return result;
     }
     
-    protected List<HistogramEntry<T>> queryAll(Predicate<T> p) {
+    public List<HistogramEntry<T>> queryAll(Predicate<T> p) {
         List<T> result = new ArrayList<>();
         List<HistogramEntry<T>> asList = this.getAsList(Sort.ITEM);
         return asList.stream().filter(entry -> p.test(entry.item)).collect(toList());

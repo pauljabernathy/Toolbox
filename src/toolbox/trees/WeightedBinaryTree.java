@@ -705,6 +705,8 @@ public class WeightedBinaryTree<T extends Comparable> {
         return result;
     }
     
+    //TODO:  reset the root to itself, so the code that gets this won't have access to the rest of the original tree
+    //TODO:  return as a copy of the original, so the original can't be changed by the code that gets this
     public Optional<WeightedBinaryTree<T>> findFirst(Predicate p) {
         //System.out.println(this + ".findFirst");
         
