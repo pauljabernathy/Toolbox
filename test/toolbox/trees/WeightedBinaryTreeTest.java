@@ -1179,6 +1179,34 @@ public class WeightedBinaryTreeTest {
         assertEquals(tree.getRightChild(), first.get());
         
         //assertEquals(tree.getRightChild(), tree.findFirst((WeightedBinaryTree<String> t) -> t.getKey().startsWith("r")));
+	p = (WeightedBinaryTree<String> t) -> t.getKey().equals("and");
+	first = tree.findFirst(p);//(WeightedBinaryTree<String> t) -> t.getKey().equals("and"));
+	assertTrue(first.isPresent());
+	assertEquals("and", first.get().getKey());
+	
+	WeightedBinaryTree<String> hist = new WeightedBinaryTree<>("the");
+        //hist.insert("the", 1);
+        hist.insert("holiday", 5);
+        hist.insert("and", 8);
+        hist.insert("the", 10);
+        hist.insert("relevance", 1);
+        hist.insert("injure", 2);
+        hist.insert("Philippino", 1);
+        hist.insert("Amaranthus", 1);
+        hist.insert("hardwood", 1);
+        hist.insert("philharmonic", 1);
+        hist.insert("the", 1);
+	
+	first = hist.findFirst(w -> w.equals("Amaranthus"));
+	//assertTrue(first.isPresent());
+	//assertEquals("Amaranthus", first.get().getKey());
+	hist.display();
+	p = (WeightedBinaryTree<String> t) -> t.getKey().equals("Amaranthus");
+	first = hist.findFirst(p);//w -> w.getKey().startsWith("Amaran"));
+	assertTrue(first.isPresent());
+	p = (WeightedBinaryTree<String> t) -> t.getKey().equals("injure");
+	first = hist.findFirst(p);//w -> w.equals("injure"));
+	assertTrue(first.isPresent());
     }
     
     @Test

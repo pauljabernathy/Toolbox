@@ -256,6 +256,24 @@ public class TreeHistogramTest {
     }
     
     @Test
+    public void testGet() {
+	logger.info("\ntesting get() ");
+	TreeHistogram<String> h = this.createSimpleWordHistogram();
+	h.getData().display();
+	assertEquals(12, h.get("the").get().count);
+	assertEquals(8, h.get("and").get().count);
+	assertEquals(1, h.get("Philippino").get().count);
+	assertEquals(5, h.get("holiday").get().count);
+	assertEquals(1, h.get("hardwood").get().count);
+	assertEquals(2, h.get("injure").get().count);
+	assertEquals(1, h.get("relevance").get().count);
+	assertEquals(1, h.get("philharmonic").get().count);
+	assertFalse(h.get(null).isPresent());
+	assertFalse(h.get("").isPresent());
+	assertFalse(h.get("themeaningoflife").isPresent());
+    }
+    
+    @Test
     public void testFindFirst() {
 	logger.info("\ntesting findFirst()");
 	TreeHistogram<String> h = this.createSimpleWordHistogram();

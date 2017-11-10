@@ -143,7 +143,7 @@ public class WeightedBinaryTree<T extends Comparable> {
     public boolean contains(T value) {
         return false;
     }
-    
+    //TODO: return an Optional?
     public WeightedBinaryTree<T> get(T value) {
         if(value == null && this.key != null) {
             return null;

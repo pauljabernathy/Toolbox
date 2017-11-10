@@ -115,6 +115,15 @@ public class TreeHistogram<T extends Comparable> {
         return this.data;
     }
     
+    public Optional<HistogramEntry<T>> get(T t) {
+	WeightedBinaryTree<T> wbt = this.data.get(t);
+	if(wbt == null) {
+	    return Optional.empty();
+	} else {
+	    return Optional.of(new HistogramEntry(wbt.getKey(), (int)wbt.getWeight()));
+	}
+    }
+    
     public Optional<HistogramEntry<T>> findFirst(Predicate<T> p) {
 	Predicate<WeightedBinaryTree<T>> tp = (WeightedBinaryTree<T> t) -> p.test(t.getKey());
 	Optional<WeightedBinaryTree<T>> subtree = this.data.findFirst(tp);
