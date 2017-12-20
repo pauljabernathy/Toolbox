@@ -654,6 +654,48 @@ public class ListArrayUtilTest {
     }
     
     @Test
+    public void testFindNumDiffs_double_arrays() {
+	logger.info("\ntesting findNumDiffs(double[] a, double[] b)");
+        double[] a = null;
+        double[] b = null;
+        assertEquals(0, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(0, ListArrayUtil.findNumDiffs(b, a));
+        
+        a = new double[0];
+        assertEquals(0, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(0, ListArrayUtil.findNumDiffs(b, a));
+        
+        b = new double[0];
+        assertEquals(0, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(0, ListArrayUtil.findNumDiffs(b, a));
+        
+        a = null;   //redundant I suppose but won't hurt
+        assertEquals(0, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(0, ListArrayUtil.findNumDiffs(b, a));
+        
+        a = new double[] { 0.0 };
+        assertEquals(1, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(1, ListArrayUtil.findNumDiffs(b, a));
+        
+        b = new double[] { 0.0 };
+        assertEquals(0, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(0, ListArrayUtil.findNumDiffs(b, a));
+        
+        b[0] = 1.0;
+        assertEquals(1, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(1, ListArrayUtil.findNumDiffs(b, a));
+        
+        b = new double[] { 0.0, 1.0, 2.0, 3.0 };
+        assertEquals(3, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(3, ListArrayUtil.findNumDiffs(b, a));
+        
+        a = new double[] { -5.0, 2.0, 1.0, 8.0, 15.0, -27.0 };
+        b = new double[] { 4.0, 2.0, 1.0, -27.0, 15.0 };
+        assertEquals(3, ListArrayUtil.findNumDiffs(a, b));
+        assertEquals(3, ListArrayUtil.findNumDiffs(b, a));
+    }
+    
+    @Test
     public void testMerge() {
         logger.info("\nteting merge()");
         List<String> left = new ArrayList<String>();

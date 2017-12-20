@@ -3,10 +3,12 @@
  * and open the template in the editor.
  */
 package toolbox.stats;
-import toolbox.util.MathUtil;
-import java.util.*;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.util.*;
+import java.util.function.Predicate;
+import static java.util.stream.Collectors.toList;
+import toolbox.util.MathUtil;
 
 /**
  *
@@ -64,7 +66,8 @@ public class ProbDist<T> {
     }
 
     //TODO:  check for probabilites of 0 since add() will not allow a 0 probability, or allow zero probabilites (but make sure to change getEntropy to ignore them)
-    public void setValuesAndProbabilities(List<T> values, List<Double> probs) throws ProbabilityException {
+    //TODO:  Check for uniqueness of values and that sum of probs = 1!
+    public ProbDist<T> setValuesAndProbabilities(List<T> values, List<Double> probs) throws ProbabilityException {
         if(values == null) {
             throw new ProbabilityException("values must be non null");
         } else if(values.isEmpty()) {
@@ -80,6 +83,7 @@ public class ProbDist<T> {
             this.setValues(values);
             this.setProbabilities(probs);
         }
+	return this;
     }
     //TODO:  should probably throw a ProbabilityException for bad inputs
     public boolean add(T value, double probability) {
@@ -244,6 +248,32 @@ public class ProbDist<T> {
             System.err.println(e.getClass() + " in createInstanceFromCounts():  " + e.getMessage());
         }
         return result;
+    }
+    
+    public ProbDist<T> given(Predicate<T> p) {
+	int length = this.values.size();
+	int[] indecesTrue = new int[length];
+	List<T> valuesGiven = new ArrayList<>();
+	List<Double> probsGiven = new ArrayList<>();
+	for(int i = 0; i < length; i++) {
+	    if(p.test(this.values.get(i))) {
+		indecesTrue[i] = 1;
+		valuesGiven.add(this.values.get(i));
+		probsGiven.add(this.probabilities.get(i));
+	    }
+	}
+	double probGiven = MathUtil.sum(probsGiven);
+	probsGiven = probsGiven.stream().map(prob -> prob / probGiven).collect(toList());
+	
+	ProbDist<T> result = new ProbDist<>();
+	try {
+	    result.setValuesAndProbabilities(valuesGiven, probsGiven);
+	} catch(ProbabilityException e) {
+	    //theoretically should never get here
+	    System.err.println("ProbabilityException in ProbDist::given()");
+	    e.printStackTrace();
+	}
+	return result;
     }
     
     public static ProbDist<List> getJointDistribution(ProbDist left, ProbDist right) {

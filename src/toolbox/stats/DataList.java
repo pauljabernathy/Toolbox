@@ -10,7 +10,7 @@ import java.util.ArrayList;
 //TODO:  remove(), elementAt()?, other?
 
 /**
- *
+ * @deprecated 
  * @author paul
  */
 public class DataList <T> {

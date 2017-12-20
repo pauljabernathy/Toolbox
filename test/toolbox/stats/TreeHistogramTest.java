@@ -29,6 +29,7 @@ import toolbox.util.ListArrayUtil;
 public class TreeHistogramTest {
     
     private static Logger logger;
+    private static final double EPSILON = .000001;
     
     public TreeHistogramTest() {
     }
@@ -333,5 +334,49 @@ public class TreeHistogramTest {
         result = h.queryAll(p);
         logger.debug("\n" + result);
         assertEquals(1, result.size());
+    }
+    
+    @Test
+    public void testFilter() {
+	logger.info("\ntesting filter()");
+	TreeHistogram<String> h = this.createSimpleWordHistogram();
+	TreeHistogram<String> result = null;
+	Predicate<String> p = (s) -> s.startsWith("h");
+	result = h.filter(p);
+	//logger.debug(result.getAsList());
+	assertEquals(2, result.getNumEntries());
+	//logger.debug(h.filter((s) -> s.startsWith("h")).getAsList());
+	
+	result = h.filter(s -> s.contains("l"));
+	assertEquals(4, result.getNumEntries());
+	assertEquals(1, result.get("Philippino").get().count);
+	assertFalse(result.get("injure").isPresent());
+    }
+    
+    @Test
+    public void testComputeProbDist() {
+	logger.info("\ntesting computeProbDist()");
+	TreeHistogram<String> stringHist = new TreeHistogram<>();
+	ProbDist<String> stringsResult = stringHist.computeProbDist();
+	assertEquals(1, stringsResult.getProbabilities().size());   //because ProbDist defaults to a value of UNKNOWN with probablity 1
+	
+	stringHist = this.createSimpleWordHistogram();
+	stringsResult = stringHist.computeProbDist();
+	assertEquals(9, stringsResult.getProbabilities().size());
+	assertEquals(9, stringsResult.getValues().size());
+	assertEquals(12.0/32.0, stringsResult.probatilityOf("the"), EPSILON);
+	assertEquals(1.0/32.0, stringsResult.probatilityOf("hardwood"), EPSILON);
+	assertEquals(5.0/32.0, stringsResult.probatilityOf("holiday"), EPSILON);
+	assertEquals(2.0/32.0, stringsResult.probatilityOf("injure"), EPSILON);
+	
+	TreeHistogram<Integer> intHist = new TreeHistogram<>();
+	intHist.insert(1, 1).insert(2, 2).insert(3, 3).insert(4, 4);
+	ProbDist<Integer> intsResult = intHist.computeProbDist();
+	assertEquals(4, intsResult.getValues().size());
+	assertEquals(4, intsResult.getProbabilities().size());
+	assertEquals(.1, intsResult.probatilityOf(1), EPSILON);
+	assertEquals(.2, intsResult.probatilityOf(2), EPSILON);
+	assertEquals(.3, intsResult.probatilityOf(3), EPSILON);
+	assertEquals(.4, intsResult.probatilityOf(4), EPSILON);
     }
 }

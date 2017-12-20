@@ -57,9 +57,9 @@ public class TreeHistogram<T extends Comparable> {
         this.totalCount = 0;
     }
     
-    public WeightedBinaryTree<T> insert(T item, int count) {
+    public TreeHistogram<T> insert(T item, int count) {
         this.addToData(item, count);
-        return this.data;
+        return this;
     }
     
     protected WeightedBinaryTree<T> addToData(T item, int count) {
@@ -146,5 +146,39 @@ public class TreeHistogram<T extends Comparable> {
         List<T> result = new ArrayList<>();
         List<HistogramEntry<T>> asList = this.getAsList(Sort.ITEM);
         return asList.stream().filter(entry -> p.test(entry.item)).collect(toList());
+    }
+    
+    public TreeHistogram<T> filter(Predicate<T> p) {
+	TreeHistogram<T> filtered = new TreeHistogram<>();
+	this.queryAll(p).stream().forEach(entry -> filtered.insert(entry.item, entry.count));
+	return filtered;
+    }
+    
+    public ProbDist<T> computeProbDist() {
+	ProbDist<T> result = new ProbDist<T>();
+	if(this.data == null) {
+	    return result;
+	}
+	double totalWeight = this.data.getTreeWeight();
+	List<HistogramEntry<T>> entries = this.getAsList(TreeHistogram.Sort.COUNT);
+	List<T> values = new ArrayList<>();
+	List<Double> probs = new ArrayList<>();
+	entries.stream().forEach(entry -> {
+	   values.add(entry.item);
+	   probs.add((double)entry.count / totalWeight);
+	});
+	try {
+	    result = new ProbDist<>();
+	    result.setValuesAndProbabilities(values, probs);
+	} catch(ProbabilityException e) {
+	    //If we get here, we can't blame user input!
+	    System.err.println("Error computing probabilities, returning null.");
+	}
+	return result;
+	
+    }
+    
+    public T getRandomValue() {
+	return null;
     }
 }

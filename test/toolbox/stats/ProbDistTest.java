@@ -29,6 +29,7 @@ import org.apache.logging.log4j.*;
 public class ProbDistTest {
     
     private static Logger logger;
+    private static final double EPSILON = .000001;
     
     public ProbDistTest() {
     }
@@ -567,6 +568,26 @@ public class ProbDistTest {
         
         ProbDist<Boolean> resultBool = ProbDist.createInstanceFromCounts(boolValues, boolCounts);  //blows up as inteded because of the assert line
         resultBool.display();
+    }
+    
+    @Test
+    public void testGiven() {
+	logger.info("\ntesting given()");
+	int[] indecesTrue = new int[6];
+	logger.debug(ListArrayUtil.arrayToString(indecesTrue));
+	ProbDist<String> instance = new ProbDist<>();
+	instance.add("abcd", .1);
+	instance.add("bcde", .2);
+	instance.add("cdef", .3);
+	instance.add("defg", .4);
+	logger.debug(instance);
+	ProbDist<String> result = null;
+	result = instance.given(s -> s.contains("a"));
+	logger.debug(result);
+	assertEquals(1.0, result.probatilityOf("abcd"), EPSILON);
+	
+	result = instance.given(s -> !s.contains("a"));
+	logger.debug(result);
     }
     
     @Test

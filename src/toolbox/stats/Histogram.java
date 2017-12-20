@@ -6,7 +6,10 @@ package toolbox.stats;
 
 import java.util.List;
 import java.util.ArrayList;
-//TODO:  Should this use a generic or can we get away without using it?
+//TODO:  Generic
+//TODO:  Make a Histogrom Interface.  Make this class into a Concrete Histogram, and make it and TreeHistogram implment the Interface.
+//TODO:  Get rid of the DataList usage and delete that class entirely.
+
 /**
  *
  * @author paul

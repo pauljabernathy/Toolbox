@@ -470,6 +470,32 @@ public class ListArrayUtil {
         return numDiffs;
     }
     
+    public static int findNumDiffs(double[] a, double[] b) {
+        int numDiffs = 0;
+        if(a == null && b == null) {
+            return 0;
+        } else if(a == null && b != null) {
+            return b.length;
+        } else if(b == null && a != null) {
+            return a.length;
+        }
+        for(int i = 0; i < a.length && i < b.length; i++) {
+            if(a[i] != b[i]) {
+                numDiffs++;
+            }
+        }
+        if(a.length < b.length) {
+            for(int i = a.length; i < b.length; i++) {
+                numDiffs++;
+            }
+        } else if(a.length > b.length) {
+            for(int i = b.length; i < a.length; i++) {
+                numDiffs++;
+            }
+        }
+        return numDiffs;
+    }
+    
     public static <T extends Comparable> List<T> merge(List<T> left, List<T> right) {
         List<T> result = new ArrayList<>();
         if(left == null || left.isEmpty()) {
