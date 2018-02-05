@@ -599,4 +599,8 @@ public class MathUtil {
         }
         return output;
     }
+    
+    public static double ratio(int a, int b) {
+	return (double) a / (double) b;
+    }
 }

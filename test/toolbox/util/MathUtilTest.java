@@ -25,6 +25,7 @@ import toolbox.util.ListArrayUtil;
 public class MathUtilTest {
     
     private static Logger logger;
+    private static final double EPSILON = 0.000001;
     
     public MathUtilTest() {
     }
@@ -731,5 +732,15 @@ public class MathUtilTest {
         assertEquals(result[0], 1.0, 0.0);
         assertEquals(result[1], 2.0, 0.0);
         assertEquals(result[2], 3.0, 0.0);
+    }
+    
+    @Test
+    public void testRatio() {
+	logger.info("\ntesting ratio()");
+	assertTrue(Double.isNaN(MathUtil.ratio(0, 0)));
+	assertTrue(Double.isInfinite(MathUtil.ratio(100, 0)));
+	assertEquals(.5, MathUtil.ratio(1, 2), EPSILON);
+	assertEquals(0.0, MathUtil.ratio(0, 2), EPSILON);
+	assertEquals(10.0, MathUtil.ratio(10, 1), EPSILON);
     }
 }

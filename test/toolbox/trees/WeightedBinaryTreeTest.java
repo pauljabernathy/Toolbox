@@ -7,6 +7,7 @@ package toolbox.trees;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +22,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import toolbox.io.TextReader;
 import toolbox.stats.Histogram;
+import toolbox.stats.TreeHistogram;
+import toolbox.stats.TreeHistogram.Sort;
 import toolbox.util.ListArrayUtil;
+import toolbox.util.MathUtil;
 
 /**
  *
@@ -30,6 +34,7 @@ import toolbox.util.ListArrayUtil;
 public class WeightedBinaryTreeTest {
     
     private static Logger logger;
+    private static final double EPSILON = .001;
     
     public WeightedBinaryTreeTest() {
     }
@@ -549,6 +554,20 @@ public class WeightedBinaryTreeTest {
     }
     
     @Test
+    public void testKeepsTrackOfWeightCorrectlyOnWeightOneInserts() {
+	logger.info("\ntestKeepsTrackOfWeightCorrectlyOnWeightOneInserts()");
+	String sentence = "one two three one two one";
+	WeightedBinaryTree<String> tree = new WeightedBinaryTree(".");
+	//List<String> words = Arrays.asList(sentence.split(" "));
+	String[] words = sentence.split(" ");
+	for(int i = 0; i < words.length; i++) {
+	    tree = tree.insert(words[i]).getRoot();
+	    assertEquals(i + 2, tree.getTreeWeight(), 0.000000001);
+	}
+	
+    }
+    
+    @Test
     public void testSimpleBinaryInsert() {
         logger.info("\ntesting simpleBinaryInsert()");
         WeightedBinaryTree<String> instance = new WeightedBinaryTree<>("m", 1);
@@ -979,13 +998,13 @@ public class WeightedBinaryTreeTest {
         treebeard = treebeard.insert("injure", 2).getRoot();*/
         
         treebeard = new WeightedBinaryTree("and", 1);
-        treebeard = treebeard.simpleBinaryInsert("relevance", 8).getRoot();
-        treebeard = treebeard.simpleBinaryInsert("aa", 10).getRoot();
-        treebeard = treebeard.simpleBinaryInsert("holiday", 5).getRoot();
-        treebeard = treebeard.simpleBinaryInsert("injure", 2).getRoot();
-        treebeard = treebeard.simpleBinaryInsert("instantiate", 1).getRoot();
-        treebeard = treebeard.simpleBinaryInsert("irritating", 2).getRoot();
-        //TODO:  why is this using simpleBinaryInsert and not insert?
+        treebeard = treebeard.insert("relevance", 8).getRoot();
+        treebeard = treebeard.insert("aa", 10).getRoot();
+        treebeard = treebeard.insert("holiday", 5).getRoot();
+        treebeard = treebeard.insert("injure", 2).getRoot();
+        treebeard = treebeard.insert("instantiate", 1).getRoot();
+        treebeard = treebeard.insert("irritating", 2).getRoot();
+        //TODO:  Why does using insert instead of simpleBinaryInsert break several tests?!!!!
         
         return treebeard.getRoot();
     }
@@ -1224,5 +1243,23 @@ public class WeightedBinaryTreeTest {
         p = (WeightedBinaryTree<String> t) -> t.getKey().startsWith("xyz");
         result = tree.queryFromFirst(p);
         assertEquals(0, result.size());
+    }
+    
+    @Test
+    public void testGetRandomValue() {
+	logger.info("\ntesting getRandomValue()");
+	WeightedBinaryTree<String> tree = this.getBasicTree();
+	tree.display();
+	TreeHistogram<String> h = new TreeHistogram<>();
+	
+	int numValues = 10000000;
+	for(int i = 0; i < numValues; i++) {
+	    h.insert(tree.getRandomValue(), 1);
+	}
+	h.getAsList(Sort.COUNT).forEach(System.out::println);
+	assertEquals(tree.get("aa").getWeight() / tree.getTreeWeight(), MathUtil.ratio(h.get("aa").get().count, numValues), EPSILON);
+	h.getAsList(Sort.COUNT).forEach(i -> { 
+	    assertEquals(tree.get(i.item).getWeight() / tree.getTreeWeight(), MathUtil.ratio(h.get(i.item).get().count, numValues), EPSILON);
+	});
     }
 }

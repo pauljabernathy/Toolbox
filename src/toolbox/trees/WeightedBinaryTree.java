@@ -11,13 +11,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.function.Predicate;
+import toolbox.random.Random;
 import toolbox.trees.InsertionResult.Status;
+
+//TODO:  a getRandomValue function that returns a randomly chosen node, with probabilities weighted by the weight of the node
+//For each node you are at, there are three possibilities: choose that node, go left, or go right.
+//The proportion of the total weight that each of the three has determines their respective probabilities.
 
 /**
  *
  * @author pabernathy
  */
-public class WeightedBinaryTree<T extends Comparable> {
+public class WeightedBinaryTree<T extends Comparable> implements Comparable<T> {
     
     public static final double DEFAULT_WEIGHT = 1.0;
     public static final DuplicateEntryOption DEFAULT_DUPLICATE_ENTRY_OPTION = DuplicateEntryOption.UPDATE;
@@ -41,10 +46,13 @@ public class WeightedBinaryTree<T extends Comparable> {
     //Actually, keep track of tree weight and don't track torque directly.  If you keep track of tree weight and let the heavier items
     //filter toward the root, the trees with greater torque should end up near the root.
     
+    //TODO:  A DEFAULT CONSTRUCTOR WITH NO ARGS.
+    
     public WeightedBinaryTree(T key) {
         this(key, DEFAULT_WEIGHT, null, null, null);
     }
     
+    //TODO: I found a bug where if I call this with a weight < 0 I get a NPE later on.
     public WeightedBinaryTree(T key, double weight) {
         this(key, weight, null, null, null);
     }
@@ -137,6 +145,10 @@ public class WeightedBinaryTree<T extends Comparable> {
     
     public int compareTo(WeightedBinaryTree<T> other) {
         return this.key.compareTo(other.getKey());
+    }
+    
+    public int compareTo(T otherKey) {
+        return this.key.compareTo(otherKey);
     }
     
     //TODO:  complete
@@ -423,7 +435,7 @@ public class WeightedBinaryTree<T extends Comparable> {
         return simpleBinaryInsert(value, weight, DuplicateEntryOption.UPDATE);
     }
     
-    protected InsertionResult<T> simpleBinaryInsert(T value, double weight, DuplicateEntryOption option) {
+    public InsertionResult<T> simpleBinaryInsert(T value, double weight, DuplicateEntryOption option) {
         InsertionResult<T> result = new InsertionResult<>();
         if(value == null) {
             //result.pathFromRoot = new LinkedList<WeightedBinaryTree<T>>();
@@ -497,6 +509,7 @@ public class WeightedBinaryTree<T extends Comparable> {
         return this;
     }
     
+    //TODO:  what if you update the root's weight to something less than a child's weight?  Handle that case!
     public RebalanceResult<T> rebalance() {
         RebalanceResult<T> result = new RebalanceResult<>();
         result.beforePathFromRoot = this.getPathFromRoot();
@@ -794,5 +807,26 @@ public class WeightedBinaryTree<T extends Comparable> {
         if(this.right != null) {
             this.right.display(prefix + "r");
         }
+    }
+    
+    public T getRandomValue() {
+	
+	int doThisOne = Random.rbinom(1, (double)(this.getWeight()) / (double)(this.getTreeWeight()))[0];
+	if(doThisOne == 1) {
+	    return this.getKey();
+	} else {
+	    if(this.getLeftChild() == null && this.getRightChild() != null) {
+		return this.getRightChild().getRandomValue();
+	    } else if(this.getLeftChild() != null && this.getRightChild() == null) {
+		return this.getLeftChild().getRandomValue();
+	    } else {
+		int doLeftOne = Random.rbinom(1, (double)(this.getLeftChild().getWeight()) / (double)(this.getSubTreeWeight()))[0];
+		if(doLeftOne == 1) {
+		    return this.getLeftChild().getRandomValue();
+		} else {
+		    return this.getRightChild().getRandomValue();
+		}
+	    }
+	}
     }
 }
