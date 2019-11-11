@@ -85,6 +85,15 @@ public class WeightedBinaryTree<T extends Comparable> implements Comparable<T> {
         this.subTreeWeight = 0.0;
     }
     
+    public double getRebalanceCoefficient() {
+	return this.rebalanceCoefficient;
+    }
+    
+    public WeightedBinaryTree<T> setRebalanceCoefficient(double newRebalanceCoefficient) {
+	this.rebalanceCoefficient = newRebalanceCoefficient;
+	return this;
+    }
+    
     public WeightedBinaryTree<T> getRightChild() {
         return this.right;
     }
@@ -206,7 +215,7 @@ public class WeightedBinaryTree<T extends Comparable> implements Comparable<T> {
                 this.parent.updateSubTreeWeight();
             }
             this.parent = null;
-        } else if(newParent != null && !newParent.isDescendentOf(this) && !newParent.isAncestorOf(this)) {
+        } else if(!newParent.isDescendentOf(this) && !newParent.isAncestorOf(this)) {
             int previousDepth = this.getDepth();
             if(this.parent != null) {
                 if(this.isLeftChild()) {
@@ -395,26 +404,26 @@ public class WeightedBinaryTree<T extends Comparable> implements Comparable<T> {
     //could check the parent chain to the root to make sure you aren't trying to insert a parent key
     //If insert(BalancedBinaryTree<T> node) is implemented, will need to check its decendents to see if those values are in the existing tree, or ensure that it has no decendents.
     //TODO: this is copied from the basic binary tree; adapt to this class
-    public InsertionResult<T> insert(T value) {
-        return insert(value, DEFAULT_WEIGHT, DEFAULT_DUPLICATE_ENTRY_OPTION);
+    public InsertionResult<T> insert(T key) {
+        return insert(key, DEFAULT_WEIGHT, DEFAULT_DUPLICATE_ENTRY_OPTION);
     }
     
-    public InsertionResult<T> insert(T value, double weight) {
-        return this.insert(value, weight, DEFAULT_DUPLICATE_ENTRY_OPTION);
+    public InsertionResult<T> insert(T key, double weight) {
+        return this.insert(key, weight, DEFAULT_DUPLICATE_ENTRY_OPTION);
     }    
     
     /**
      * inserts the given key, or updates the node in the tree if one is found with the given key
  For example, if the class T here is a node that stores key key pairs, if we find the key we could update the key in some way which might be specific to class T.
-     * @param value
+     * @param key
      * @return 
      */
-    public InsertionResult insert(T value, double weight, DuplicateEntryOption option) {
+    public InsertionResult insert(T key, double weight, DuplicateEntryOption option) {
         //System.out.println("\n---\ninsert(" + key + ", " + option + ")");
         //First, insert like a regular binary tree.
         //Find where it should go (either the exiting entry, or where a new one will go).
         //Add the new entry or update the existing one, as needed.
-        InsertionResult result = this.simpleBinaryInsert(value, weight, option);
+        InsertionResult result = this.simpleBinaryInsert(key, weight, option);
         
         //Next, look at the path to the root, starting with the node just entered or updated and going to the root,
         //check and see if it should be bumped up a level.
@@ -428,19 +437,19 @@ public class WeightedBinaryTree<T extends Comparable> implements Comparable<T> {
     }
     
     
-    protected InsertionResult<T> simpleBinaryInsert(T value) {
-        return simpleBinaryInsert(value, DEFAULT_WEIGHT);
+    protected InsertionResult<T> simpleBinaryInsert(T key) {
+        return simpleBinaryInsert(key, DEFAULT_WEIGHT);
     }
-    protected InsertionResult<T> simpleBinaryInsert(T value, double weight) {
-        return simpleBinaryInsert(value, weight, DuplicateEntryOption.UPDATE);
+    protected InsertionResult<T> simpleBinaryInsert(T key, double weight) {
+        return simpleBinaryInsert(key, weight, DuplicateEntryOption.UPDATE);
     }
     
-    public InsertionResult<T> simpleBinaryInsert(T value, double weight, DuplicateEntryOption option) {
+    public InsertionResult<T> simpleBinaryInsert(T key, double weight, DuplicateEntryOption option) {
         InsertionResult<T> result = new InsertionResult<>();
-        if(value == null) {
+        if(key == null) {
             //result.pathFromRoot = new LinkedList<WeightedBinaryTree<T>>();
         }
-        int compare = value.compareTo(this.key);
+        int compare = key.compareTo(this.key);
         //System.out.println("insert(" + key + ", " + weight + ", " + option + ") into " + this + ";  compare == " + compare);
         if(compare == 0) {
             //System.out.println("compare is 0");
@@ -452,7 +461,7 @@ public class WeightedBinaryTree<T extends Comparable> implements Comparable<T> {
                     break;
                 case REPLACE:
                     this.weight = weight;
-                    result.status = InsertionResult.Status.REPLACED;
+                    result.status = InsertionResult.Status.REPLACED;	//TODO: remove this, pending passing unit tests
                     result.setStatus(InsertionResult.Status.REPLACED).setPreviousWeight(previousWeight);
                     break;
                 case UPDATE:
@@ -465,16 +474,16 @@ public class WeightedBinaryTree<T extends Comparable> implements Comparable<T> {
             //this.updateSubTreeWeight(result, weight);
         } else if(compare < 0) {
             if(this.left != null) {
-                result = this.left.simpleBinaryInsert(value, weight, option);
+                result = this.left.simpleBinaryInsert(key, weight, option);
             } else {
-                this.setLeftChild(new WeightedBinaryTree(value, weight));
+                this.setLeftChild(new WeightedBinaryTree(key, weight));
                 result.setInsertedNode(this.left).setStatus(InsertionResult.Status.CREATED);
             }
         } else {
             if(this.right != null) {
-                result = this.right.simpleBinaryInsert(value, weight, option);
+                result = this.right.simpleBinaryInsert(key, weight, option);
             } else {
-                this.setRightChild(new WeightedBinaryTree(value, weight));
+                this.setRightChild(new WeightedBinaryTree(key, weight));
                 result.setInsertedNode(this.right).setStatus(InsertionResult.Status.CREATED);
             }
         }
@@ -483,7 +492,7 @@ public class WeightedBinaryTree<T extends Comparable> implements Comparable<T> {
     }
     
     //TODO:  determine if this should be removed and replaced with updateSubTreeWeight()
-    protected void updateSubTreeWeight(InsertionResult result, double newWeight) {
+    /*protected void updateSubTreeWeight(InsertionResult result, double newWeight) {
         if(this == result.getInsertedNode()) {// || !this.getPathFromRoot().contains(result.getInsertedNode())) {
             //simply updated this node, so no need to update the sub tree weight
             //or updated a node that is not a descendant
@@ -496,7 +505,7 @@ public class WeightedBinaryTree<T extends Comparable> implements Comparable<T> {
             this.subTreeWeight -= result.previousWeight;
             this.subTreeWeight += newWeight;
         }
-    }
+    }*/
     
     //TODO:  consider having this automatically update the parent's weight, or doing it in setXChild().  Currently, 
     //it only filters up toward the root in simpleBinaryInsert, but I think that means that if you call simpleBinaryInsert()
@@ -531,7 +540,7 @@ public class WeightedBinaryTree<T extends Comparable> implements Comparable<T> {
     //and parent.getTreeWeight() - this.getTreeWeight()) * this.rebalanceCoefficient for the threshold weight.  That it, it was moving stuff up
     //based on a node's entire tree weight, not the individual weight.  This was for performance reasons, on the idea that that will lead to the 
     //fewest number or node traversals.  But I found that when the tree was sorted by weight, it didn't always sort things correctly.  The nodes with
-    //the highest weight were not guaranteed to be at the time.
+    //the highest weight were not guaranteed to be at the top.
     //=>Investigate 
     //1.  performance difference between the two (and possibly others) ways of determine when to rebalance
     //2.  If there is a way to rebalance based of the tree weight and not the individual weight and still sort correctly (but only if there is a major performance gain by using the tree weight).
@@ -541,10 +550,17 @@ public class WeightedBinaryTree<T extends Comparable> implements Comparable<T> {
     
     public double getRebalanceThresholdWeight() {
         //assume parent is never null for now, for performance
-        return parent.getWeight();
+        //return parent.getWeight();
+	//return (parent.getTreeWeight() - this.getTreeWeight()) * this.rebalanceCoefficient;
+	return parent.getWeight() * this.rebalanceCoefficient;
     }
     
     public void rebalanceOneLevel() {
+	
+	if(this.isRoot()) {
+	    return;
+	}
+	
         WeightedBinaryTree<T> oldParent = this.parent;
         //six cases 
         //parent is root and this is left child
@@ -785,19 +801,6 @@ public class WeightedBinaryTree<T extends Comparable> implements Comparable<T> {
         this.display("");
     }
     
-    public void display(int depth) {
-        String indent = "";
-        for(int i = 0; i < depth; i ++) {
-            indent += ".";
-        }
-        //System.out.println(indent + this);
-        if(this.left != null) {
-            this.left.display(depth + 1);
-        }
-        if(this.right != null) {
-            this.right.display(depth + 1);
-        }
-    }
     
     public void display(String prefix) {
         System.out.println(prefix + this);
@@ -810,6 +813,13 @@ public class WeightedBinaryTree<T extends Comparable> implements Comparable<T> {
     }
     
     public T getRandomValue() {
+	//try {
+	if(this.getLeftChild() == null && this.getRightChild() == null) {
+	    return this.getKey();
+	    //The following lines will generally take care of this condition, but if the weight is 0.0 (which currently is allowed)
+	    //then this.getWeight() / this.getTreeWeight() will evaluate to NaN and rbinom will return 0 so does not return self.key
+	    //as it should and there is an NPE later on.
+	}
 	
 	int doThisOne = Random.rbinom(1, (double)(this.getWeight()) / (double)(this.getTreeWeight()))[0];
 	if(doThisOne == 1) {
