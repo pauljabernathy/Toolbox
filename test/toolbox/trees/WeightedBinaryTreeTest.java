@@ -979,21 +979,13 @@ public class WeightedBinaryTreeTest {
         String text = "and I want to make a word histogram and and I and histogram I";
         WeightedBinaryTree<String> hist = new WeightedBinaryTree<>("a");
         String[] words = text.split(" ");
-        /*for(String word : words) {
-            hist.insert(word, 1.0, DuplicateEntryOption.UPDATE);
-        }
-        for(String word : words) {
-            logger.info(hist.get(word));
-        }
-        logger.info(hist.getAsList(WeightedBinaryTree.SortType.NATURAL_ORDER));
-        logger.info(hist.getAsList(WeightedBinaryTree.SortType.WEIGHT));*/
         
         text = "The sun was shining on the sea,\n"
-/**/ + "Shining with all his might:\n"
-/**/+ "He did his very best to make\n"
-/**/+ "The billows smooth and bright--\n"
-/**/+ "And this was odd, because it was\n"
-+ "The middle of the night."/**/;
+	    + "Shining with all his might:\n"
+	    + "He did his very best to make\n"
+	    + "The billows smooth and bright--\n"
+	    + "And this was odd, because it was\n"
+	    + "The middle of the night.";
         text = text.toLowerCase().replaceAll("\\.", "").replaceAll(":", "").replaceAll("\\-", "").replaceAll("\n", " ").replaceAll(",", "");
         
         //text = "a b c d e f g a b c d e f a b c d e a b c d a b c a b";
@@ -1023,36 +1015,6 @@ public class WeightedBinaryTreeTest {
                 fail("counts for " + currentValue + " did not match:  " + h.getCounts().get(i) + " vs " + currentNode.getWeight());
             }
         }
-        //byWeight.forEach(logger::info);
-        
-        //Histogram histogram = new Histogram(words);
-        //logger.info(histogram.toString());
-       
-        //hist.insert("holiday", 5);
-        /*hist = new WeightedBinaryTree("holiday", 5);
-        hist.display();
-        hist = hist.insert("and", 8, DuplicateEntryOption.REPLACE).getRoot();
-        hist.display();
-        hist = hist.insert("the", 10).getRoot();
-        hist.display();
-        hist = hist.insert("relevance", 1).getRoot();
-        hist.display();
-        hist = hist.insert("injure", 2).getRoot();
-        hist.display();*/
-        /**hist = new WeightedBinaryTree<>("the", 1);
-        hist = hist.insert("holiday", 5).getRoot();
-        //hist.display();
-        hist = hist.insert("and", 8).getRoot();
-        //hist.display();
-        hist = hist.insert("the", 10).getRoot();
-        //hist.display();
-        hist = hist.insert("relevance", 1).getRoot();
-        hist = hist.insert("injure", 2).getRoot();
-        logger.info("\nfinal:");
-        hist.display();
-        logger.info("\n" + hist.getAsList(WeightedBinaryTree.SortType.NATURAL_ORDER));
-        logger.info("\n" + hist.getAsList(WeightedBinaryTree.SortType.WEIGHT));
-        /**/
     }
     
     @Test
@@ -1068,7 +1030,7 @@ public class WeightedBinaryTreeTest {
             words = words.stream().map(word -> word.toLowerCase().replaceAll("\\.", "").replaceAll(":", "").replaceAll("\\-", "").replaceAll("\n", " ").replaceAll(",", "").replaceAll("\"", "")).collect(java.util.stream.Collectors.toList());
         
             Histogram h = new Histogram(words);
-            WeightedBinaryTree<String> hist = new WeightedBinaryTree<String>("mmmm");
+            WeightedBinaryTree<String> hist = new WeightedBinaryTree<>("mmmm");
             for(String word : words) {
                 hist.getRoot().insert(word);
             }
@@ -1078,8 +1040,8 @@ public class WeightedBinaryTreeTest {
             logger.info(hist.getAsList(WeightedBinaryTree.SortType.WEIGHT));
             logger.info("\n---natural order");
             logger.info(hist.getAsList(WeightedBinaryTree.SortType.NATURAL_ORDER));
-            String currentValue = null;
-            WeightedBinaryTree<String> currentNode = null;
+            String currentValue;
+            WeightedBinaryTree<String> currentNode;
             for(int i = 0; i < h.getCounts().size(); i++) {
                 currentValue = (String)h.getValues().get(i);
                 //System.out.println(currentValue + " " + h.getCounts().get(i));
@@ -1104,21 +1066,21 @@ public class WeightedBinaryTreeTest {
     public void testVerifyOrderFunctions() {
         logger.info("\ntestVerifyFunctions()");
         List<WeightedBinaryTree> ints = new ArrayList<>();
-        ints.add(new WeightedBinaryTree<Integer>(5));
-        ints.add(new WeightedBinaryTree<Integer>(4));
-        ints.add(new WeightedBinaryTree<Integer>(3));
-        ints.add(new WeightedBinaryTree<Integer>(2));
+        ints.add(new WeightedBinaryTree<>(5));
+        ints.add(new WeightedBinaryTree<>(4));
+        ints.add(new WeightedBinaryTree<>(3));
+        ints.add(new WeightedBinaryTree<>(2));
         assertEquals(true, verifyNaturalOrder(ints));
-        ints.add(new WeightedBinaryTree<Integer>(6));
+        ints.add(new WeightedBinaryTree<>(6));
         assertEquals(false, verifyNaturalOrder(ints));
         
         List<WeightedBinaryTree> words = new ArrayList<>();
-        words.add(new WeightedBinaryTree<String>("the", 14));
-        words.add(new WeightedBinaryTree<String>("and", 10));
-        words.add(new WeightedBinaryTree<String>("a", 8));
-        words.add(new WeightedBinaryTree<String>("other", 3));
+        words.add(new WeightedBinaryTree<>("the", 14));
+        words.add(new WeightedBinaryTree<>("and", 10));
+        words.add(new WeightedBinaryTree<>("a", 8));
+        words.add(new WeightedBinaryTree<>("other", 3));
         assertEquals(true, verifySortOrder(words));
-        words.add(new WeightedBinaryTree<String>("herculean", 147));
+        words.add(new WeightedBinaryTree<>("herculean", 147));
         assertEquals(false, verifySortOrder(words));
     }
     
@@ -1140,13 +1102,7 @@ public class WeightedBinaryTreeTest {
         }
         return true;
     }
-    
-    private List<WeightedBinaryTree> removeGeneric(List<WeightedBinaryTree<String>> list) {
-        List<WeightedBinaryTree> result = new ArrayList<WeightedBinaryTree>();
-        result.stream().forEach(item -> result.add(item));
-        return result;
-    }
-    
+       
     @Test
     public void testFindFirst() {
         logger.info("\ntesting findFirst()");
@@ -1198,14 +1154,14 @@ public class WeightedBinaryTreeTest {
         WeightedBinaryTree<String> tree = this.getBasicTree();
         tree.display();
         Predicate<WeightedBinaryTree<String>> p = (WeightedBinaryTree<String> t) -> t.getKey().startsWith("in");
-        List<WeightedBinaryTree<String>> result = tree.queryFromFirst(p);
+        List<WeightedBinaryTree<String>> result = tree.fuzzyQueryFromFirst(p);
         assertEquals(2, result.size());
         logger.debug(result);
         assertEquals("injure", result.get(0).getKey());
         assertEquals("instantiate", result.get(1).getKey());
         
         p = (WeightedBinaryTree<String> t) -> t.getKey().startsWith("xyz");
-        result = tree.queryFromFirst(p);
+        result = tree.fuzzyQueryFromFirst(p);
         assertEquals(0, result.size());
     }
     

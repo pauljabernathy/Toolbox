@@ -550,7 +550,6 @@ public class WeightedBinaryTree<T extends Comparable> implements Comparable<T> {
     
     public double getRebalanceThresholdWeight() {
         //assume parent is never null for now, for performance
-        //return parent.getWeight();
 	//return (parent.getTreeWeight() - this.getTreeWeight()) * this.rebalanceCoefficient;
 	return parent.getWeight() * this.rebalanceCoefficient;
     }
@@ -672,7 +671,8 @@ public class WeightedBinaryTree<T extends Comparable> implements Comparable<T> {
         }
         return root;
     }    
-      
+    
+    @Override
     public String toString() {
         return new StringBuilder("[").append(this.key.toString()).append(" ").append(this.weight).append(" ").append(this.subTreeWeight).append(" ").append(this.getTreeWeight()).append(" ").append("]").toString();
     }
@@ -734,6 +734,21 @@ public class WeightedBinaryTree<T extends Comparable> implements Comparable<T> {
         return result;
     }
     
+    public Optional<WeightedBinaryTree<T>> fullQuery(Predicate p) {
+	LinkedList<WeightedBinaryTree<T>> result = new LinkedList<>();
+	
+	if(p.test(this.key)) {
+	    result.add(this);
+	}
+	if(this.left != null) {
+	    //result.addAll(this.left.fullQuery(p));
+	}
+	if(this.right != null) {
+	    //result.addAll(this.right.fullQuery(p));
+	}
+	return null; //result;
+    }
+    
     //TODO:  reset the root to itself, so the code that gets this won't have access to the rest of the original tree
     //TODO:  return as a copy of the original, so the original can't be changed by the code that gets this
     public Optional<WeightedBinaryTree<T>> findFirst(Predicate p) {
@@ -761,7 +776,11 @@ public class WeightedBinaryTree<T extends Comparable> implements Comparable<T> {
         return Optional.ofNullable(null);
     }
     
-    public List<WeightedBinaryTree<T>> queryFromFirst(Predicate<WeightedBinaryTree<T>> p) {
+    //This method can miss certain queries.  For example, the one in the unit test
+    //Predicate<WeightedBinaryTree<String>> p = (WeightedBinaryTree<String> t) -> t.getKey().startsWith("in")
+    //This algorithm is not guaranteed to find everything in cases like that.
+    //TODO: Find an algorithm to guarantee finding all cases that match the query.
+    public List<WeightedBinaryTree<T>> fuzzyQueryFromFirst(Predicate<WeightedBinaryTree<T>> p) {
         Optional<WeightedBinaryTree<T>> first = this.findFirst(p);
         LinkedList<WeightedBinaryTree<T>> result = new LinkedList<>();
         PriorityQueue<WeightedBinaryTree<T>> pq = new PriorityQueue<>();
