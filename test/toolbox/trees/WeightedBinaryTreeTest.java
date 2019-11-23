@@ -506,30 +506,30 @@ public class WeightedBinaryTreeTest {
         
         WeightedBinaryTree<String> m = new WeightedBinaryTree<>("m", 5);
         /*InsertionResult result = m.insert("n", 4);
-        LinkedList<WeightedBinaryTree<String>> list = result.getPathFromRoot();
-        logger.info(list);
-        assertEquals(2, list.size());
-        assertEquals(m, list.get(0));
+        LinkedList<WeightedBinaryTree<String>> natural_order_list = result.getPathFromRoot();
+        logger.info(natural_order_list);
+        assertEquals(2, natural_order_list.size());
+        assertEquals(m, natural_order_list.get(0));
         assertEquals(InsertionResult.Status.CREATED, result.status);
-        assert(m == list.get(0));
+        assert(m == natural_order_list.get(0));
         
         //Adding a new node with greater weight, but no child node to switch with
-        list = m.insert("k", 6).getPathFromRoot();
-        logger.info(list);
+        natural_order_list = m.insert("k", 6).getPathFromRoot();
+        logger.info(natural_order_list);
         logger.info(m.getAsList(WeightedBinaryTree.SortType.WEIGHT));
-        assertEquals(2, list.size());
-        assertEquals("k", list.get(1).getKey());
-        assertEquals("m", list.get(0).getKey());
+        assertEquals(2, natural_order_list.size());
+        assertEquals("k", natural_order_list.get(1).getKey());
+        assertEquals("m", natural_order_list.get(0).getKey());
         m.display();
         
         m = new WeightedBinaryTree<>("m", 5);
-        list = m.insert("n", 4).getPathFromRoot();
-        list = m.insert("o", 7).getPathFromRoot();
-        logger.info(list);
+        natural_order_list = m.insert("n", 4).getPathFromRoot();
+        natural_order_list = m.insert("o", 7).getPathFromRoot();
+        logger.info(natural_order_list);
         m.display();
-        assertEquals(2, list.size());
-        assertEquals("m", list.get(0).getKey());
-        assertEquals("o", list.get(0).getRightChild().getKey());*/
+        assertEquals(2, natural_order_list.size());
+        assertEquals("m", natural_order_list.get(0).getKey());
+        assertEquals("o", natural_order_list.get(0).getRightChild().getKey());*/
         
         logger.info("");
         m = new WeightedBinaryTree<>("and", 5);
@@ -932,27 +932,57 @@ public class WeightedBinaryTreeTest {
     public void testGetAsList() {
         logger.info("\ntesting getAsList()");
         WeightedBinaryTree<String> tree = this.getBasicTree();
-        //System.out.println("\ntree is " + tree);
         
-        LinkedList<WeightedBinaryTree<String>> list = tree.getAsList(WeightedBinaryTree.SortType.NATURAL_ORDER);
-        logger.info("depth first list = " + list);
+        LinkedList<WeightedBinaryTree<String>> natural_order_list = tree.getAsList(WeightedBinaryTree.SortType.NATURAL_ORDER);
+        logger.info("depth first list = " + natural_order_list);
+	assertEquals("aa", natural_order_list.get(0).getKey());
+	assertEquals("and", natural_order_list.get(1).getKey());
+	assertEquals("holiday", natural_order_list.get(2).getKey());
+	assertEquals("injure", natural_order_list.get(3).getKey());
+	assertEquals("instantiate", natural_order_list.get(4).getKey());
+	assertEquals("irritating", natural_order_list.get(5).getKey());
+	assertEquals("relevance", natural_order_list.get(6).getKey());
+              
+        LinkedList<WeightedBinaryTree<String>> weight_ordered_list = tree.getAsList(WeightedBinaryTree.SortType.WEIGHT);
+        logger.info("weight_ordered_list = " + weight_ordered_list);
+	assertEquals("aa", weight_ordered_list.get(0).getKey());
+	assertEquals("relevance", weight_ordered_list.get(1).getKey());
+	assertEquals("holiday", weight_ordered_list.get(2).getKey());
+	String index_3 = weight_ordered_list.get(4).getKey();
+	assertTrue("injure".equals(index_3) | "irritating".equals(index_3));
+	String index_5 = weight_ordered_list.get(5).getKey();
+	assertTrue("instantiate".equals(index_5) | "and".equals(index_5));
+	
+    }
+    
+    @Test
+    public void testGetAsListDepthFirst() {
+	logger.info("\ntestGetAsListDepthFirst()");
+	WeightedBinaryTree<String> tree = this.getBasicTree();
         
-        /*ArrayList<String> words = new ArrayList<String>();
-        words.add("word");
-        words.add("want");
-        words.add("make");
-        words.add("histogram");
-        words.add("and");
-        words.add("I");
-        words.add("to");
-        words.add("aardvark");
-        logger.info("words = " + words);
-        java.util.Collections.sort(words);
-        logger.info("sorted word = " + words);*/
+        LinkedList<WeightedBinaryTree<String>> list = tree.getAsListDepthFirst();
+	assertEquals("aa", list.get(0).getKey());
+	assertEquals("and", list.get(1).getKey());
+	assertEquals("holiday", list.get(2).getKey());
+	assertEquals("injure", list.get(3).getKey());
+	assertEquals("instantiate", list.get(4).getKey());
+	assertEquals("irritating", list.get(5).getKey());
+	assertEquals("relevance", list.get(6).getKey());
+    }
+    
+    @Test
+    public void testGetAsListBreadthFirst() {
+	logger.info("\ntestGetAsListBreadthFirst()");
+	WeightedBinaryTree<String> tree = this.getBasicTree();
         
-        tree.display();
-        list = tree.getAsList(WeightedBinaryTree.SortType.WEIGHT);
-        logger.info("breadth first list = " + list);
+        LinkedList<WeightedBinaryTree<String>> list = tree.getAsListBreadthFirst(null);
+	assertEquals("aa", list.get(0).getKey());
+	assertEquals("relevance", list.get(1).getKey());
+	assertEquals("holiday", list.get(2).getKey());
+	String index_3 = list.get(4).getKey();
+	assertTrue("injure".equals(index_3) | "irritating".equals(index_3));
+	String index_5 = list.get(5).getKey();
+	assertTrue("instantiate".equals(index_5) | "and".equals(index_5));
     }
     
     //TODO:  Did something change in thie "recently"?

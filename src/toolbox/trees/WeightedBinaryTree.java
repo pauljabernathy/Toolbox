@@ -677,6 +677,14 @@ public class WeightedBinaryTree<T extends Comparable> implements Comparable<T> {
         return new StringBuilder("[").append(this.key.toString()).append(" ").append(this.weight).append(" ").append(this.subTreeWeight).append(" ").append(this.getTreeWeight()).append(" ").append("]").toString();
     }
     
+    /**
+     * Gets the contents of the tree as a list, sorted either by natural order or by weight.
+     * For example, if the tree consisted of words in a document and their counts,
+     * using SortType.NATURAL_ORDER would result a list sorted in alphabetical order.  Using
+     * SortType.WEIGHT would result in a list sorted by highest count to lowest count.
+     * @param sortType
+     * @return 
+     */
     public LinkedList<WeightedBinaryTree<T>> getAsList(SortType sortType) {
         if(sortType == SortType.NATURAL_ORDER) {
             return this.getAsListDepthFirst();
@@ -685,7 +693,12 @@ public class WeightedBinaryTree<T extends Comparable> implements Comparable<T> {
         }
     }
     
-    private LinkedList<WeightedBinaryTree<T>> getAsListDepthFirst() {
+    /**
+     * Does a depth first traversal of the tree and builds a list of the contents of the tree.
+     * Generally should only be used internally.
+     * @return a list of the nodes of the tree
+     */
+    protected LinkedList<WeightedBinaryTree<T>> getAsListDepthFirst() {
         LinkedList<WeightedBinaryTree<T>> result = new LinkedList<>();
         if(this.left != null) {
             result.addAll(this.left.getAsListDepthFirst());
@@ -697,14 +710,14 @@ public class WeightedBinaryTree<T extends Comparable> implements Comparable<T> {
         return result;
     }
     
-    //TODO:  complete;  And a simple depth first search probably will not give things in weighted order so make on that gives things in weighted order
     /**
-     * Does sort of a breadth first search of the tree in order to return a list of nodes on order of weight;
+     * Does a breadth first traversal of the tree and builds a list of the contents of the tree
+     * Generally should only be used internally.
      * Assumes the tree is such that at every level, the children are of equal or less weight than the parent.
-     * @param pq
-     * @return 
+     * @param pq a PriorityQueue; when calling this initially, it should be null
+     * @return a list of the nodes of the tree, sorted by weight
      */
-    private LinkedList<WeightedBinaryTree<T>> getAsListBreadthFirst(PriorityQueue<WeightedBinaryTree> pq) {
+    protected LinkedList<WeightedBinaryTree<T>> getAsListBreadthFirst(PriorityQueue<WeightedBinaryTree> pq) {
         //TODO:  remove this pq parameter since this is no longer a recursive function
         LinkedList<WeightedBinaryTree<T>> result = new LinkedList<>();
         if(pq == null) {
