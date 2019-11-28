@@ -396,54 +396,73 @@ public class WeightedBinaryTree<T extends Comparable> implements Comparable<T> {
         return this.isAncestorOf(other) && other != null && !other.isChildOf(this);
     }
     
-    //TODO: get with a functional interface, more of a query;
-    //converting to a list to do stream().filter would be nlogn, right?  A simple query to go get a list of nodes that match
-    //not a high priority
-    
-    //TODO:  what sort of checking should there be for repetitions?
-    //could check the parent chain to the root to make sure you aren't trying to insert a parent key
-    //If insert(BalancedBinaryTree<T> node) is implemented, will need to check its decendents to see if those values are in the existing tree, or ensure that it has no decendents.
-    //TODO: this is copied from the basic binary tree; adapt to this class
+    /**
+     * inserts the given key, or updates the node in the tree if one is found with the given key
+     * uses the default weight and the default DuplicateEntryOption
+     * @param key the item being inserted
+     * @return an InsertionResult representing what was inserted
+     */
     public InsertionResult<T> insert(T key) {
         return insert(key, DEFAULT_WEIGHT, DEFAULT_DUPLICATE_ENTRY_OPTION);
     }
     
+    /**
+     * inserts the given key, or updates the node in the tree if one is found with the given key
+     * uses the default DuplicateEntryOption
+     * @param key the item being inserted
+     * @param weight the weight the key will have
+     * @return an InsertionResult representing what was inserted
+     */
     public InsertionResult<T> insert(T key, double weight) {
         return this.insert(key, weight, DEFAULT_DUPLICATE_ENTRY_OPTION);
     }    
     
     /**
      * inserts the given key, or updates the node in the tree if one is found with the given key
- For example, if the class T here is a node that stores key key pairs, if we find the key we could update the key in some way which might be specific to class T.
-     * @param key
-     * @return 
+     * @param key the item being inserted
+     * @param weight the weight the key will have
+     * @param option the DuplicateEntryOption to specify how to handle keys that already exist in the tree
+     * @return an InsertionResult representing what was inserted
      */
     public InsertionResult insert(T key, double weight, DuplicateEntryOption option) {
-        //System.out.println("\n---\ninsert(" + key + ", " + option + ")");
-        //First, insert like a regular binary tree.
-        //Find where it should go (either the exiting entry, or where a new one will go).
-        //Add the new entry or update the existing one, as needed.
+
         InsertionResult result = this.simpleBinaryInsert(key, weight, option);
-        
-        //Next, look at the path to the root, starting with the node just entered or updated and going to the root,
-        //check and see if it should be bumped up a level.
-        //If so, move it up and set the previous parent to be that one's right or left child, as appropriate, and set that one's
-        //old right or left child to be the old parent's child, as appropriate.
-        //Continue the process.  
-        //LinkedList<WeightedBinaryTree<T>> pathFromRoot = result.getPathFromRoot();
         WeightedBinaryTree<T> current = result.getInsertedNode();
         current.rebalance();
         return result;
     }
     
-    
+    /**
+     * inserts the given key, or updates the node in the tree if one is found with the given key
+     * This method does not rebalance the tree and using it to build a tree it results in a binary tree that is not balanced.
+     * uses the default weight and the default DuplicateEntryOption
+     * @param key the item being inserted
+     * @return an InsertionResult representing what was inserted
+     */
     protected InsertionResult<T> simpleBinaryInsert(T key) {
         return simpleBinaryInsert(key, DEFAULT_WEIGHT);
     }
+   
+    /**
+     * inserts the given key, or updates the node in the tree if one is found with the given key
+     * This method does not rebalance the tree and using it to build a tree it results in a binary tree that is not balanced.
+     * uses the default DuplicateEntryOption
+     * @param key the item being inserted
+     * @param weight the weight the key will have
+     * @return an InsertionResult representing what was inserted
+     */
     protected InsertionResult<T> simpleBinaryInsert(T key, double weight) {
         return simpleBinaryInsert(key, weight, DuplicateEntryOption.UPDATE);
     }
     
+    /**
+     * inserts the given key, or updates the node in the tree if one is found with the given key
+     * This method does not rebalance the tree and using it to build a tree it results in a binary tree that is not balanced.
+     * @param key the item being inserted
+     * @param weight the weight the key will have
+     * @param option the DuplicateEntryOption to specify how to handle keys that already exist in the tree
+     * @return an InsertionResult representing what was inserted
+     */
     public InsertionResult<T> simpleBinaryInsert(T key, double weight, DuplicateEntryOption option) {
         InsertionResult<T> result = new InsertionResult<>();
         if(key == null) {
